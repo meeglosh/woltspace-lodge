@@ -6,7 +6,7 @@
 <title>Woltspace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:         #EDE8DE;
@@ -25,7 +25,7 @@
     --green-light:#C8DECE;
     --cream:      #FAF7F0;
 
-    --font-display: 'Bebas Neue', sans-serif;
+    --font-display: 'Fraunces', serif;
     --font-body:    'DM Sans', sans-serif;
     --font-mono:    'JetBrains Mono', monospace;
   }
@@ -58,46 +58,73 @@
   }
 
   .sidebar-brand {
-    padding: 28px 24px 20px;
+    padding: 22px 20px 18px;
     border-bottom: 1px solid rgba(255,255,255,0.07);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .sidebar-brand::before {
-    content: '';
-    position: absolute;
-    top: -30px; right: -30px;
-    width: 100px; height: 100px;
-    border-radius: 50%;
-    background: var(--terra);
-    opacity: 0.15;
   }
 
   .brand-name {
     font-family: var(--font-display);
-    font-size: 36px;
-    letter-spacing: 0.03em;
-    color: var(--surface-2);
+    font-size: 17px;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    color: rgba(255,255,255,0.82);
     line-height: 1;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
 
   .brand-emoji {
-    font-size: 26px;
+    font-size: 28px;
     line-height: 1;
   }
 
   .brand-tagline {
     font-family: var(--font-mono);
     font-size: 10px;
-    color: rgba(255,255,255,0.3);
-    margin-top: 6px;
+    color: rgba(255,255,255,0.2);
+    margin-top: 7px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    padding-left: 2px;
   }
+
+  /* ── Sidebar nav ── */
+  .sidebar-nav {
+    padding: 8px 12px 4px;
+  }
+  .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 8px 8px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .sidebar-nav-item:hover { background: rgba(255,255,255,0.06); }
+  .sidebar-nav-item.active { background: rgba(255,255,255,0.08); }
+  .sidebar-nav-icon {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.07);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: rgba(255,255,255,0.5);
+    font-size: 16px;
+  }
+  .sidebar-nav-item:hover .sidebar-nav-icon,
+  .sidebar-nav-item.active .sidebar-nav-icon { color: rgba(255,255,255,0.75); }
+  .sidebar-nav-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.75);
+  }
+  .sidebar-nav-item:hover .sidebar-nav-label,
+  .sidebar-nav-item.active .sidebar-nav-label { color: rgba(255,255,255,0.92); }
 
   /* Team section */
 
@@ -107,7 +134,7 @@
 
   .sidebar-section-label {
     font-family: var(--font-mono);
-    font-size: 9.5px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -117,6 +144,1238 @@
     align-items: center;
     justify-content: space-between;
   }
+
+  /* ── NEW WOLT MODAL ──────────────────────────────────────── */
+
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 16, 10, 0.55);
+    backdrop-filter: blur(3px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; }
+
+  .modal {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 460px;
+    max-width: calc(100vw - 48px);
+    box-shadow: 0 24px 64px rgba(24,16,10,0.25);
+    overflow: hidden;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .modal-close {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border-2);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ink-3);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s;
+  }
+  .modal-close:hover { background: var(--bg); color: var(--ink); }
+
+  .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 22px; max-height: 68vh; overflow-y: auto; }
+
+  .modal-field { display: flex; flex-direction: column; gap: 8px; }
+
+  .modal-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .modal-input {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 10px 14px;
+    border: 1px solid var(--border-2);
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .modal-input::placeholder { color: var(--ink-3); }
+  .modal-input:focus { border-color: var(--terra); }
+
+  /* Type picker */
+  .type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .type-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 10px;
+    background: var(--surface);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .type-card:hover { border-color: var(--border-2); background: var(--bg); }
+  .type-card.selected {
+    border-color: var(--terra);
+    background: var(--terra-light);
+  }
+
+  .type-card-emoji { font-size: 24px; line-height: 1; }
+
+  .type-card-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .type-card-desc {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.4;
+  }
+
+  /* Project assignment */
+  .project-assign-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .project-assign-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .project-assign-row:hover { border-color: var(--border-2); background: var(--bg); }
+  .project-assign-row.selected {
+    border-color: var(--terra);
+    background: var(--terra-light);
+  }
+
+  .project-assign-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-2);
+    flex-shrink: 0;
+    transition: all 0.12s;
+  }
+  .project-assign-row.selected .project-assign-dot {
+    background: var(--terra);
+    border-color: var(--terra);
+  }
+
+  .project-assign-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .project-assign-stack {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+
+  .project-assign-none {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    font-style: italic;
+    padding: 4px 2px;
+  }
+
+  /* Footer */
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .modal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid var(--border-2);
+    background: transparent;
+    color: var(--ink-2);
+    transition: all 0.15s;
+  }
+  .modal-btn:hover { background: var(--bg); }
+  .modal-btn.primary {
+    background: var(--terra);
+    border-color: var(--terra);
+    color: #fff;
+  }
+  .modal-btn.primary:hover { background: #B44419; }
+  .modal-btn.primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .keeper-warning {
+    background: var(--amber-light);
+    border: 1px solid var(--amber);
+    border-radius: 5px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 2px;
+  }
+
+  .keeper-warning-text {
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  .keeper-warning-text strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .keeper-warning-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .keeper-warning-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--border-2);
+    transition: all 0.12s;
+  }
+
+  .keeper-warning-btn.confirm {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+  .keeper-warning-btn.confirm:hover { background: var(--terra); border-color: var(--terra); }
+
+  .keeper-warning-btn.cancel {
+    background: transparent;
+    color: var(--ink-2);
+  }
+  .keeper-warning-btn.cancel:hover { background: var(--bg); }
+
+  /* ── SKILL CHIPS ─────────────────────────────────────────── */
+  .skill-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .skill-chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-2);
+    background: var(--surface);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .skill-chip:hover {
+    border-color: var(--terra);
+    color: var(--terra);
+    background: var(--terra-light);
+  }
+  .skill-chip.selected {
+    background: var(--terra);
+    border-color: var(--terra);
+    color: #fff;
+  }
+
+  /* ── ONBOARDING ──────────────────────────────────────────── */
+
+  #onboarding {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    transition: opacity 0.5s ease;
+  }
+  #onboarding.fading { opacity: 0; pointer-events: none; }
+
+  .ob-inner {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .ob-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ob-brand-emoji { font-size: 28px; line-height: 1; }
+  .ob-brand-name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--ink-2);
+    letter-spacing: -0.01em;
+  }
+
+  .ob-headline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .ob-title {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .ob-sub {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 420px;
+  }
+
+  .ob-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ob-field { display: flex; flex-direction: column; gap: 10px; }
+
+  .ob-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .ob-input {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 2px solid var(--border-2);
+    background: transparent;
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+  .ob-input::placeholder { color: var(--border-2); }
+  .ob-input:focus { border-bottom-color: var(--terra); }
+
+  .ob-type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .ob-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .ob-hint {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+
+  .ob-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    background: var(--terra);
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+  }
+  .ob-cta:hover { background: #B44419; }
+  .ob-cta:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* ── PROJECT DETAIL OVERLAY ──────────────────────────────── */
+
+  #project-detail {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg);
+  }
+
+  /* LEFT: chat panel */
+  .pd-chat-panel {
+    width: 380px;
+    min-width: 240px;
+    max-width: 680px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  /* Drag handle */
+  .pd-drag-handle {
+    width: 5px;
+    flex-shrink: 0;
+    background: var(--border);
+    cursor: col-resize;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .pd-drag-handle:hover, .pd-drag-handle.dragging { background: var(--terra); }
+  .pd-drag-handle::after {
+    content: '';
+    position: absolute;
+    inset: 0 -4px;
+  }
+
+  /* Back bar */
+  .pd-back-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--surface-2);
+  }
+  .pd-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: 7px;
+    padding: 6px 12px 6px 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-2);
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .pd-back-btn:hover { background: var(--terra); border-color: var(--terra); color: #fff; }
+  .pd-back-project {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Wolt header */
+  .pd-wolt-head {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--surface-2);
+  }
+  .pd-wolt-avatar {
+    width: 34px; height: 34px;
+    border-radius: 7px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .pd-wolt-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .pd-wolt-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+
+  /* Messages — inherits main chat styles, no overrides needed */
+  .pd-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Input area */
+  .pd-input-area {
+    border-top: 1px solid var(--border);
+    padding: 12px 16px 18px;
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+  .pd-pending-files { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .pd-input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 7px 10px;
+    transition: border-color 0.15s;
+  }
+  .pd-input-row:focus-within { border-color: var(--ink-3); }
+
+  /* No keeper state */
+  .pd-no-keeper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .pd-no-keeper-text {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.7;
+  }
+
+  /* RIGHT: live preview */
+  .pd-preview-panel {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: #e8e8e8;
+    overflow: hidden;
+  }
+
+  /* Browser chrome */
+  .pd-chrome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    height: 42px;
+    background: #f0f0f0;
+    border-bottom: 1px solid #d0d0d0;
+    flex-shrink: 0;
+  }
+  .pd-chrome-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .pd-chrome-dots span {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    display: block;
+  }
+  .pd-chrome-url {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pd-chrome-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .pd-chrome-btn {
+    width: 26px; height: 26px;
+    background: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #777;
+    transition: background 0.12s;
+  }
+  .pd-chrome-btn:hover { background: #e0e0e0; color: #333; }
+
+  /* iframe */
+  .pd-iframe {
+    flex: 1;
+    border: none;
+    width: 100%;
+  }
+
+  /* ── HOME VIEW ───────────────────────────────────────────── */
+
+  #home-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .home-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 0 32px;
+  }
+
+  /* Hero — initial welcome state */
+  .home-hero {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 88px 40px 48px;
+    transition: padding 0.4s ease;
+  }
+  .home-hero.compact { padding-top: 48px; }
+
+  .home-greeting {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 24px;
+    transition: font-size 0.4s ease;
+  }
+  .home-hero.compact .home-greeting { font-size: 32px; }
+
+  .home-welcome-text {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--ink-2);
+    max-width: 480px;
+    margin-bottom: 32px;
+  }
+
+  .home-prompt-hint {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+
+  /* Persona section — appears as conversation grows */
+  .home-persona {
+    max-width: 640px;
+    margin: 0 auto 40px;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .home-persona-section {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .home-persona-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 10px;
+  }
+  .home-persona-value {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .home-persona-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .home-persona-tag {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+  }
+
+  /* First project preview in Home */
+  .home-first-project {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--terra);
+    border-radius: 10px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+  }
+  .home-first-project:hover { box-shadow: 0 4px 16px rgba(24,16,10,0.1); }
+  .home-first-project-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--terra);
+    margin-bottom: 8px;
+  }
+  .home-first-project-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .home-first-project-desc {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  /* Message history in Home */
+  .home-msgs {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .home-msg-user {
+    align-self: flex-end;
+    max-width: 480px;
+    background: #2A1C12;
+    border-radius: 12px;
+    padding: 11px 16px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: #F5EDD8;
+    line-height: 1.6;
+  }
+  .home-msg-wolt {
+    align-self: flex-start;
+    max-width: 480px;
+  }
+  .home-msg-wolt-name {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .home-msg-wolt-text {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.65;
+  }
+
+  /* Sticky input bar */
+  .home-input-bar {
+    border-top: 1px solid var(--border);
+    padding: 16px 40px 24px;
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+  .home-input-inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .home-pending-files {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+  }
+  .home-input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    transition: border-color 0.15s;
+  }
+  .home-input-row:focus-within { border-color: var(--ink-3); }
+  .home-textarea {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    resize: none;
+    line-height: 1.5;
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 2px 0;
+  }
+  .home-textarea::placeholder { color: var(--ink-3); }
+  .home-send-btn {
+    background: var(--ink);
+    border: none;
+    border-radius: 7px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--bg);
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .home-send-btn:hover { background: var(--terra); }
+
+  /* ── THREADS + CHAT VIEWS ────────────────────────────────── */
+
+  #projects-view, #threads-view, #chat-view { width: 100%; }
+
+  /* Chat view needs full height layout */
+  #chat-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .back-btn {
+    background: none; border: none; cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    padding: 0;
+    transition: color 0.15s;
+  }
+  .back-btn:hover { color: var(--terra); }
+
+  /* ── Thread header ── */
+  .thread-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .thread-header .btn { margin-left: auto; }
+  .thread-header-wolt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .thread-wolt-avatar {
+    width: 40px; height: 40px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .thread-wolt-name {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .thread-wolt-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+  }
+
+  /* ── Thread list ── */
+  .threads-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .thread-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .thread-item:hover {
+    background: var(--surface-2);
+    border-color: var(--border);
+  }
+  .thread-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--terra);
+    margin-top: 7px;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+  .thread-dot.unread { opacity: 1; }
+  .thread-body { flex: 1; min-width: 0; }
+  .thread-title {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  .thread-preview {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .thread-date {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .threads-empty {
+    padding: 48px 0;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+
+  /* ── All Sessions ── */
+  .sessions-group {
+    margin-bottom: 32px;
+  }
+  .sessions-group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+    padding: 0 4px;
+  }
+  .sessions-group-avatar {
+    font-size: 18px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .sessions-group-name {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .sessions-group-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Chat header ── */
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+  .chat-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .chat-back-btn:hover { background: var(--surface-2); border-color: var(--ink-3); color: var(--ink); }
+  .chat-thread-title {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ── Chat messages ── */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .msg-row {
+    display: flex;
+    gap: 10px;
+    max-width: 720px;
+  }
+  .msg-row.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+  .msg-avatar {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .msg-bubble-wrap { display: flex; flex-direction: column; gap: 4px; }
+  .msg-row.user .msg-bubble-wrap { align-items: flex-end; }
+  .msg-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    padding: 0 4px;
+  }
+  .msg-bubble {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.6;
+    max-width: 560px;
+  }
+  .msg-row.user .msg-bubble {
+    background: #2A1C12;
+    border-color: #2A1C12;
+    color: #F5EDD8;
+    border-radius: 12px;
+  }
+  .msg-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .msg-file-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+  }
+  .msg-row.user .msg-file-chip {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.12);
+    color: rgba(245,237,216,0.7);
+  }
+
+  /* ── Chat input ── */
+  .chat-input-area {
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    padding: 14px 32px 20px;
+    flex-shrink: 0;
+  }
+  .chat-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .pending-file-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+  }
+  .pending-file-chip .remove-file {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-3); font-size: 12px; padding: 0; line-height: 1;
+    margin-left: 2px;
+  }
+  .pending-file-chip .remove-file:hover { color: var(--terra); }
+  .chat-input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 10px;
+    transition: border-color 0.15s;
+  }
+  .chat-input-row:focus-within { border-color: var(--ink-3); }
+  .attach-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-3);
+    padding: 4px;
+    border-radius: 5px;
+    display: flex; align-items: center;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+  .attach-btn:hover { color: var(--ink); background: var(--bg); }
+  .chat-textarea {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    resize: none;
+    line-height: 1.5;
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 3px 0;
+  }
+  .chat-textarea::placeholder { color: var(--ink-3); }
+  .send-btn {
+    background: var(--ink);
+    border: none;
+    border-radius: 6px;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--bg);
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .send-btn:hover { background: var(--terra); }
 
   .sidebar-section-label a {
     color: var(--terra);
@@ -128,7 +1387,7 @@
 
   .wolt-card {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 11px;
     padding: 10px 12px;
     border-radius: 6px;
@@ -173,28 +1432,26 @@
     font-size: 12px;
     font-weight: 500;
     color: rgba(255,255,255,0.85);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     line-height: 1.3;
+    word-break: break-all;
   }
 
   .wolt-type {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 11px;
     color: rgba(255,255,255,0.28);
     line-height: 1.3;
   }
 
   .wolt-project-tag {
+    display: inline-block;
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 11px;
     background: rgba(196,83,30,0.25);
     color: #F0A882;
     padding: 2px 6px;
     border-radius: 3px;
-    white-space: nowrap;
-    flex-shrink: 0;
+    margin-top: 4px;
   }
   .wolt-project-tag.available {
     background: rgba(255,255,255,0.06);
@@ -218,7 +1475,7 @@
 
   .creatures-toggle-label {
     font-family: var(--font-mono);
-    font-size: 9.5px;
+    font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.25);
@@ -228,7 +1485,7 @@
   }
 
   .creatures-chevron {
-    font-size: 9px;
+    font-size: 11px;
     color: rgba(255,255,255,0.2);
     transition: transform 0.2s;
   }
@@ -259,9 +1516,118 @@
   }
   .creature-desc {
     font-family: var(--font-mono);
-    font-size: 9.5px;
+    font-size: 11px;
     color: rgba(255,255,255,0.18);
     margin-left: auto;
+  }
+
+  /* ── Connectors ── */
+  .connectors-toggle {
+    margin: 8px 24px 0;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.15s;
+  }
+  .connectors-toggle:hover { background: rgba(255,255,255,0.07); }
+  .connectors-toggle-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .connectors-active-dot {
+    display: none;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #5BC87A;
+    flex-shrink: 0;
+    box-shadow: 0 0 4px rgba(91,200,122,0.6);
+  }
+  .connectors-active-dot.visible { display: inline-block; }
+
+  .connectors-chevron {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    transition: transform 0.2s;
+  }
+  .connectors-chevron.open { transform: rotate(180deg); }
+
+  .connectors-list {
+    margin: 6px 12px 0;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .connectors-list.open { display: flex; }
+
+  .connector-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.12s;
+    user-select: none;
+  }
+  .connector-row:hover { background: rgba(255,255,255,0.05); }
+
+  .connector-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.25);
+    transition: background 0.2s, color 0.2s;
+  }
+  .connector-row.connected .connector-icon {
+    background: var(--brand-color, rgba(255,255,255,0.1));
+    color: #fff;
+  }
+
+  .connector-info { flex: 1; min-width: 0; }
+  .connector-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .connector-row.connected .connector-name { color: rgba(255,255,255,0.82); }
+
+  .connector-handle {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.28);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .connector-action {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+  .connector-row:not(.connected) .connector-action {
+    color: rgba(255,255,255,0.18);
+  }
+  .connector-row.connected .connector-action {
+    color: #5BC87A;
   }
 
   .sidebar-footer {
@@ -274,7 +1640,7 @@
 
   .sidebar-footer a {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.22);
@@ -290,6 +1656,14 @@
     min-width: 0;
     padding: 40px 48px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .main:has(#chat-view[style*="flex"]),
+  .main:has(#home-view[style*="flex"]) {
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
   }
 
   .main-header {
@@ -303,9 +1677,10 @@
 
   .main-title {
     font-family: var(--font-display);
-    font-size: 72px;
-    line-height: 0.9;
-    letter-spacing: 0.02em;
+    font-size: 40px;
+    font-weight: 300;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
     color: var(--ink);
   }
 
@@ -365,7 +1740,7 @@
 
   .filter-chip {
     font-family: var(--font-mono);
-    font-size: 10.5px;
+    font-size: 12px;
     padding: 5px 12px;
     border-radius: 4px;
     cursor: pointer;
@@ -401,8 +1776,9 @@
   .project-card {
     background: var(--surface-2);
     border: 1px solid var(--border);
+    border-bottom: 3px solid var(--card-accent, var(--border));
+    border-right: 3px solid var(--card-accent, var(--border));
     border-radius: 8px;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     transition: box-shadow 0.2s, transform 0.2s;
@@ -414,17 +1790,9 @@
     transform: translateY(-1px);
   }
 
-  .project-card-accent {
-    height: 4px;
-    background: var(--border);
-    flex-shrink: 0;
-  }
-  .project-card-accent.running { background: var(--green); }
-  .project-card-accent.stopped { background: var(--border-2); }
-  .project-card-accent.building { background: var(--amber); }
 
   .project-card-body {
-    padding: 22px 22px 16px;
+    padding: 16px 22px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -437,10 +1805,15 @@
     margin-bottom: 4px;
   }
 
-  .project-emoji {
-    font-size: 22px;
-    line-height: 1;
-    margin-bottom: 8px;
+  .project-illus {
+    display: block;
+    width: 56px;
+    height: 40px;
+    margin-bottom: 5px;
+    flex-shrink: 0;
+  }
+  .project-illus svg {
+    display: block;
   }
 
   .project-status {
@@ -448,7 +1821,7 @@
     align-items: center;
     gap: 5px;
     font-family: var(--font-mono);
-    font-size: 9.5px;
+    font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     padding: 3px 8px;
@@ -481,16 +1854,17 @@
 
   .project-name {
     font-family: var(--font-display);
-    font-size: 38px;
-    line-height: 0.92;
-    letter-spacing: 0.02em;
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
     color: var(--ink);
-    margin-bottom: 6px;
+    margin-bottom: 16px;
   }
 
   .project-stack {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 11px;
     color: var(--ink-3);
     letter-spacing: 0.06em;
     margin-bottom: 12px;
@@ -543,18 +1917,18 @@
   }
 
   .project-wolt-avatar {
-    width: 26px; height: 26px;
+    width: 30px; height: 30px;
     border-radius: 5px;
     background: var(--bg);
     border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
+    font-size: 18px;
     flex-shrink: 0;
   }
 
   .project-wolt-name {
     font-family: var(--font-mono);
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--ink-2);
     white-space: nowrap;
@@ -564,13 +1938,13 @@
 
   .project-wolt-assign {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 11px;
     color: var(--ink-3);
   }
 
   .project-wolt-unassigned {
     font-family: var(--font-mono);
-    font-size: 10.5px;
+    font-size: 12px;
     color: var(--ink-3);
     font-style: italic;
   }
@@ -639,14 +2013,14 @@
 
   .new-label {
     font-family: var(--font-display);
-    font-size: 20px;
+    font-size: 15px;
     letter-spacing: 0.05em;
     color: var(--ink-3);
   }
 
   .new-sub {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 11px;
     color: var(--ink-3);
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -665,9 +2039,8 @@
   .section-title {
     font-family: var(--font-display);
     font-size: 14px;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.02em;
     color: var(--ink-3);
-    text-transform: uppercase;
     white-space: nowrap;
   }
 
@@ -679,7 +2052,7 @@
 
   .section-count {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 11px;
     color: var(--ink-3);
     background: var(--bg);
     border: 1px solid var(--border);
@@ -721,7 +2094,7 @@
     background: var(--ink);
     border-radius: 6px;
     padding: 4px;
-    z-index: 100;
+    z-index: 200;
     display: none;
     flex-direction: column;
     gap: 2px;
@@ -745,6 +2118,28 @@
   .context-menu-item:hover { background: rgba(255,255,255,0.1); }
   .context-menu-item.danger { color: #F08070; }
   .context-menu-item.danger:hover { background: rgba(196,83,30,0.2); }
+  .context-menu-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 4px 0;
+  }
+  .context-menu-item.github-connected {
+    color: #7bbf8a;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    gap: 7px;
+  }
+  .context-menu-item.github-connected:hover { background: rgba(123,191,138,0.12); }
+  .context-menu-item .gh-icon {
+    width: 13px; height: 13px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+  .context-menu-item.unlink {
+    color: #E8A080;
+  }
+  .context-menu-item.unlink:hover { background: rgba(196,83,30,0.15); }
 </style>
 </head>
 <body>
@@ -757,19 +2152,44 @@
 <aside class="sidebar">
   <div class="sidebar-brand">
     <div class="brand-name">
-      <span class="brand-emoji">🦫</span>
-      WOLTSPACE
+      <span class="brand-emoji">🌿</span>
+      Woltspace
     </div>
-    <div class="brand-tagline">the lodge · v2</div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="sidebar-nav-item active" id="nav-home" onclick="showHome()">
+      <span class="sidebar-nav-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="8" cy="8" r="5.5"/>
+          <circle cx="8" cy="8" r="2" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <span class="sidebar-nav-label">Home</span>
+    </div>
+    <div class="sidebar-nav-item" id="nav-projects" onclick="showProjects()">
+      <span class="sidebar-nav-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+      </span>
+      <span class="sidebar-nav-label">Projects</span>
+    </div>
   </div>
 
   <div class="sidebar-section">
     <div class="sidebar-section-label">
       Team <span style="color:rgba(255,255,255,0.4)">4</span>
-      <a href="#">+ add wolt</a>
+      <a href="#" onclick="openWoltModal(event)">+ add wolt</a>
     </div>
 
-    <div class="wolt-card active">
+    <div class="sidebar-nav-item" id="nav-all-sessions" onclick="showAllSessions()" style="margin-bottom:8px">
+      <span class="sidebar-nav-icon">💬</span>
+      <span class="sidebar-nav-label">All Sessions</span>
+    </div>
+
+    <div class="wolt-card" onclick="showThreads('Woltaire','🦝','raccoon · opus','creatorspace')">
       <div class="wolt-avatar">
         🦝
         <div class="wolt-status-dot running"></div>
@@ -777,11 +2197,11 @@
       <div class="wolt-info">
         <div class="wolt-name">Woltaire</div>
         <div class="wolt-type">raccoon</div>
+        <div class="wolt-project-tag">creatorspace</div>
       </div>
-      <div class="wolt-project-tag">creatorspace</div>
     </div>
 
-    <div class="wolt-card">
+    <div class="wolt-card" onclick="showThreads('creationwolt','🦫','beaver · sonnet','signal-desk')">
       <div class="wolt-avatar">
         🦫
         <div class="wolt-status-dot running"></div>
@@ -789,11 +2209,11 @@
       <div class="wolt-info">
         <div class="wolt-name">creationwolt</div>
         <div class="wolt-type">beaver</div>
+        <div class="wolt-project-tag">signal-desk</div>
       </div>
-      <div class="wolt-project-tag">signal-desk</div>
     </div>
 
-    <div class="wolt-card">
+    <div class="wolt-card" onclick="showThreads('lodgebuilder','🦫','beaver · sonnet','daily-digest')">
       <div class="wolt-avatar">
         🦫
         <div class="wolt-status-dot running"></div>
@@ -801,11 +2221,11 @@
       <div class="wolt-info">
         <div class="wolt-name">lodgebuilder</div>
         <div class="wolt-type">beaver</div>
+        <div class="wolt-project-tag">daily-digest</div>
       </div>
-      <div class="wolt-project-tag">daily-digest</div>
     </div>
 
-    <div class="wolt-card">
+    <div class="wolt-card" onclick="showThreads('Wolten','🐕','dog · companion','—')">
       <div class="wolt-avatar">
         🐕
         <div class="wolt-status-dot idle"></div>
@@ -813,8 +2233,8 @@
       <div class="wolt-info">
         <div class="wolt-name">Wolten</div>
         <div class="wolt-type">dog · companion</div>
+        <div class="wolt-project-tag available">idle</div>
       </div>
-      <div class="wolt-project-tag available">idle</div>
     </div>
   </div>
 
@@ -838,6 +2258,81 @@
     </div>
   </div>
 
+  <!-- Connectors -->
+  <div class="connectors-toggle" onclick="toggleConnectors(this)">
+    <span class="connectors-toggle-label">⚡ Connectors <span class="connectors-active-dot" id="connectors-active-dot"></span></span>
+    <span class="connectors-chevron" id="connectors-chevron">▾</span>
+  </div>
+  <div class="connectors-list" id="connectors-list">
+
+    <div class="connector-row connected" data-service="telegram" style="--brand-color:#2AABEE" onclick="toggleConnector(this)">
+      <div class="connector-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
+      </div>
+      <div class="connector-info">
+        <div class="connector-name">Telegram</div>
+        <div class="connector-handle">@meeglosh</div>
+      </div>
+      <div class="connector-action">●</div>
+    </div>
+
+    <div class="connector-row" data-service="slack" style="--brand-color:#4A154B" onclick="toggleConnector(this)">
+      <div class="connector-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zm10.122 2.521a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zm-1.268 0a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zm-2.523 10.122a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zm0-1.268a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>
+      </div>
+      <div class="connector-info">
+        <div class="connector-name">Slack</div>
+        <div class="connector-handle">— not connected</div>
+      </div>
+      <div class="connector-action">＋</div>
+    </div>
+
+    <div class="connector-row" data-service="discord" style="--brand-color:#5865F2" onclick="toggleConnector(this)">
+      <div class="connector-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+      </div>
+      <div class="connector-info">
+        <div class="connector-name">Discord</div>
+        <div class="connector-handle">— not connected</div>
+      </div>
+      <div class="connector-action">＋</div>
+    </div>
+
+    <div class="connector-row" data-service="spotify" style="--brand-color:#1DB954" onclick="toggleConnector(this)">
+      <div class="connector-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+      </div>
+      <div class="connector-info">
+        <div class="connector-name">Spotify</div>
+        <div class="connector-handle">— not connected</div>
+      </div>
+      <div class="connector-action">＋</div>
+    </div>
+
+    <div class="connector-row" data-service="notion" style="--brand-color:#ffffff" onclick="toggleConnector(this)">
+      <div class="connector-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.14c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z"/></svg>
+      </div>
+      <div class="connector-info">
+        <div class="connector-name">Notion</div>
+        <div class="connector-handle">— not connected</div>
+      </div>
+      <div class="connector-action">＋</div>
+    </div>
+
+    <div class="connector-row" data-service="github" style="--brand-color:#ffffff" onclick="toggleConnector(this)">
+      <div class="connector-icon">
+        <svg width="14" height="14" viewBox="0 0 98 96" fill="currentColor"><path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>
+      </div>
+      <div class="connector-info">
+        <div class="connector-name">GitHub</div>
+        <div class="connector-handle">meeglosh</div>
+      </div>
+      <div class="connector-action">●</div>
+    </div>
+
+  </div>
+
   <div class="sidebar-footer">
     <a href="#">terminal</a>
     <a href="#">status</a>
@@ -848,9 +2343,38 @@
 <!-- ── MAIN ──────────────────────────────────────────────────── -->
 <main class="main">
 
+<!-- ── HOME VIEW ──────────────────────────────────────────────── -->
+<div id="home-view" style="display:flex">
+  <div class="home-scroll" id="home-scroll">
+    <div class="home-hero" id="home-hero">
+      <div class="home-greeting" id="home-greeting">Good to meet you.</div>
+      <div class="home-welcome-text" id="home-welcome-text">I'm just waking up in here. This space is yours — I'm going to help you make it feel like home.<br><br>Tell me a bit about yourself. What are you working on? What's been sitting in the back of your head?</div>
+      <div class="home-prompt-hint">↓ start below</div>
+    </div>
+    <div class="home-persona" id="home-persona" style="display:none"></div>
+    <div class="home-msgs" id="home-msgs"></div>
+  </div>
+  <div class="home-input-bar">
+    <div class="home-input-inner">
+      <div class="home-pending-files" id="home-pending-files"></div>
+      <div class="home-input-row">
+        <button class="attach-btn" onclick="triggerHomeFile()" title="Attach file">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <textarea class="home-textarea" id="home-input" placeholder="Tell me about yourself…" rows="1" onkeydown="handleHomeKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="home-send-btn" onclick="sendHomeMessage()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <input type="file" id="home-file-input" multiple style="display:none" onchange="handleHomeFile(event)">
+    </div>
+  </div>
+</div>
+
+<div id="projects-view" style="display:none">
   <div class="main-header">
     <div class="main-title-block">
-      <div class="main-title">PROJECTS</div>
+      <div class="main-title">Projects</div>
       <div class="main-subtitle">3 active · 2 running · your build surface</div>
     </div>
     <div class="header-actions">
@@ -874,17 +2398,17 @@
   <div class="project-grid">
 
     <!-- Card 1: running -->
-    <div class="project-card" style="position:relative">
-      <div class="project-card-accent running"></div>
+    <div class="project-card" style="position:relative;cursor:pointer" onclick="openProject('Creatorspace')">`
+
       <div class="project-card-body">
         <div class="project-card-top">
-          <div class="project-emoji">🎨</div>
+          <div class="project-illus" data-illus="Creatorspace"></div>
           <div class="project-status running">
             <div class="project-status-dot"></div>
             running
           </div>
         </div>
-        <div class="project-name">CREATORSPACE</div>
+        <div class="project-name">Creatorspace</div>
         <div class="project-stack">
           <span class="stack-tag">React</span>
           <span class="stack-tag">Vite</span>
@@ -898,35 +2422,41 @@
             <div class="project-wolt-avatar">🦝</div>
             <div>
               <div class="project-wolt-name">Woltaire</div>
-              <div class="project-wolt-assign">keeper · click to reassign</div>
+              <div class="project-wolt-assign">keeper</div>
             </div>
           </div>
           <div class="project-actions">
-            <button class="action-btn stop" title="Stop">■</button>
-            <button class="action-btn" title="Edit" onclick="toggleMenu('menu-1')">⋯</button>
+            <button class="action-btn stop" title="Stop" onclick="toggleProjectState(this,event)">■</button>
+            <button class="action-btn" title="Edit" onclick="event.stopPropagation();toggleMenu('menu-1')">⋯</button>
           </div>
         </div>
       </div>
       <div class="context-menu" id="menu-1">
+        <div class="context-menu-item">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Reassign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
+        <div class="context-menu-item github-connected" onclick="window.open('https://github.com/meeglosh/creatorspace','_blank')">
+          <svg class="gh-icon" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg> meeglosh/creatorspace
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item unlink" style="gap:7px"><svg class="gh-icon" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg> Unlink GitHub</div>
         <div class="context-menu-item danger">✕ Delete</div>
       </div>
     </div>
 
     <!-- Card 2: stopped -->
-    <div class="project-card" style="position:relative">
-      <div class="project-card-accent stopped"></div>
+    <div class="project-card" style="position:relative;cursor:pointer" onclick="openProject('Signal Desk Pro')">`
+
       <div class="project-card-body">
         <div class="project-card-top">
-          <div class="project-emoji">🎚</div>
+          <div class="project-illus" data-illus="Signal Desk Pro"></div>
           <div class="project-status stopped">
             <div class="project-status-dot"></div>
             stopped
           </div>
         </div>
-        <div class="project-name">SIGNAL DESK PRO</div>
+        <div class="project-name">Signal Desk Pro</div>
         <div class="project-stack">
           <span class="stack-tag">Next.js</span>
           <span class="stack-tag">TypeScript</span>
@@ -939,35 +2469,38 @@
             <div class="project-wolt-avatar">🦫</div>
             <div>
               <div class="project-wolt-name">creationwolt</div>
-              <div class="project-wolt-assign">keeper · click to reassign</div>
+              <div class="project-wolt-assign">keeper</div>
             </div>
           </div>
           <div class="project-actions">
-            <button class="action-btn start" title="Start">▶</button>
-            <button class="action-btn" title="Edit" onclick="toggleMenu('menu-2')">⋯</button>
+            <button class="action-btn start" title="Start" onclick="toggleProjectState(this,event)">▶</button>
+            <button class="action-btn" title="Edit" onclick="event.stopPropagation();toggleMenu('menu-2')">⋯</button>
           </div>
         </div>
       </div>
       <div class="context-menu" id="menu-2">
+        <div class="context-menu-item">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Reassign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
+        <div class="context-menu-item" style="gap:7px"><svg class="gh-icon" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg> Connect to GitHub</div>
+        <div class="context-menu-divider"></div>
         <div class="context-menu-item danger">✕ Delete</div>
       </div>
     </div>
 
     <!-- Card 3: running -->
-    <div class="project-card" style="position:relative">
-      <div class="project-card-accent running"></div>
+    <div class="project-card" style="position:relative;cursor:pointer" onclick="openProject('Daily Digest')">`
+
       <div class="project-card-body">
         <div class="project-card-top">
-          <div class="project-emoji">☀️</div>
+          <div class="project-illus" data-illus="Daily Digest"></div>
           <div class="project-status running">
             <div class="project-status-dot"></div>
             running
           </div>
         </div>
-        <div class="project-name">DAILY DIGEST</div>
+        <div class="project-name">Daily Digest</div>
         <div class="project-stack">
           <span class="stack-tag">Python</span>
           <span class="stack-tag">FastAPI</span>
@@ -980,35 +2513,38 @@
             <div class="project-wolt-avatar">🦫</div>
             <div>
               <div class="project-wolt-name">lodgebuilder</div>
-              <div class="project-wolt-assign">keeper · click to reassign</div>
+              <div class="project-wolt-assign">keeper</div>
             </div>
           </div>
           <div class="project-actions">
-            <button class="action-btn stop" title="Stop">■</button>
-            <button class="action-btn" title="Edit" onclick="toggleMenu('menu-3')">⋯</button>
+            <button class="action-btn stop" title="Stop" onclick="toggleProjectState(this,event)">■</button>
+            <button class="action-btn" title="Edit" onclick="event.stopPropagation();toggleMenu('menu-3')">⋯</button>
           </div>
         </div>
       </div>
       <div class="context-menu" id="menu-3">
+        <div class="context-menu-item">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Reassign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
+        <div class="context-menu-item" style="gap:7px"><svg class="gh-icon" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg> Connect to GitHub</div>
+        <div class="context-menu-divider"></div>
         <div class="context-menu-item danger">✕ Delete</div>
       </div>
     </div>
 
     <!-- Card 4: building -->
-    <div class="project-card" style="position:relative">
-      <div class="project-card-accent building"></div>
+    <div class="project-card" style="position:relative;cursor:pointer" onclick="openProject('Memex')">`
+
       <div class="project-card-body">
         <div class="project-card-top">
-          <div class="project-emoji">🧠</div>
+          <div class="project-illus" data-illus="Memex"></div>
           <div class="project-status building">
             <div class="project-status-dot"></div>
             building
           </div>
         </div>
-        <div class="project-name">MEMEX</div>
+        <div class="project-name">Memex</div>
         <div class="project-stack">
           <span class="stack-tag">Svelte</span>
           <span class="stack-tag">SQLite</span>
@@ -1026,14 +2562,17 @@
           </div>
           <div class="project-actions">
             <button class="action-btn" style="opacity:0.4; cursor:not-allowed">▶</button>
-            <button class="action-btn" title="Edit" onclick="toggleMenu('menu-4')">⋯</button>
+            <button class="action-btn" title="Edit" onclick="event.stopPropagation();toggleMenu('menu-4')">⋯</button>
           </div>
         </div>
       </div>
       <div class="context-menu" id="menu-4">
+        <div class="context-menu-item">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Assign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
+        <div class="context-menu-item" style="gap:7px"><svg class="gh-icon" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg> Connect to GitHub</div>
+        <div class="context-menu-divider"></div>
         <div class="context-menu-item danger">✕ Delete</div>
       </div>
     </div>
@@ -1041,11 +2580,66 @@
     <!-- New project -->
     <a class="project-card-new" href="#">
       <div class="new-icon">+</div>
-      <div class="new-label">NEW PROJECT</div>
+      <div class="new-label">New project</div>
       <div class="new-sub">deploy a wolt to build it</div>
     </a>
 
   </div>
+
+</div><!-- /#projects-view -->
+
+<!-- ── ALL SESSIONS VIEW ─────────────────────────────────────── -->
+<div id="all-sessions-view" style="display:none">
+  <div class="main-header">
+    <div class="main-title-block">
+      <div class="main-title">Sessions</div>
+      <div class="main-subtitle">all threads across all wolts</div>
+    </div>
+  </div>
+  <div id="all-sessions-list"></div>
+</div>
+
+<!-- ── THREADS VIEW ───────────────────────────────────────────── -->
+<div id="threads-view" style="display:none">
+  <div class="thread-header">
+    <button class="back-btn" onclick="showProjects()">← Projects</button>
+    <div class="thread-header-wolt">
+      <div class="thread-wolt-avatar" id="tv-avatar"></div>
+      <div>
+        <div class="thread-wolt-name" id="tv-name"></div>
+        <div class="thread-wolt-meta" id="tv-meta"></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="newThread()">+ new thread</button>
+  </div>
+  <div class="threads-list" id="threads-list"></div>
+</div>
+
+<!-- ── CHAT VIEW ─────────────────────────────────────────────── -->
+<div id="chat-view" style="display:none">
+  <div class="chat-header">
+    <button class="chat-back-btn" id="chat-back-btn">← <span id="chat-back-label">threads</span></button>
+    <div class="chat-thread-title" id="chat-title"></div>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-area">
+    <div class="chat-attachments" id="chat-attachments"></div>
+    <div class="chat-input-row">
+      <button class="attach-btn" onclick="triggerFileInput()" title="Attach file">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+        </svg>
+      </button>
+      <textarea class="chat-textarea" id="chat-input" placeholder="Message…" rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" onclick="sendMessage()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+    <input type="file" id="file-input" multiple style="display:none" onchange="handleFileSelect(event)">
+  </div>
+</div>
 
 </main>
 
@@ -1068,7 +2662,69 @@
     chevron.classList.toggle('open');
   }
 
+  function toggleConnectors(el) {
+    const list = document.getElementById('connectors-list');
+    const chevron = document.getElementById('connectors-chevron');
+    list.classList.toggle('open');
+    chevron.classList.toggle('open');
+  }
+
+  const CONNECTOR_HANDLES = {
+    telegram: '@meeglosh',
+    slack: 'meeglosh.slack.com',
+    discord: 'meeglosh#0001',
+    spotify: 'meeglosh',
+    notion: 'meeglosh',
+    github: 'meeglosh',
+  };
+
+  function toggleConnector(row) {
+    const service = row.dataset.service;
+    const isConnected = row.classList.contains('connected');
+    const handle = row.querySelector('.connector-handle');
+    const action = row.querySelector('.connector-action');
+
+    if (isConnected) {
+      row.classList.remove('connected');
+      handle.textContent = '— not connected';
+      action.textContent = '＋';
+    } else {
+      row.classList.add('connected');
+      handle.textContent = CONNECTOR_HANDLES[service] || '';
+      action.textContent = '●';
+    }
+    syncConnectorDot();
+  }
+
+  function syncConnectorDot() {
+    const anyConnected = document.querySelector('#connectors-list .connector-row.connected');
+    document.getElementById('connectors-active-dot').classList.toggle('visible', !!anyConnected);
+  }
+
+  syncConnectorDot();
+
   // Context menus
+  function toggleProjectState(btn, e) {
+    e.stopPropagation();
+    const card = btn.closest('.project-card');
+    const statusEl = card.querySelector('.project-status');
+    const isRunning = statusEl.classList.contains('running');
+
+    if (isRunning) {
+      statusEl.classList.replace('running', 'stopped');
+      statusEl.innerHTML = '<div class="project-status-dot"></div> stopped';
+      btn.classList.replace('stop', 'start');
+      btn.title = 'Start';
+      btn.textContent = '▶';
+    } else {
+      statusEl.classList.replace('stopped', 'running');
+      statusEl.innerHTML = '<div class="project-status-dot"></div> running';
+      btn.classList.replace('start', 'stop');
+      btn.title = 'Stop';
+      btn.textContent = '■';
+    }
+  }
+
   function toggleMenu(id) {
     document.querySelectorAll('.context-menu').forEach(m => {
       if (m.id !== id) m.classList.remove('open');
@@ -1082,6 +2738,1339 @@
       document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('open'));
     }
   });
+</script>
+
+<script>
+// ── Threads & Chat ────────────────────────────────────────────
+
+const WOLT_DATA = {
+  'Woltaire': {
+    threads: [
+      {
+        id: 'w1t1', title: 'Dashboard redesign brief', date: '3 days ago', unread: true,
+        preview: "Let's lock in the font pairing first, then we can move on to layout.",
+        messages: [
+          { from: 'user', text: "Hey Woltaire — I want to start a redesign of the woltspace dashboard. Feeling like the current one is getting cluttered. Thoughts?", time: 'Mon 9:14am', files: [] },
+          { from: 'wolt', text: "Agreed. The main issues are hierarchy and density — projects are the real unit of work but they don't feel primary right now. I'd start by making the project grid the hero of the main area and moving wolts to a supporting sidebar role. Want me to sketch a structure?", time: 'Mon 9:15am', files: [] },
+          { from: 'user', text: "Yes exactly. Also I uploaded the current design for reference.", time: 'Mon 9:18am', files: ['dashboard-current.png'] },
+          { from: 'wolt', text: "Got it, looking at it now. The sidebar is doing too much — team roster, creatures, footer nav all competing. I'd collapse creatures by default and simplify the nav. For the main area: big project cards with status, keeper, stack tags, and action buttons. Clean grid, lots of breathing room.", time: 'Mon 9:20am', files: [] },
+        ]
+      },
+      {
+        id: 'w1t2', title: 'Creatorspace feature planning', date: '1 week ago', unread: false,
+        preview: "The onboarding flow is the highest-leverage thing to fix right now.",
+        messages: [
+          { from: 'user', text: "What should we prioritise for the next Creatorspace sprint?", time: 'Tue 2:30pm', files: [] },
+          { from: 'wolt', text: "The onboarding flow is the highest-leverage thing to fix. Users are dropping off at step 3 — the template picker. Too many choices, no clear recommendation. I'd cut it to 3 options max with a 'recommended for you' default.", time: 'Tue 2:31pm', files: [] },
+        ]
+      },
+      {
+        id: 'w1t3', title: 'Font pairing options', date: '2 weeks ago', unread: false,
+        preview: "Fraunces at weight 300 pairs really well with DM Sans for body copy.",
+        messages: [
+          { from: 'wolt', text: "Fraunces at weight 300 pairs really well with DM Sans for body copy. It has optical character without feeling heavy — mid-century without trying too hard. Want me to mock it up?", time: 'Fri 11:02am', files: [] },
+          { from: 'user', text: "Yes please, mock it up against the Bebas Neue option too.", time: 'Fri 11:10am', files: [] },
+          { from: 'wolt', text: "Here's the comparison. Fraunces wins on warmth — Bebas reads too cold for this palette.", time: 'Fri 11:22am', files: ['font-comparison.pdf'] },
+        ]
+      },
+    ]
+  },
+  'creationwolt': {
+    threads: [
+      {
+        id: 'w2t1', title: 'Signal Desk landing copy', date: '5 days ago', unread: true,
+        preview: "The hero headline should lead with the outcome, not the feature.",
+        messages: [
+          { from: 'user', text: "Can you take a pass at the Signal Desk hero copy? It's feeling too feature-y.", time: 'Wed 10:00am', files: [] },
+          { from: 'wolt', text: "The hero headline should lead with the outcome, not the feature. Instead of 'Reference mixes on your iPhone' try something like 'Your ears, calibrated.' Then the subhead explains the how.", time: 'Wed 10:03am', files: [] },
+        ]
+      },
+      {
+        id: 'w2t2', title: 'Next.js upgrade notes', date: '3 weeks ago', unread: false,
+        preview: "App router migration is straightforward — pages router is still fine though.",
+        messages: [
+          { from: 'wolt', text: "App router migration is straightforward — pages router is still fully supported so no rush. Main thing to watch is the data fetching patterns, they change quite a bit.", time: 'Mon 3:45pm', files: ['nextjs-migration-notes.md'] },
+        ]
+      }
+    ]
+  },
+  'lodgebuilder': {
+    threads: [
+      {
+        id: 'w3t1', title: 'Daily digest aggregator build', date: '2 days ago', unread: false,
+        preview: "I've got the HN scraper working, Spotify is next.",
+        messages: [
+          { from: 'wolt', text: "I've got the HN scraper working — pulling top 10 threads by score, filtering for signal. Spotify is next. The 7am delivery timing will need a cron.", time: 'Thu 8:01am', files: [] },
+          { from: 'user', text: "Great. Can you attach the scraper code so I can review it?", time: 'Thu 9:15am', files: [] },
+          { from: 'wolt', text: "Here it is. The rate limiting is conservative on purpose — HN doesn't document their limits.", time: 'Thu 9:18am', files: ['hn-scraper.py'] },
+        ]
+      }
+    ]
+  },
+  'Wolten': {
+    threads: [
+      {
+        id: 'w4t1', title: 'Morning check-in setup', date: '1 week ago', unread: false,
+        preview: "I'll send you a daily briefing at 8am — just reply to adjust anything.",
+        messages: [
+          { from: 'wolt', text: "I'll send you a daily briefing at 8am — weather, calendar, and any urgent Telegram messages you might have missed overnight. Just reply to adjust anything.", time: 'Mon 7:58am', files: [] },
+        ]
+      }
+    ]
+  }
+};
+
+let currentWolt = null;
+let currentThread = null;
+let pendingFiles = [];
+
+function setNavActive(id) {
+  ['nav-home','nav-projects','nav-all-sessions'].forEach(n => {
+    document.getElementById(n)?.classList.remove('active');
+  });
+  if (id) document.getElementById(id)?.classList.add('active');
+}
+
+function hideAllViews() {
+  ['projects-view','all-sessions-view','threads-view','chat-view','home-view'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+function showProjects() {
+  hideAllViews();
+  document.getElementById('projects-view').style.display = '';
+  document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
+  setNavActive('nav-projects');
+  currentWolt = null;
+  currentThread = null;
+}
+
+function showAllSessions() {
+  hideAllViews();
+  document.getElementById('all-sessions-view').style.display = '';
+  document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
+  setNavActive('nav-all-sessions');
+  currentWolt = null;
+
+  const woltMeta = {
+    'Woltaire':     { emoji: '🦝', meta: 'raccoon · opus', project: 'creatorspace' },
+    'creationwolt': { emoji: '🦫', meta: 'beaver · sonnet', project: 'signal-desk' },
+    'lodgebuilder': { emoji: '🦫', meta: 'beaver · sonnet', project: 'daily-digest' },
+    'Wolten':       { emoji: '🐕', meta: 'dog · companion', project: '—' },
+  };
+
+  const list = document.getElementById('all-sessions-list');
+  list.innerHTML = Object.entries(WOLT_DATA).map(([name, data]) => {
+    const m = woltMeta[name] || { emoji: '🦫', meta: '', project: '' };
+    const threads = data.threads.map(t => `
+      <div class="thread-item" onclick="showThreads('${name}','${m.emoji}','${m.meta}','${m.project}'); showChat('${name}','${t.id}')">
+        <div class="thread-dot${t.unread ? ' unread' : ''}"></div>
+        <div class="thread-body">
+          <div class="thread-title">${t.title}</div>
+          <div class="thread-preview">${t.preview}</div>
+        </div>
+        <div class="thread-date">${t.date}</div>
+      </div>`).join('');
+    return `
+      <div class="sessions-group">
+        <div class="sessions-group-header">
+          <div class="sessions-group-avatar">${m.emoji}</div>
+          <div class="sessions-group-name">${name}</div>
+          <div class="sessions-group-meta">${m.meta}</div>
+        </div>
+        <div class="threads-list">${threads}</div>
+      </div>`;
+  }).join('');
+}
+
+function showThreads(name, emoji, meta, project) {
+  currentWolt = name;
+  hideAllViews();
+  document.getElementById('threads-view').style.display = '';
+  setNavActive(null);
+  document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.wolt-card').forEach(c => {
+    if (c.getAttribute('onclick')?.includes(`'${name}'`)) c.classList.add('active');
+  });
+
+  document.getElementById('tv-avatar').textContent = emoji;
+  document.getElementById('tv-name').textContent = name;
+  document.getElementById('tv-meta').textContent = meta + (project !== '—' ? ' · ' + project : '');
+
+  const data = WOLT_DATA[name] || { threads: [] };
+  const list = document.getElementById('threads-list');
+  if (!data.threads.length) {
+    list.innerHTML = `<div class="threads-empty">No threads yet — start one.</div>`;
+    return;
+  }
+  list.innerHTML = data.threads.map(t => `
+    <div class="thread-item" onclick="showChat('${name}','${t.id}')">
+      <div class="thread-dot${t.unread ? ' unread' : ''}"></div>
+      <div class="thread-body">
+        <div class="thread-title">${t.title}</div>
+        <div class="thread-preview">${t.preview}</div>
+      </div>
+      <div class="thread-date">${t.date}</div>
+    </div>
+  `).join('');
+}
+
+function showChat(woltName, threadId) {
+  const data = WOLT_DATA[woltName];
+  const thread = data.threads.find(t => t.id === threadId);
+  if (!thread) return;
+  currentThread = thread;
+  thread.unread = false;
+
+  document.getElementById('threads-view').style.display = 'none';
+  const chatEl = document.getElementById('chat-view');
+  chatEl.style.display = 'flex';
+
+  const wolt = Object.keys(WOLT_DATA).find(k => k === woltName);
+  const emoji = document.querySelector(`.wolt-card[onclick*="${woltName}"] .wolt-avatar`)?.childNodes[0]?.textContent?.trim() || '🦫';
+
+  document.getElementById('chat-title').textContent = thread.title;
+  document.getElementById('chat-back-label').textContent = woltName;
+  document.getElementById('chat-back-btn').onclick = () => {
+    chatEl.style.display = 'none';
+    document.getElementById('threads-view').style.display = '';
+  };
+
+  pendingFiles = [];
+  renderPendingFiles();
+  document.getElementById('chat-input').value = '';
+
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML = thread.messages.map(m => renderMessage(m, emoji)).join('');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function renderMessage(m, woltEmoji) {
+  const isUser = m.from === 'user';
+  const avatar = isUser
+    ? `<div class="msg-avatar">👤</div>`
+    : `<div class="msg-avatar">${woltEmoji}</div>`;
+  const files = (m.files || []).map(f =>
+    `<div class="msg-file-chip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>${f}</div>`
+  ).join('');
+  return `
+    <div class="msg-row${isUser ? ' user' : ''}">
+      ${avatar}
+      <div class="msg-bubble-wrap">
+        <div class="msg-meta">${m.time}</div>
+        <div class="msg-bubble">${m.text}</div>
+        ${files ? `<div class="msg-attachments">${files}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function newThread() {
+  const title = prompt('Thread title:');
+  if (!title || !currentWolt) return;
+  const data = WOLT_DATA[currentWolt];
+  const id = 'new-' + Date.now();
+  data.threads.unshift({ id, title, date: 'just now', unread: false, preview: 'New thread', messages: [] });
+  showThreads(currentWolt, ...['','',''].map(() => ''));
+  // re-render with correct args from the clicked card
+  const card = document.querySelector(`.wolt-card[onclick*="${currentWolt}"]`);
+  if (card) { const fn = card.getAttribute('onclick'); eval(fn); }
+  showChat(currentWolt, id);
+}
+
+function triggerFileInput() { document.getElementById('file-input').click(); }
+
+function handleFileSelect(e) {
+  for (const f of e.target.files) pendingFiles.push(f.name);
+  e.target.value = '';
+  renderPendingFiles();
+}
+
+function renderPendingFiles() {
+  const el = document.getElementById('chat-attachments');
+  el.innerHTML = pendingFiles.map((name, i) => `
+    <div class="pending-file-chip">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      ${name}
+      <button class="remove-file" onclick="removeFile(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removeFile(i) {
+  pendingFiles.splice(i, 1);
+  renderPendingFiles();
+}
+
+function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text && !pendingFiles.length) return;
+
+  const now = new Date();
+  const time = now.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+  const msg = { from: 'user', text: text || '(attachment)', time, files: [...pendingFiles] };
+  currentThread.messages.push(msg);
+
+  const emoji = document.getElementById('tv-avatar').textContent || '🦫';
+  const msgs = document.getElementById('chat-messages');
+  msgs.insertAdjacentHTML('beforeend', renderMessage(msg, emoji));
+  msgs.scrollTop = msgs.scrollHeight;
+
+  input.value = '';
+  input.style.height = 'auto';
+  pendingFiles = [];
+  renderPendingFiles();
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+}
+
+// ── Home ──────────────────────────────────────────────────────
+
+const HOME_WOLT_RESPONSES = [
+  "Nice. What kind of projects are you usually working on — are you more of a builder, a designer, or something else entirely?",
+  "Got it. And what does your ideal setup look like? Solo, or do you like collaborating with others?",
+  "I'm starting to get a picture of you. One more thing — is there something specific you've been wanting to build but haven't had the time or tools for yet?",
+  "That's exactly the kind of thing we can make real here. I'm going to start sketching out your first project — give me a moment.",
+  "Your first project is taking shape. You'll find it in Projects whenever you're ready to open it up.",
+  "This space is yours now. I'll keep learning as we go — the more we work together, the more it'll feel like home.",
+];
+
+const HOME_TOPICS = ['design', 'code', 'writing', 'music', 'research', 'product', 'video', 'ai', 'startup', 'art', 'tools', 'automation'];
+
+let homeMsgCount = 0;
+let homeUserName = null;
+let homeTopics = [];
+let homePendingFiles = [];
+let homeFirstProjectCreated = false;
+
+function showHome() {
+  hideAllViews();
+  const el = document.getElementById('home-view');
+  el.style.display = 'flex';
+  setNavActive('nav-home');
+  document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
+  setTimeout(() => document.getElementById('home-input').focus(), 100);
+}
+
+function sendHomeMessage() {
+  const input = document.getElementById('home-input');
+  const text = input.value.trim();
+  if (!text && !homePendingFiles.length) return;
+
+  // Render user message
+  const msgs = document.getElementById('home-msgs');
+  const userDiv = document.createElement('div');
+  userDiv.className = 'home-msg-user';
+  userDiv.textContent = text || '(attachment)';
+  msgs.appendChild(userDiv);
+
+  // Detect name
+  if (!homeUserName) {
+    const nameMatch = text.match(/(?:i'?m|my name is|call me)\s+([A-Z][a-z]+)/i);
+    if (nameMatch) homeUserName = nameMatch[1];
+  }
+
+  // Detect topics
+  HOME_TOPICS.forEach(t => {
+    if (text.toLowerCase().includes(t) && !homeTopics.includes(t)) homeTopics.push(t);
+  });
+
+  input.value = '';
+  input.style.height = 'auto';
+  homePendingFiles = [];
+  document.getElementById('home-pending-files').innerHTML = '';
+
+  homeMsgCount++;
+  updateHomePersona();
+
+  // Compact the hero after first message
+  document.querySelector('.home-hero').classList.add('compact');
+  document.getElementById('home-welcome-text').style.display = 'none';
+  document.getElementById('home-prompt-hint').style.display = 'none';
+
+  // Wolt response
+  const responseIdx = Math.min(homeMsgCount - 1, HOME_WOLT_RESPONSES.length - 1);
+  setTimeout(() => {
+    const woltDiv = document.createElement('div');
+    woltDiv.className = 'home-msg-wolt';
+    woltDiv.innerHTML = `<div class="home-msg-wolt-name">woltspace</div>
+      <div class="home-msg-wolt-text">${HOME_WOLT_RESPONSES[responseIdx]}</div>`;
+    msgs.appendChild(woltDiv);
+
+    // Create first project after 4th user message
+    if (homeMsgCount === 4 && !homeFirstProjectCreated) {
+      homeFirstProjectCreated = true;
+      setTimeout(() => updateHomePersona(), 300);
+    }
+
+    const scroll = document.getElementById('home-scroll');
+    scroll.scrollTop = scroll.scrollHeight;
+  }, 600);
+
+  const scroll = document.getElementById('home-scroll');
+  scroll.scrollTop = scroll.scrollHeight;
+}
+
+function updateHomePersona() {
+  if (homeMsgCount < 2) return;
+  const persona = document.getElementById('home-persona');
+  persona.style.display = 'flex';
+
+  // Update greeting
+  if (homeUserName) {
+    document.getElementById('home-greeting').textContent = `hey, ${homeUserName}.`;
+  }
+
+  let html = '';
+
+  // Focus areas
+  if (homeTopics.length > 0) {
+    html += `<div class="home-persona-section">
+      <div class="home-persona-label">What you're into</div>
+      <div class="home-persona-tags">${homeTopics.map(t => `<span class="home-persona-tag">${t}</span>`).join('')}</div>
+    </div>`;
+  } else if (homeMsgCount >= 2) {
+    html += `<div class="home-persona-section">
+      <div class="home-persona-label">Getting to know you</div>
+      <div class="home-persona-value" style="color:var(--ink-3);font-style:italic">Building a picture of what matters to you…</div>
+    </div>`;
+  }
+
+  // First project — appears after 4th message
+  if (homeFirstProjectCreated) {
+    const projectName = homeUserName ? `${homeUserName}'s First Build` : 'Your First Build';
+    html += `<div class="home-first-project" onclick="showProjects()">
+      <div class="home-first-project-label">⊙ first project · just created</div>
+      <div class="home-first-project-name">${projectName}</div>
+      <div class="home-first-project-desc">Open Projects to explore it — your wolt is ready to start building.</div>
+    </div>`;
+  }
+
+  persona.innerHTML = html;
+}
+
+function handleHomeKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendHomeMessage(); }
+}
+
+function triggerHomeFile() { document.getElementById('home-file-input').click(); }
+
+function handleHomeFile(e) {
+  for (const f of e.target.files) homePendingFiles.push(f.name);
+  e.target.value = '';
+  document.getElementById('home-pending-files').innerHTML = homePendingFiles.map((name, i) => `
+    <div class="pending-file-chip">${name}
+      <button class="remove-file" onclick="homePendingFiles.splice(${i},1);handleHomeFile({target:{files:[]}})">✕</button>
+    </div>`).join('');
+}
+
+// ── Project Detail ────────────────────────────────────────────
+
+const PROJECT_DATA = {
+  'Creatorspace': {
+    keeper: 'Woltaire', keeperEmoji: '🦝', keeperMeta: 'raccoon · opus',
+    url: 'lodge.local/project/creatorspace',
+    page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#f0f0f0;min-height:100vh}
+      nav{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid #1f1f1f}
+      .logo{font-size:18px;font-weight:700;letter-spacing:-0.03em}
+      .logo span{color:#7c6aff}
+      nav ul{display:flex;gap:28px;list-style:none;font-size:14px;color:#888}
+      nav ul li:hover{color:#f0f0f0;cursor:pointer}
+      .nav-cta{background:#7c6aff;color:#fff;border:none;padding:8px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+      .hero{padding:100px 40px 80px;max-width:860px;margin:0 auto;text-align:center}
+      .badge{display:inline-block;background:#1a1a2e;border:1px solid #7c6aff44;color:#9d8fff;font-size:12px;padding:5px 12px;border-radius:20px;margin-bottom:28px;letter-spacing:0.04em}
+      h1{font-size:62px;font-weight:800;letter-spacing:-0.04em;line-height:1.05;margin-bottom:22px}
+      h1 span{background:linear-gradient(135deg,#7c6aff,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+      .sub{font-size:18px;color:#888;line-height:1.6;max-width:520px;margin:0 auto 40px}
+      .ctas{display:flex;gap:12px;justify-content:center}
+      .btn-p{background:#7c6aff;color:#fff;border:none;padding:13px 28px;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer}
+      .btn-s{background:transparent;color:#888;border:1px solid #2a2a2a;padding:13px 28px;border-radius:9px;font-size:15px;cursor:pointer}
+      .features{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#1a1a1a;margin:60px 40px;border:1px solid #1a1a1a;border-radius:12px;overflow:hidden}
+      .feat{background:#0f0f0f;padding:28px;font-size:13px;color:#666;line-height:1.6}
+      .feat strong{display:block;color:#f0f0f0;font-size:15px;margin-bottom:6px}
+    </style></head><body>
+    <nav><div class="logo">creator<span>space</span></div><ul><li>Docs</li><li>Pricing</li><li>Blog</li></ul><button class="nav-cta">Get access</button></nav>
+    <div class="hero">
+      <div class="badge">✦ Now in open beta</div>
+      <h1>Create without <span>limits</span></h1>
+      <p class="sub">The AI-native workspace for creators. Write, design, publish — with an AI that actually understands what you're building.</p>
+      <div class="ctas"><button class="btn-p">Start for free</button><button class="btn-s">Watch demo →</button></div>
+    </div>
+    <div class="features">
+      <div class="feat"><strong>AI co-writer</strong>Drafts, rewrites, and refines your content in your voice.</div>
+      <div class="feat"><strong>Visual canvas</strong>Design layouts without touching code. Export anywhere.</div>
+      <div class="feat"><strong>One-click publish</strong>Push to your site, newsletter, or socials simultaneously.</div>
+    </div>
+    </body></html>`,
+  },
+  'Signal Desk Pro': {
+    keeper: 'creationwolt', keeperEmoji: '🦫', keeperMeta: 'beaver · sonnet',
+    url: 'lodge.local/project/signal-desk-pro',
+    page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:'Inter',system-ui,sans-serif;background:#f8f6f2;color:#1a1a1a;min-height:100vh}
+      nav{display:flex;align-items:center;justify-content:space-between;padding:22px 48px}
+      .logo{font-size:15px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase}
+      nav ul{display:flex;gap:32px;list-style:none;font-size:13px;color:#888}
+      .nav-cta{background:#1a1a1a;color:#fff;border:none;padding:9px 20px;border-radius:6px;font-size:13px;cursor:pointer}
+      .hero{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:80px 48px;max-width:1100px;margin:0 auto}
+      .hero-text h1{font-size:52px;font-weight:800;letter-spacing:-0.03em;line-height:1.08;margin-bottom:18px}
+      .hero-text p{font-size:16px;color:#666;line-height:1.7;margin-bottom:32px}
+      .pill{display:inline-block;background:#e8e4dc;color:#888;font-size:11px;padding:4px 10px;border-radius:4px;letter-spacing:0.06em;margin-bottom:20px}
+      .btn-p{background:#1a1a1a;color:#fff;border:none;padding:13px 26px;border-radius:7px;font-size:14px;font-weight:600;cursor:pointer}
+      .hero-visual{background:#1a1a1a;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:14px}
+      .meter{background:#2a2a2a;border-radius:6px;height:8px;overflow:hidden}
+      .meter-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#f0a800,#e05a00)}
+      .meter-label{font-size:11px;color:#666;font-family:monospace;margin-bottom:4px}
+      .meter-row{display:flex;align-items:center;gap:12px}
+      .meter-row .meter{flex:1}
+      .meter-row span{font-size:12px;color:#888;font-family:monospace;width:36px;text-align:right}
+    </style></head><body>
+    <nav><div class="logo">Signal Desk</div><ul><li>Features</li><li>Pricing</li><li>Support</li></ul><button class="nav-cta">Download</button></nav>
+    <div class="hero">
+      <div class="hero-text">
+        <div class="pill">FOR iOS · PRO AUDIO</div>
+        <h1>Your ears, calibrated.</h1>
+        <p>Reference mixes from the world's best-sounding records. Trust what you hear, wherever you mix.</p>
+        <button class="btn-p">Get Signal Desk Pro</button>
+      </div>
+      <div class="hero-visual">
+        <div class="meter-label">Low</div>
+        <div class="meter-row"><div class="meter"><div class="meter-fill" style="width:62%"></div></div><span>-4.2</span></div>
+        <div class="meter-label">Mid</div>
+        <div class="meter-row"><div class="meter"><div class="meter-fill" style="width:78%;background:linear-gradient(90deg,#7c6aff,#c084fc)"></div></div><span>-1.8</span></div>
+        <div class="meter-label">High</div>
+        <div class="meter-row"><div class="meter"><div class="meter-fill" style="width:45%"></div></div><span>-7.1</span></div>
+        <div class="meter-label" style="margin-top:8px">Stereo width</div>
+        <div class="meter-row"><div class="meter"><div class="meter-fill" style="width:85%;background:#3A6644"></div></div><span>+0.3</span></div>
+      </div>
+    </div>
+    </body></html>`,
+  },
+  'Daily Digest': {
+    keeper: 'lodgebuilder', keeperEmoji: '🦫', keeperMeta: 'beaver · sonnet',
+    url: 'lodge.local/project/daily-digest',
+    page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:Georgia,serif;background:#faf8f4;color:#2a2018;min-height:100vh}
+      header{border-bottom:2px solid #2a2018;padding:20px 48px;display:flex;align-items:baseline;justify-content:space-between}
+      .logo{font-size:28px;font-weight:700;letter-spacing:-0.01em}
+      .dateline{font-size:12px;color:#888;letter-spacing:0.08em;font-family:monospace}
+      .hero{padding:60px 48px 40px;border-bottom:1px solid #e0d8cc}
+      .hero .kicker{font-family:monospace;font-size:11px;letter-spacing:0.12em;color:#C4531E;text-transform:uppercase;margin-bottom:12px}
+      .hero h1{font-size:48px;font-weight:700;line-height:1.1;letter-spacing:-0.02em;max-width:680px;margin-bottom:16px}
+      .hero .deck{font-size:18px;color:#5a4030;line-height:1.6;max-width:560px}
+      .digest-grid{display:grid;grid-template-columns:2fr 1fr;gap:0;border-top:1px solid #e0d8cc}
+      .main-col{padding:40px 48px;border-right:1px solid #e0d8cc}
+      .side-col{padding:32px 28px}
+      .story{margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid #e0d8cc}
+      .story:last-child{border-bottom:none}
+      .story .label{font-family:monospace;font-size:10px;letter-spacing:0.1em;color:#C4531E;text-transform:uppercase;margin-bottom:8px}
+      .story h2{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:8px}
+      .story p{font-size:14px;color:#5a4030;line-height:1.7}
+      .side-label{font-family:monospace;font-size:10px;letter-spacing:0.1em;color:#888;text-transform:uppercase;margin-bottom:16px;border-bottom:1px solid #e0d8cc;padding-bottom:8px}
+      .track{display:flex;gap:10px;align-items:center;margin-bottom:14px;font-size:13px}
+      .track-num{color:#C98B2A;font-family:monospace;font-size:11px;width:16px}
+    </style></head><body>
+    <header><div class="logo">Daily Digest</div><div class="dateline">SAT MAR 28 · MORNING EDITION</div></header>
+    <div class="hero">
+      <div class="kicker">Good morning</div>
+      <h1>The three things you need to know today</h1>
+      <p class="deck">Curated from 240 sources overnight by lodgebuilder. Delivered at 7am, no noise.</p>
+    </div>
+    <div class="digest-grid">
+      <div class="main-col">
+        <div class="story"><div class="label">Technology</div><h2>Open-source AI models close gap with proprietary systems</h2><p>New benchmarks show the latest open-weight models performing within 5% of top closed models on reasoning tasks — a shift that could reshape how teams build AI products.</p></div>
+        <div class="story"><div class="label">Design</div><h2>Why mid-century modern is the aesthetic of this moment</h2><p>Warm palettes, generous whitespace, and geometric forms are showing up everywhere. Designers cite a reaction to the cold, sterile visual language of the last decade.</p></div>
+      </div>
+      <div class="side-col">
+        <div class="side-label">Listening queue</div>
+        <div class="track"><span class="track-num">01</span>Ólafur Arnalds — Near Light</div>
+        <div class="track"><span class="track-num">02</span>Nils Frahm — Says</div>
+        <div class="track"><span class="track-num">03</span>Floating Points — LesAlpx</div>
+        <div class="track"><span class="track-num">04</span>Jon Hopkins — Open Eye Signal</div>
+      </div>
+    </div>
+    </body></html>`,
+  },
+  'Memex': {
+    keeper: null, keeperEmoji: null, keeperMeta: null,
+    url: 'lodge.local/project/memex',
+    page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh}
+      nav{padding:20px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #21262d}
+      .logo{font-size:16px;font-weight:700;letter-spacing:-0.01em}
+      .logo em{color:#58a6ff;font-style:normal}
+      .status{font-size:11px;font-family:monospace;color:#C98B2A;background:#2a2200;border:1px solid #C98B2A44;padding:4px 10px;border-radius:4px}
+      .hero{padding:80px 40px;text-align:center}
+      .hero h1{font-size:56px;font-weight:800;letter-spacing:-0.04em;line-height:1;margin-bottom:16px}
+      .hero h1 em{color:#58a6ff;font-style:normal}
+      .hero p{font-size:17px;color:#8b949e;line-height:1.7;max-width:480px;margin:0 auto 36px}
+      .graph{margin:0 40px;background:#161b22;border:1px solid #21262d;border-radius:12px;padding:32px;position:relative;height:220px;overflow:hidden}
+      .node{position:absolute;width:10px;height:10px;border-radius:50%;background:#58a6ff}
+      .node.big{width:16px;height:16px;background:#3fb950}
+      .node.med{width:12px;height:12px;background:#d29922}
+      .node-label{position:absolute;font-size:11px;color:#8b949e;font-family:monospace;white-space:nowrap}
+      .edge{position:absolute;background:linear-gradient(90deg,#58a6ff33,#58a6ff11);height:1px;transform-origin:left center}
+      .wip{text-align:center;padding:24px;font-family:monospace;font-size:12px;color:#3fb950;letter-spacing:0.06em}
+    </style></head><body>
+    <nav><div class="logo"><em>memex</em></div><div class="status">⚡ building</div></nav>
+    <div class="hero">
+      <h1>Ideas that <em>connect</em></h1>
+      <p>A personal knowledge graph. Tag what matters, find what you forgot, surface the unexpected.</p>
+    </div>
+    <div class="graph">
+      <div class="edge" style="top:80px;left:120px;width:140px;transform:rotate(18deg)"></div>
+      <div class="edge" style="top:140px;left:180px;width:110px;transform:rotate(-25deg)"></div>
+      <div class="edge" style="top:60px;left:260px;width:120px;transform:rotate(35deg)"></div>
+      <div class="edge" style="top:155px;left:310px;width:90px;transform:rotate(-10deg)"></div>
+      <div class="node big" style="top:72px;left:108px"></div><div class="node-label" style="top:58px;left:126px">AI tools</div>
+      <div class="node med" style="top:130px;left:170px"></div><div class="node-label" style="top:134px;left:186px">design systems</div>
+      <div class="node" style="top:52px;left:254px"></div><div class="node-label" style="top:38px;left:266px">typography</div>
+      <div class="node med" style="top:148px;left:302px"></div><div class="node-label" style="top:152px;left:318px">vibe coding</div>
+      <div class="node" style="top:90px;left:388px"></div><div class="node-label" style="top:76px;left:396px">audio</div>
+    </div>
+    <div class="wip">// work in progress — no keeper assigned yet</div>
+    </body></html>`,
+  },
+};
+
+let pdPendingFiles = [];
+let pdCurrentThread = null;
+
+function openProject(name) {
+  const proj = PROJECT_DATA[name];
+  if (!proj) return;
+
+  document.querySelector('aside.sidebar').style.display = 'none';
+  document.querySelector('main.main').style.display = 'none';
+  document.querySelectorAll('.geo-circle, .geo-circle-2').forEach(el => el.style.display = 'none');
+  const overlay = document.getElementById('project-detail');
+  overlay.style.display = 'flex';
+
+  // Browser chrome
+  document.getElementById('pd-chrome-url').textContent = proj.url;
+  document.getElementById('pd-back-project').textContent = name;
+
+  // Load fake page into iframe
+  const iframe = document.getElementById('pd-iframe');
+  iframe.srcdoc = proj.page;
+
+  // Chat panel
+  renderPdChat(proj);
+}
+
+function renderPdChat(proj) {
+  const head = document.getElementById('pd-wolt-head');
+  const msgs = document.getElementById('pd-messages');
+  const inputArea = document.getElementById('pd-input-area');
+
+  if (!proj.keeper) {
+    head.innerHTML = '';
+    msgs.innerHTML = `
+      <div class="pd-no-keeper">
+        <div style="font-size:32px;opacity:0.25">🦫</div>
+        <div class="pd-no-keeper-text">No keeper assigned yet.<br>Assign a wolt to start a session here.</div>
+        <button class="btn btn-primary" style="font-size:12px;margin-top:4px">Assign wolt</button>
+      </div>`;
+    inputArea.style.display = 'none';
+    return;
+  }
+
+  inputArea.style.display = '';
+  head.innerHTML = `
+    <div class="pd-wolt-avatar">${proj.keeperEmoji}</div>
+    <div>
+      <div class="pd-wolt-name">${proj.keeper}</div>
+      <div class="pd-wolt-meta">${proj.keeperMeta}</div>
+    </div>`;
+
+  const woltData = WOLT_DATA[proj.keeper];
+  pdCurrentThread = woltData?.threads?.[0] || null;
+
+  if (!pdCurrentThread) {
+    msgs.innerHTML = `<div style="text-align:center;padding:40px 16px;font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,0.22)">No sessions yet.<br>Send a message to start.</div>`;
+    return;
+  }
+
+  msgs.innerHTML = pdCurrentThread.messages.map(m =>
+    renderMessage(m, proj.keeperEmoji)
+  ).join('');
+  setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 0);
+
+  pdPendingFiles = [];
+  document.getElementById('pd-pending-files').innerHTML = '';
+  document.getElementById('pd-input').value = '';
+}
+
+function closeProject() {
+  document.getElementById('project-detail').style.display = 'none';
+  document.getElementById('pd-iframe').srcdoc = '';
+  document.querySelector('aside.sidebar').style.display = '';
+  document.querySelector('main.main').style.display = '';
+  document.querySelectorAll('.geo-circle, .geo-circle-2').forEach(el => el.style.display = '');
+}
+
+function triggerPdFile() { document.getElementById('pd-file-input').click(); }
+
+function handlePdFile(e) {
+  for (const f of e.target.files) pdPendingFiles.push(f.name);
+  e.target.value = '';
+  renderPdPending();
+}
+
+function renderPdPending() {
+  document.getElementById('pd-pending-files').innerHTML = pdPendingFiles.map((name, i) => `
+    <div class="pending-file-chip">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      ${name}<button class="remove-file" onclick="pdPendingFiles.splice(${i},1);renderPdPending()">✕</button>
+    </div>`).join('');
+}
+
+function sendPdMessage() {
+  const input = document.getElementById('pd-input');
+  const text = input.value.trim();
+  if (!text && !pdPendingFiles.length) return;
+  if (!pdCurrentThread) return;
+
+  const now = new Date();
+  const time = now.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+  const msg = { from: 'user', text: text || '(attachment)', time, files: [...pdPendingFiles] };
+  pdCurrentThread.messages.push(msg);
+
+  const emoji = document.querySelector('.pd-wolt-avatar')?.textContent?.trim() || '🦫';
+  const msgs = document.getElementById('pd-messages');
+  msgs.insertAdjacentHTML('beforeend', renderMessage(msg, emoji));
+  msgs.scrollTop = msgs.scrollHeight;
+
+  input.value = '';
+  input.style.height = 'auto';
+  pdPendingFiles = [];
+  renderPdPending();
+}
+
+function handlePdKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendPdMessage(); }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('project-detail').style.display !== 'none') {
+    closeProject();
+  }
+});
+
+// ── Drag to resize chat panel ──────────────────────────────────
+(function () {
+  let dragging = false;
+
+  document.addEventListener('mousedown', e => {
+    const handle = document.getElementById('pd-drag-handle');
+    if (!handle || !handle.contains(e.target) && e.target !== handle) return;
+    dragging = true;
+    handle.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const panel = document.querySelector('.pd-chat-panel');
+    const overlay = document.getElementById('project-detail');
+    const iframe = document.getElementById('pd-iframe');
+    if (!panel || !overlay) return;
+    if (iframe) iframe.style.pointerEvents = 'none';
+    const rect = overlay.getBoundingClientRect();
+    const newW = Math.max(240, Math.min(680, e.clientX - rect.left));
+    panel.style.width = newW + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    const handle = document.getElementById('pd-drag-handle');
+    const iframe = document.getElementById('pd-iframe');
+    if (handle) handle.classList.remove('dragging');
+    if (iframe) iframe.style.pointerEvents = '';
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+})();
+</script>
+
+<script>
+// ── Generative project illustrations ─────────────────────────
+// Deterministic: same project name always produces the same SVG.
+(function () {
+  const W = 56, H = 40;
+
+  const PALETTE = [
+    '#C4531E', // terra
+    '#C98B2A', // amber
+    '#3A6644', // green
+    '#18100A', // ink
+    '#9A8878', // ink-3
+    '#D6CCBA', // border
+    '#F0D5C8', // terra-light
+    '#C8DECE', // green-light
+    '#5C4D3C', // ink-2
+  ];
+
+  // djb2 hash → stable seed from a string
+  function hash(str) {
+    let h = 5381;
+    for (let i = 0; i < str.length; i++)
+      h = Math.imul(h * 33 ^ str.charCodeAt(i), 1) | 0;
+    return Math.abs(h);
+  }
+
+  // Lehmer LCG — fast, deterministic, good enough for visuals
+  function makeRng(seed) {
+    let s = (seed || 1) >>> 0;
+    return () => {
+      s = Math.imul(48271, s) >>> 0;
+      return s / 0x100000000;
+    };
+  }
+
+  // Pick n distinct colours, seeded
+  function pickColors(rng, n) {
+    const pool = [...PALETTE];
+    const out = [];
+    while (out.length < n) {
+      const i = Math.floor(rng() * pool.length);
+      out.push(pool.splice(i, 1)[0]);
+    }
+    return out;
+  }
+
+  function f(n) { return n.toFixed(1); }
+
+  // ── Compositions ──────────────────────────────────────────
+
+  // 0: Overlapping circles — all constrained within viewBox
+  function circles(rng, c) {
+    const r1 = 10 + rng() * 3;  // 10–13
+    const r2 = 8  + rng() * 3;  // 8–11
+    const r3 = 5  + rng() * 3;  // 5–8
+    const cx1 = r1 + rng() * (W - 2 * r1);
+    const cy1 = r1 + rng() * (H - 2 * r1);
+    const cx2 = r2 + rng() * (W - 2 * r2);
+    const cy2 = r2 + rng() * (H - 2 * r2);
+    const cx3 = r3 + rng() * (W - 2 * r3);
+    const cy3 = r3 + rng() * (H - 2 * r3);
+    return [
+      `<circle cx="${f(cx1)}" cy="${f(cy1)}" r="${f(r1)}" fill="${c[0]}" opacity="0.9"/>`,
+      `<circle cx="${f(cx2)}" cy="${f(cy2)}" r="${f(r2)}" fill="${c[1]}" opacity="0.85"/>`,
+      `<circle cx="${f(cx3)}" cy="${f(cy3)}" r="${f(r3)}" fill="${c[2]}" opacity="0.9"/>`,
+    ].join('');
+  }
+
+  // 1: Layered landscape
+  function landscape(rng, c) {
+    const cx = f(10 + rng() * 36);
+    const cy = f(8 + rng() * 10);
+    const r  = f(7 + rng() * 5);
+    return [
+      `<rect x="0" y="28" width="56" height="12" fill="${c[0]}"/>`,
+      `<rect x="0" y="21" width="56" height="9"  fill="${c[1]}" opacity="0.65"/>`,
+      `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c[2]}"/>`,
+      `<rect x="0" y="27" width="56" height="2" fill="${c[0]}"/>`,
+    ].join('');
+  }
+
+  // 2: Faders
+  function faders(rng, c) {
+    const count = 4 + Math.round(rng());
+    const gap = W / (count + 1);
+    const accentIdx = Math.floor(rng() * count);
+    return Array.from({ length: count }, (_, i) => {
+      const x = f(gap * (i + 1));
+      const ky = f(7 + rng() * 20);
+      const col = i === accentIdx ? c[0] : c[1];
+      return [
+        `<rect x="${f(gap*(i+1)-2)}" y="5" width="4" height="30" rx="2" fill="${c[2]}" opacity="0.35"/>`,
+        `<rect x="${f(gap*(i+1)-5)}" y="${ky}" width="10" height="5" rx="2" fill="${col}"/>`,
+      ].join('');
+    }).join('');
+  }
+
+  // 3: Node graph
+  function nodes(rng, c) {
+    const pts = [
+      [8  + rng()*10, 8  + rng()*8],
+      [38 + rng()*10, 7  + rng()*10],
+      [10 + rng()*8,  28 + rng()*6],
+      [36 + rng()*10, 27 + rng()*6],
+      [22 + rng()*12, 17 + rng()*8],
+    ];
+    const edges = [[0,4],[1,4],[2,4],[3,4],[0,2],[1,3]];
+    const lines = edges
+      .filter(() => rng() > 0.25)
+      .map(([a,b]) =>
+        `<line x1="${f(pts[a][0])}" y1="${f(pts[a][1])}" x2="${f(pts[b][0])}" y2="${f(pts[b][1])}" stroke="${c[2]}" stroke-width="1.2" opacity="0.45"/>`)
+      .join('');
+    const dots = pts.map(([x, y], i) => {
+      const r = i === 4 ? 4 : 3 + rng() * 2;
+      const col = [c[0], c[1], c[2], c[1], c[0]][i];
+      return `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${col}"/>`;
+    }).join('');
+    return lines + dots;
+  }
+
+  // 4: Bold geometric blocks
+  function blocks(rng, c) {
+    const x1 = f(2  + rng() * 8),  y1 = f(3  + rng() * 8);
+    const w1 = f(22 + rng() * 12), h1 = f(18 + rng() * 12);
+    const x2 = f(parseFloat(x1) + parseFloat(w1) - 6 + rng() * 6);
+    const y2 = f(parseFloat(y1) + rng() * 10);
+    const w2 = f(12 + rng() * 10), h2 = f(12 + rng() * 10);
+    const ccx = f(parseFloat(x1) + rng() * parseFloat(w1));
+    const ccy = f(parseFloat(y1) + rng() * parseFloat(h1));
+    return [
+      `<rect x="${x1}" y="${y1}" width="${w1}" height="${h1}" fill="${c[0]}"/>`,
+      `<rect x="${x2}" y="${y2}" width="${w2}" height="${h2}" fill="${c[1]}" opacity="0.88"/>`,
+      `<circle cx="${ccx}" cy="${ccy}" r="${f(3+rng()*4)}" fill="${c[2]}"/>`,
+    ].join('');
+  }
+
+  // 5: Radial / sun — centre kept inset so rays stay inside
+  function radial(rng, c) {
+    const maxRay = 18;
+    const cx = maxRay + rng() * (W - 2 * maxRay);
+    const cy = maxRay + rng() * (H - 2 * maxRay);
+    const rayCount = 6 + Math.round(rng() * 4);
+    const rays = Array.from({ length: rayCount }, (_, i) => {
+      const a = (i / rayCount) * Math.PI * 2 - Math.PI / 2;
+      const r1 = 8 + rng() * 2, r2 = 13 + rng() * 5;
+      return `<line x1="${f(cx+Math.cos(a)*r1)}" y1="${f(cy+Math.sin(a)*r1)}" x2="${f(cx+Math.cos(a)*r2)}" y2="${f(cy+Math.sin(a)*r2)}" stroke="${c[1]}" stroke-width="1.8" stroke-linecap="round"/>`;
+    }).join('');
+    return [
+      rays,
+      `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(6+rng()*3)}" fill="${c[0]}"/>`,
+      `<rect x="0" y="33" width="56" height="2" rx="1" fill="${c[2]}" opacity="0.45"/>`,
+    ].join('');
+  }
+
+  const comps = [circles, landscape, faders, nodes, blocks, radial];
+
+  function luma(hex) {
+    const r = parseInt(hex.slice(1,3), 16);
+    const g = parseInt(hex.slice(3,5), 16);
+    const b = parseInt(hex.slice(5,7), 16);
+    return 0.299*r + 0.587*g + 0.114*b;
+  }
+
+  function generate(name) {
+    const seed = hash(name);
+    const rng  = makeRng(seed);
+    const comp = comps[Math.floor(rng() * comps.length)];
+    const cols = pickColors(rng, 3);
+    const viable = cols.filter(c => luma(c) > 80);
+    const accent = (viable.length ? viable : cols).reduce((a, b) => luma(a) > luma(b) ? a : b);
+    const id = 'clip-' + name.replace(/\s+/g, '-').toLowerCase();
+    const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="${id}"><rect width="${W}" height="${H}"/></clipPath></defs><g clip-path="url(#${id})">${comp(rng, cols)}</g></svg>`;
+    return { svg, color: accent };
+  }
+
+  window._genIllus = generate;
+
+  document.querySelectorAll('[data-illus]').forEach(el => {
+    let clicks = 0;
+    const card = el.closest('.project-card');
+    function render(name) {
+      const { svg, color } = generate(name);
+      el.innerHTML = svg;
+      if (card) card.style.setProperty('--card-accent', color);
+    }
+    render(el.dataset.illus);
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', () => {
+      clicks++;
+      render(el.dataset.illus + clicks);
+    });
+  });
+})();
+</script>
+
+<!-- ── Project Detail Overlay ────────────────────────────── -->
+<div id="project-detail" style="display:none">
+
+  <!-- LEFT: Chat panel -->
+  <div class="pd-chat-panel">
+
+    <!-- Back bar -->
+    <div class="pd-back-bar">
+      <button class="pd-back-btn" onclick="closeProject()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Lodge
+      </button>
+      <div class="pd-back-project" id="pd-back-project"></div>
+    </div>
+
+    <!-- Wolt header -->
+    <div class="pd-wolt-head" id="pd-wolt-head"></div>
+
+    <!-- Messages -->
+    <div class="pd-messages" id="pd-messages"></div>
+
+    <!-- Input -->
+    <div class="pd-input-area" id="pd-input-area">
+      <div class="pd-pending-files" id="pd-pending-files"></div>
+      <div class="pd-input-row">
+        <button class="attach-btn" onclick="triggerPdFile()" title="Attach file">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <textarea class="chat-textarea" id="pd-input" placeholder="Message…" rows="1" onkeydown="handlePdKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" onclick="sendPdMessage()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <input type="file" id="pd-file-input" multiple style="display:none" onchange="handlePdFile(event)">
+    </div>
+
+  </div>
+
+  <!-- Drag handle -->
+  <div class="pd-drag-handle" id="pd-drag-handle"></div>
+
+  <!-- RIGHT: Live preview -->
+  <div class="pd-preview-panel">
+
+    <!-- Browser chrome -->
+    <div class="pd-chrome">
+      <div class="pd-chrome-dots">
+        <span style="background:#FF5F57"></span>
+        <span style="background:#FFBD2E"></span>
+        <span style="background:#28CA41"></span>
+      </div>
+      <div class="pd-chrome-url" id="pd-chrome-url"></div>
+      <div class="pd-chrome-actions">
+        <button class="pd-chrome-btn" title="Refresh">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+        <button class="pd-chrome-btn" title="Open in new tab">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- The "site" -->
+    <iframe class="pd-iframe" id="pd-iframe" sandbox="allow-scripts"></iframe>
+
+  </div>
+</div>
+
+<!-- ── New Wolt Modal ──────────────────────────────────────── -->
+<div class="modal-backdrop" id="wolt-modal" onclick="handleBackdropClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New wolt</div>
+      <button class="modal-close" onclick="closeWoltModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="modal-field">
+        <div class="modal-label">Name</div>
+        <input class="modal-input" id="wolt-name" type="text" placeholder="e.g. chip, luna, fang..." autocomplete="off" oninput="updateCreateBtn()">
+      </div>
+
+      <div class="modal-field">
+        <div class="modal-label">Type</div>
+        <div class="type-grid">
+          <div class="type-card" data-type="otter" onclick="selectType(this)">
+            <div class="type-card-emoji">🦦</div>
+            <div class="type-card-name">Otter</div>
+            <div class="type-card-desc">quick · haiku</div>
+          </div>
+          <div class="type-card selected" data-type="beaver" onclick="selectType(this)">
+            <div class="type-card-emoji">🦫</div>
+            <div class="type-card-name">Beaver</div>
+            <div class="type-card-desc">builder · sonnet</div>
+          </div>
+          <div class="type-card" data-type="raccoon" onclick="selectType(this)">
+            <div class="type-card-emoji">🦝</div>
+            <div class="type-card-name">Raccoon</div>
+            <div class="type-card-desc">thinker · opus</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <div class="modal-label">Skills <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-3)">— pick any</span></div>
+        <div class="skill-chips" id="skill-chips">
+          <div class="skill-chip" onclick="toggleSkill(this)">Frontend</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Backend</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Design</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">UX</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Marketing</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Copywriting</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Data</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">DevOps</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Mobile</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Research</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Strategy</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Philosophy</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Mathematics</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Science</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Health & Wellness</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Music</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Poetry</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Psychology</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Anthropology</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Conspiracies</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Unicorn CEO</div>
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <div class="modal-label">Assign to project <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-3)">— optional</span></div>
+        <div class="project-assign-list">
+          <div class="project-assign-row selected" data-project="" onclick="selectProject(this)">
+            <div class="project-assign-dot"></div>
+            <div class="project-assign-name" style="font-style:italic;color:var(--ink-3)">No project — free agent</div>
+          </div>
+          <div class="project-assign-row" data-project="creatorspace" data-keeper="Woltaire" onclick="selectProject(this)">
+            <div class="project-assign-dot"></div>
+            <div class="project-assign-name">Creatorspace</div>
+            <div class="project-assign-stack">React · Vite · TS</div>
+          </div>
+          <div class="project-assign-row" data-project="signal-desk-pro" data-keeper="creationwolt" onclick="selectProject(this)">
+            <div class="project-assign-dot"></div>
+            <div class="project-assign-name">Signal Desk Pro</div>
+            <div class="project-assign-stack">Next.js · TS</div>
+          </div>
+          <div class="project-assign-row" data-project="daily-digest" data-keeper="lodgebuilder" onclick="selectProject(this)">
+            <div class="project-assign-dot"></div>
+            <div class="project-assign-name">Daily Digest</div>
+            <div class="project-assign-stack">Python · FastAPI</div>
+          </div>
+          <div class="project-assign-row" data-project="memex" onclick="selectProject(this)">
+            <div class="project-assign-dot"></div>
+            <div class="project-assign-name">Memex</div>
+            <div class="project-assign-stack">Svelte · SQLite</div>
+          </div>
+        </div>
+
+        <!-- Keeper conflict warning -->
+        <div class="keeper-warning" id="keeper-warning" style="display:none">
+          <div class="keeper-warning-text" id="keeper-warning-text"></div>
+          <div class="keeper-warning-actions">
+            <button class="keeper-warning-btn confirm" onclick="confirmRelieve()">Yes, relieve them</button>
+            <button class="keeper-warning-btn cancel" onclick="cancelRelieve()">No, keep them</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeWoltModal()">Cancel</button>
+      <button class="modal-btn primary" id="create-wolt-btn" disabled onclick="createWolt()">Create wolt</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openWoltModal(e) {
+    e && e.preventDefault();
+    document.getElementById('wolt-name').value = '';
+    document.getElementById('create-wolt-btn').disabled = true;
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector('.type-card[data-type="beaver"]').classList.add('selected');
+    document.querySelectorAll('.project-assign-row').forEach(r => r.classList.remove('selected'));
+    document.querySelector('.project-assign-row[data-project=""]').classList.add('selected');
+    document.querySelectorAll('.skill-chip').forEach(c => c.classList.remove('selected'));
+    document.getElementById('wolt-modal').classList.add('open');
+    setTimeout(() => document.getElementById('wolt-name').focus(), 50);
+  }
+
+  function toggleSkill(chip) {
+    chip.classList.toggle('selected');
+  }
+
+  function closeWoltModal() {
+    document.getElementById('wolt-modal').classList.remove('open');
+  }
+
+  function handleBackdropClick(e) {
+    if (e.target === document.getElementById('wolt-modal')) closeWoltModal();
+  }
+
+  function selectType(el) {
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  let pendingProjectRow = null;
+
+  function selectProject(el) {
+    const keeper = el.dataset.keeper;
+    const projectName = el.querySelector('.project-assign-name')?.textContent;
+    if (keeper && el.dataset.project !== '') {
+      pendingProjectRow = el;
+      document.getElementById('keeper-warning-text').innerHTML =
+        `<strong>${keeper}</strong> is currently keeping <strong>${projectName}</strong>. Projects can only have one keeper at a time — do you want to relieve them for now?`;
+      document.getElementById('keeper-warning').style.display = 'flex';
+    } else {
+      document.querySelectorAll('.project-assign-row').forEach(r => r.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('keeper-warning').style.display = 'none';
+      pendingProjectRow = null;
+    }
+  }
+
+  function confirmRelieve() {
+    if (pendingProjectRow) {
+      document.querySelectorAll('.project-assign-row').forEach(r => r.classList.remove('selected'));
+      pendingProjectRow.classList.add('selected');
+      pendingProjectRow = null;
+    }
+    document.getElementById('keeper-warning').style.display = 'none';
+  }
+
+  function cancelRelieve() {
+    pendingProjectRow = null;
+    document.getElementById('keeper-warning').style.display = 'none';
+  }
+
+  function updateCreateBtn() {
+    const name = document.getElementById('wolt-name').value.trim();
+    document.getElementById('create-wolt-btn').disabled = name.length === 0;
+  }
+
+  function createWolt() {
+    const name    = document.getElementById('wolt-name').value.trim();
+    const type    = document.querySelector('.type-card.selected')?.dataset.type;
+    const project = document.querySelector('.project-assign-row.selected')?.dataset.project;
+    const skills  = [...document.querySelectorAll('.skill-chip.selected')].map(c => c.textContent);
+    // In the real build this would call the API — for now just close
+    console.log('Create wolt:', { name, type, project: project || null, skills });
+    closeWoltModal();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeWoltModal();
+  });
+</script>
+
+<!-- ── Onboarding ─────────────────────────────────────────── -->
+<div id="onboarding">
+  <div class="ob-inner">
+
+    <div class="ob-brand">
+      <span class="ob-brand-emoji">🌿</span>
+      <span class="ob-brand-name">Woltspace</span>
+    </div>
+
+    <div class="ob-headline">
+      <div class="ob-title">Meet your first wolt.</div>
+      <div class="ob-sub">Wolts are your AI collaborators — each one has a name, a type, and a set of skills. Build a team and assign them to different projects, or let them roam free as generalists. Give your first one an identity and we'll get to work.</div>
+    </div>
+
+    <div class="ob-form">
+
+      <div class="ob-field">
+        <div class="ob-label">Name</div>
+        <input class="ob-input" id="ob-name" type="text" placeholder="chip, luna, fang…" autocomplete="off" oninput="obUpdateCta()">
+      </div>
+
+      <div class="ob-field">
+        <div class="ob-label">Type</div>
+        <div class="ob-type-grid">
+          <div class="type-card" data-type="otter" onclick="obSelectType(this)">
+            <div class="type-card-emoji">🦦</div>
+            <div class="type-card-name">Otter</div>
+            <div class="type-card-desc">quick · haiku</div>
+          </div>
+          <div class="type-card selected" data-type="beaver" onclick="obSelectType(this)">
+            <div class="type-card-emoji">🦫</div>
+            <div class="type-card-name">Beaver</div>
+            <div class="type-card-desc">builder · sonnet</div>
+          </div>
+          <div class="type-card" data-type="raccoon" onclick="obSelectType(this)">
+            <div class="type-card-emoji">🦝</div>
+            <div class="type-card-name">Raccoon</div>
+            <div class="type-card-desc">thinker · opus</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ob-field">
+        <div class="ob-label">Skills <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-3)">— pick any</span></div>
+        <div class="skill-chips" id="ob-skill-chips">
+          <div class="skill-chip" onclick="toggleSkill(this)">Frontend</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Backend</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Design</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">UX</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Marketing</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Copywriting</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Data</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">DevOps</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Mobile</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Research</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Strategy</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Philosophy</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Mathematics</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Science</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Health & Wellness</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Music</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Poetry</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Psychology</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Anthropology</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Conspiracies</div>
+          <div class="skill-chip" onclick="toggleSkill(this)">Unicorn CEO</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ob-footer">
+      <span class="ob-hint">you can add more wolts later</span>
+      <button class="ob-cta" id="ob-cta" disabled onclick="completeOnboarding()">
+        Create wolt →
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Onboarding ────────────────────────────────────────────────
+function obSelectType(el) {
+  el.closest('.ob-type-grid').querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function obUpdateCta() {
+  const name = document.getElementById('ob-name').value.trim();
+  document.getElementById('ob-cta').disabled = !name;
+}
+
+function completeOnboarding() {
+  const name   = document.getElementById('ob-name').value.trim();
+  const type   = document.querySelector('#onboarding .type-card.selected')?.dataset.type;
+  const skills = [...document.querySelectorAll('#ob-skill-chips .skill-chip.selected')].map(c => c.textContent);
+  console.log('First wolt created:', { name, type, skills });
+
+  const ob = document.getElementById('onboarding');
+  ob.classList.add('fading');
+  setTimeout(() => {
+    ob.style.display = 'none';
+    showHome();
+  }, 500);
+}
 </script>
 </body>
 </html>
