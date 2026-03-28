@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Woltspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #EDE8DE;
+    --surface:    #F5F1E8;
+    --surface-2:  #FAF7F0;
+    --border:     #D6CCBA;
+    --border-2:   #C4B89E;
+    --ink:        #18100A;
+    --ink-2:      #5C4D3C;
+    --ink-3:      #9A8878;
+    --terra:      #C4531E;
+    --terra-light:#F0D5C8;
+    --amber:      #C98B2A;
+    --amber-light:#F2E4C0;
+    --green:      #3A6644;
+    --green-light:#C8DECE;
+    --cream:      #FAF7F0;
+
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body:    'DM Sans', sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── SIDEBAR ─────────────────────────────────────────────── */
+
+  .sidebar {
+    width: 272px;
+    flex-shrink: 0;
+    background: var(--ink);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-brand {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sidebar-brand::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: var(--terra);
+    opacity: 0.15;
+  }
+
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 36px;
+    letter-spacing: 0.03em;
+    color: var(--surface-2);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand-emoji {
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  .brand-tagline {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 6px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Team section */
+
+  .sidebar-section {
+    padding: 20px 24px 12px;
+  }
+
+  .sidebar-section-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.28);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sidebar-section-label a {
+    color: var(--terra);
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+  }
+  .sidebar-section-label a:hover { opacity: 1; }
+
+  .wolt-card {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+
+  .wolt-card:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .wolt-card.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .wolt-avatar {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .wolt-status-dot {
+    position: absolute;
+    bottom: -2px; right: -2px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+  }
+  .wolt-status-dot.running { background: #5BC87A; }
+  .wolt-status-dot.idle    { background: rgba(255,255,255,0.25); }
+
+  .wolt-info { flex: 1; min-width: 0; }
+
+  .wolt-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .wolt-type {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.28);
+    line-height: 1.3;
+  }
+
+  .wolt-project-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    background: rgba(196,83,30,0.25);
+    color: #F0A882;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .wolt-project-tag.available {
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.28);
+  }
+
+  /* Creatures — tucked */
+  .creatures-toggle {
+    margin: 0 24px 8px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.15s;
+  }
+  .creatures-toggle:hover { background: rgba(255,255,255,0.07); }
+
+  .creatures-toggle-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .creatures-chevron {
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    transition: transform 0.2s;
+  }
+  .creatures-chevron.open { transform: rotate(180deg); }
+
+  .creatures-list {
+    margin: 0 24px;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .creatures-list.open { display: flex; }
+
+  .creature-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.03);
+  }
+  .creature-row span:first-child { font-size: 14px; }
+  .creature-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+  }
+  .creature-desc {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    color: rgba(255,255,255,0.18);
+    margin-left: auto;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    gap: 16px;
+  }
+
+  .sidebar-footer a {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.22);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .sidebar-footer a:hover { color: rgba(255,255,255,0.6); }
+
+  /* ── MAIN ────────────────────────────────────────────────── */
+
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 48px;
+    overflow-y: auto;
+  }
+
+  .main-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+  }
+
+  .main-title-block {}
+
+  .main-title {
+    font-family: var(--font-display);
+    font-size: 72px;
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+
+  .main-subtitle {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 6px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--terra);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #B44419; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-2);
+    border: 1px solid var(--border-2);
+  }
+  .btn-ghost:hover { background: var(--surface); border-color: var(--ink-3); }
+
+  /* Filter strip */
+  .filter-strip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+
+  .filter-chip {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--ink-3);
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+  .filter-chip:hover { border-color: var(--ink-3); color: var(--ink-2); }
+  .filter-chip.active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--surface-2);
+  }
+
+  .filter-sep {
+    width: 1px;
+    height: 16px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+
+  /* ── PROJECT GRID ─────────────────────────────────────────── */
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .project-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s, transform 0.2s;
+    position: relative;
+  }
+
+  .project-card:hover {
+    box-shadow: 0 6px 24px rgba(24,16,10,0.1);
+    transform: translateY(-1px);
+  }
+
+  .project-card-accent {
+    height: 4px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .project-card-accent.running { background: var(--green); }
+  .project-card-accent.stopped { background: var(--border-2); }
+  .project-card-accent.building { background: var(--amber); }
+
+  .project-card-body {
+    padding: 22px 22px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .project-emoji {
+    font-size: 22px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .project-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .project-status.running {
+    background: var(--green-light);
+    color: var(--green);
+  }
+  .project-status.stopped {
+    background: rgba(0,0,0,0.05);
+    color: var(--ink-3);
+  }
+  .project-status.building {
+    background: var(--amber-light);
+    color: var(--amber);
+  }
+
+  .project-status-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .running .project-status-dot  { background: var(--green); }
+  .stopped .project-status-dot  { background: var(--ink-3); }
+  .building .project-status-dot { background: var(--amber); animation: pulse 1.2s ease-in-out infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .project-name {
+    font-family: var(--font-display);
+    font-size: 38px;
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .project-stack {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .stack-tag {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2px 6px;
+    color: var(--ink-2);
+  }
+
+  .project-desc {
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .project-card-footer {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .project-wolt {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    padding: 4px 8px 4px 4px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    flex: 1;
+    min-width: 0;
+  }
+  .project-wolt:hover {
+    background: var(--bg);
+    border-color: var(--border);
+  }
+
+  .project-wolt-avatar {
+    width: 26px; height: 26px;
+    border-radius: 5px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .project-wolt-name {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--ink-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .project-wolt-assign {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ink-3);
+  }
+
+  .project-wolt-unassigned {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    font-style: italic;
+  }
+
+  .project-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .action-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    color: var(--ink-3);
+    transition: all 0.15s;
+    font-size: 13px;
+  }
+  .action-btn:hover { background: var(--bg); color: var(--ink); border-color: var(--border-2); }
+
+  .action-btn.start {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .action-btn.start:hover { background: #2E5338; }
+
+  .action-btn.stop {
+    background: var(--terra-light);
+    border-color: var(--terra);
+    color: var(--terra);
+  }
+  .action-btn.stop:hover { background: var(--terra); color: #fff; }
+
+  /* ── NEW PROJECT CARD ─────────────────────────────────────── */
+
+  .project-card-new {
+    border: 2px dashed var(--border-2);
+    border-radius: 8px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 200px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .project-card-new:hover {
+    background: var(--surface);
+    border-color: var(--terra);
+  }
+  .project-card-new:hover .new-icon { color: var(--terra); }
+
+  .new-icon {
+    font-size: 28px;
+    color: var(--ink-3);
+    transition: color 0.2s;
+  }
+
+  .new-label {
+    font-family: var(--font-display);
+    font-size: 20px;
+    letter-spacing: 0.05em;
+    color: var(--ink-3);
+  }
+
+  .new-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  /* ── SECTION DIVIDER ──────────────────────────────────────── */
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  /* ── GEOMETRIC ACCENT ─────────────────────────────────────── */
+
+  .geo-accent {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .geo-circle {
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    opacity: 0.5;
+    position: fixed;
+    bottom: -80px; right: -80px;
+  }
+
+  .geo-circle-2 {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    opacity: 0.4;
+    position: fixed;
+    bottom: 60px; right: 60px;
+  }
+
+  /* ── MENU TOOLTIP ─────────────────────────────────────────── */
+
+  .context-menu {
+    position: absolute;
+    right: 16px; bottom: 60px;
+    background: var(--ink);
+    border-radius: 6px;
+    padding: 4px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 140px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .context-menu.open { display: flex; }
+
+  .context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.75);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .context-menu-item:hover { background: rgba(255,255,255,0.1); }
+  .context-menu-item.danger { color: #F08070; }
+  .context-menu-item.danger:hover { background: rgba(196,83,30,0.2); }
+</style>
+</head>
+<body>
+
+<!-- Geometric accents (mid-century) -->
+<div class="geo-circle"></div>
+<div class="geo-circle-2"></div>
+
+<!-- ── SIDEBAR ───────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name">
+      <span class="brand-emoji">🦫</span>
+      WOLTSPACE
+    </div>
+    <div class="brand-tagline">the lodge · v2</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">
+      Team <span style="color:rgba(255,255,255,0.4)">4</span>
+      <a href="#">+ add wolt</a>
+    </div>
+
+    <div class="wolt-card active">
+      <div class="wolt-avatar">
+        🦝
+        <div class="wolt-status-dot running"></div>
+      </div>
+      <div class="wolt-info">
+        <div class="wolt-name">Woltaire</div>
+        <div class="wolt-type">raccoon</div>
+      </div>
+      <div class="wolt-project-tag">creatorspace</div>
+    </div>
+
+    <div class="wolt-card">
+      <div class="wolt-avatar">
+        🦫
+        <div class="wolt-status-dot running"></div>
+      </div>
+      <div class="wolt-info">
+        <div class="wolt-name">creationwolt</div>
+        <div class="wolt-type">beaver</div>
+      </div>
+      <div class="wolt-project-tag">signal-desk</div>
+    </div>
+
+    <div class="wolt-card">
+      <div class="wolt-avatar">
+        🦫
+        <div class="wolt-status-dot running"></div>
+      </div>
+      <div class="wolt-info">
+        <div class="wolt-name">lodgebuilder</div>
+        <div class="wolt-type">beaver</div>
+      </div>
+      <div class="wolt-project-tag">daily-digest</div>
+    </div>
+
+    <div class="wolt-card">
+      <div class="wolt-avatar">
+        🐕
+        <div class="wolt-status-dot idle"></div>
+      </div>
+      <div class="wolt-info">
+        <div class="wolt-name">Wolten</div>
+        <div class="wolt-type">dog · companion</div>
+      </div>
+      <div class="wolt-project-tag available">idle</div>
+    </div>
+  </div>
+
+  <!-- Creatures tucked away -->
+  <div class="creatures-toggle" onclick="toggleCreatures(this)">
+    <span class="creatures-toggle-label">
+      ⚙ System Creatures
+    </span>
+    <span class="creatures-chevron" id="creatures-chevron">▾</span>
+  </div>
+  <div class="creatures-list" id="creatures-list">
+    <div class="creature-row">
+      <span>🐺</span>
+      <span class="creature-name">wolf</span>
+      <span class="creature-desc">scheduler</span>
+    </div>
+    <div class="creature-row">
+      <span>🦅</span>
+      <span class="creature-name">eagle</span>
+      <span class="creature-desc">reaper</span>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="#">terminal</a>
+    <a href="#">status</a>
+    <a href="#">settings</a>
+  </div>
+</aside>
+
+<!-- ── MAIN ──────────────────────────────────────────────────── -->
+<main class="main">
+
+  <div class="main-header">
+    <div class="main-title-block">
+      <div class="main-title">PROJECTS</div>
+      <div class="main-subtitle">3 active · 2 running · your build surface</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost">⟳ refresh</button>
+      <button class="btn btn-primary">+ new project</button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-strip">
+    <button class="filter-chip active">All</button>
+    <button class="filter-chip">Running</button>
+    <button class="filter-chip">Stopped</button>
+    <div class="filter-sep"></div>
+    <button class="filter-chip">React</button>
+    <button class="filter-chip">Python</button>
+    <button class="filter-chip">Node</button>
+  </div>
+
+  <!-- Project cards -->
+  <div class="project-grid">
+
+    <!-- Card 1: running -->
+    <div class="project-card" style="position:relative">
+      <div class="project-card-accent running"></div>
+      <div class="project-card-body">
+        <div class="project-card-top">
+          <div class="project-emoji">🎨</div>
+          <div class="project-status running">
+            <div class="project-status-dot"></div>
+            running
+          </div>
+        </div>
+        <div class="project-name">CREATORSPACE</div>
+        <div class="project-stack">
+          <span class="stack-tag">React</span>
+          <span class="stack-tag">Vite</span>
+          <span class="stack-tag">TypeScript</span>
+        </div>
+        <div class="project-desc">
+          Onix AI creator platform — a full workspace for AI-assisted content creation and publishing.
+        </div>
+        <div class="project-card-footer">
+          <div class="project-wolt">
+            <div class="project-wolt-avatar">🦝</div>
+            <div>
+              <div class="project-wolt-name">Woltaire</div>
+              <div class="project-wolt-assign">keeper · click to reassign</div>
+            </div>
+          </div>
+          <div class="project-actions">
+            <button class="action-btn stop" title="Stop">■</button>
+            <button class="action-btn" title="Edit" onclick="toggleMenu('menu-1')">⋯</button>
+          </div>
+        </div>
+      </div>
+      <div class="context-menu" id="menu-1">
+        <div class="context-menu-item">✏ Edit project</div>
+        <div class="context-menu-item">🔁 Reassign wolt</div>
+        <div class="context-menu-item">📋 Copy URL</div>
+        <div class="context-menu-item danger">✕ Delete</div>
+      </div>
+    </div>
+
+    <!-- Card 2: stopped -->
+    <div class="project-card" style="position:relative">
+      <div class="project-card-accent stopped"></div>
+      <div class="project-card-body">
+        <div class="project-card-top">
+          <div class="project-emoji">🎚</div>
+          <div class="project-status stopped">
+            <div class="project-status-dot"></div>
+            stopped
+          </div>
+        </div>
+        <div class="project-name">SIGNAL DESK PRO</div>
+        <div class="project-stack">
+          <span class="stack-tag">Next.js</span>
+          <span class="stack-tag">TypeScript</span>
+        </div>
+        <div class="project-desc">
+          Landing page for Signal Desk Pro — iOS mix reference tool for recording engineers.
+        </div>
+        <div class="project-card-footer">
+          <div class="project-wolt">
+            <div class="project-wolt-avatar">🦫</div>
+            <div>
+              <div class="project-wolt-name">creationwolt</div>
+              <div class="project-wolt-assign">keeper · click to reassign</div>
+            </div>
+          </div>
+          <div class="project-actions">
+            <button class="action-btn start" title="Start">▶</button>
+            <button class="action-btn" title="Edit" onclick="toggleMenu('menu-2')">⋯</button>
+          </div>
+        </div>
+      </div>
+      <div class="context-menu" id="menu-2">
+        <div class="context-menu-item">✏ Edit project</div>
+        <div class="context-menu-item">🔁 Reassign wolt</div>
+        <div class="context-menu-item">📋 Copy URL</div>
+        <div class="context-menu-item danger">✕ Delete</div>
+      </div>
+    </div>
+
+    <!-- Card 3: running -->
+    <div class="project-card" style="position:relative">
+      <div class="project-card-accent running"></div>
+      <div class="project-card-body">
+        <div class="project-card-top">
+          <div class="project-emoji">☀️</div>
+          <div class="project-status running">
+            <div class="project-status-dot"></div>
+            running
+          </div>
+        </div>
+        <div class="project-name">DAILY DIGEST</div>
+        <div class="project-stack">
+          <span class="stack-tag">Python</span>
+          <span class="stack-tag">FastAPI</span>
+        </div>
+        <div class="project-desc">
+          Morning briefing aggregator — curated news, HN threads, and a Spotify playlist, delivered at 7am.
+        </div>
+        <div class="project-card-footer">
+          <div class="project-wolt">
+            <div class="project-wolt-avatar">🦫</div>
+            <div>
+              <div class="project-wolt-name">lodgebuilder</div>
+              <div class="project-wolt-assign">keeper · click to reassign</div>
+            </div>
+          </div>
+          <div class="project-actions">
+            <button class="action-btn stop" title="Stop">■</button>
+            <button class="action-btn" title="Edit" onclick="toggleMenu('menu-3')">⋯</button>
+          </div>
+        </div>
+      </div>
+      <div class="context-menu" id="menu-3">
+        <div class="context-menu-item">✏ Edit project</div>
+        <div class="context-menu-item">🔁 Reassign wolt</div>
+        <div class="context-menu-item">📋 Copy URL</div>
+        <div class="context-menu-item danger">✕ Delete</div>
+      </div>
+    </div>
+
+    <!-- Card 4: building -->
+    <div class="project-card" style="position:relative">
+      <div class="project-card-accent building"></div>
+      <div class="project-card-body">
+        <div class="project-card-top">
+          <div class="project-emoji">🧠</div>
+          <div class="project-status building">
+            <div class="project-status-dot"></div>
+            building
+          </div>
+        </div>
+        <div class="project-name">MEMEX</div>
+        <div class="project-stack">
+          <span class="stack-tag">Svelte</span>
+          <span class="stack-tag">SQLite</span>
+        </div>
+        <div class="project-desc">
+          Personal knowledge graph — tag ideas, find connections, surface forgotten notes on demand.
+        </div>
+        <div class="project-card-footer">
+          <div class="project-wolt" style="opacity:0.5; cursor:default">
+            <div class="project-wolt-avatar" style="border-style:dashed">➕</div>
+            <div>
+              <div class="project-wolt-unassigned">no wolt assigned</div>
+              <div class="project-wolt-assign">click to assign</div>
+            </div>
+          </div>
+          <div class="project-actions">
+            <button class="action-btn" style="opacity:0.4; cursor:not-allowed">▶</button>
+            <button class="action-btn" title="Edit" onclick="toggleMenu('menu-4')">⋯</button>
+          </div>
+        </div>
+      </div>
+      <div class="context-menu" id="menu-4">
+        <div class="context-menu-item">✏ Edit project</div>
+        <div class="context-menu-item">🔁 Assign wolt</div>
+        <div class="context-menu-item">📋 Copy URL</div>
+        <div class="context-menu-item danger">✕ Delete</div>
+      </div>
+    </div>
+
+    <!-- New project -->
+    <a class="project-card-new" href="#">
+      <div class="new-icon">+</div>
+      <div class="new-label">NEW PROJECT</div>
+      <div class="new-sub">deploy a wolt to build it</div>
+    </a>
+
+  </div>
+
+</main>
+
+<script>
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.closest('.filter-strip').querySelectorAll('.filter-chip').forEach(c => {
+        if (c.classList.contains('active') && c !== chip) c.classList.remove('active');
+      });
+      chip.classList.toggle('active');
+    });
+  });
+
+  // Creatures toggle
+  function toggleCreatures(el) {
+    const list = document.getElementById('creatures-list');
+    const chevron = document.getElementById('creatures-chevron');
+    list.classList.toggle('open');
+    chevron.classList.toggle('open');
+  }
+
+  // Context menus
+  function toggleMenu(id) {
+    document.querySelectorAll('.context-menu').forEach(m => {
+      if (m.id !== id) m.classList.remove('open');
+    });
+    document.getElementById(id).classList.toggle('open');
+  }
+
+  // Close menus on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.action-btn') && !e.target.closest('.context-menu')) {
+      document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('open'));
+    }
+  });
+</script>
+</body>
+</html>
