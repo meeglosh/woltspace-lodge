@@ -50,11 +50,31 @@
     background: var(--ink);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
     position: sticky;
     top: 0;
     height: 100vh;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.25s ease;
+  }
+  .sidebar.hidden {
+    transform: translateX(-100%);
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .sidebar-scroll {
+    flex: 1;
     overflow-y: auto;
+    min-height: 0;
+    scrollbar-width: none;
+  }
+  .sidebar-scroll::-webkit-scrollbar { display: none; }
+  .sidebar-bottom {
+    flex-shrink: 0;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding: 4px 0 8px;
   }
 
   .sidebar-brand {
@@ -143,6 +163,129 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  /* ── NEW PROJECT MODAL ───────────────────────────────────── */
+  .np-steps {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 24px 0;
+  }
+  .np-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+  }
+  .np-step-dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    color: var(--ink-3);
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .np-step.active .np-step-dot { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+  .np-step.done .np-step-dot { border-color: #5BC87A; background: #5BC87A; color: #fff; }
+  .np-step.active { color: var(--ink); }
+  .np-step-divider { flex: 1; height: 1px; background: var(--border); max-width: 32px; }
+  .np-wolt-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .np-wolt-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .np-wolt-row:hover { border-color: var(--ink-3); background: var(--surface-2); }
+  .np-wolt-row.selected { border-color: var(--terracotta); background: rgba(196,83,30,0.05); }
+  .np-wolt-avatar {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+  .np-wolt-name { font-family: var(--font-body); font-size: 14px; color: var(--ink); }
+  .np-wolt-meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: 0.05em; margin-top: 1px; }
+  .np-wolt-check {
+    margin-left: auto;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    color: transparent;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .np-wolt-row.selected .np-wolt-check { border-color: var(--terracotta); background: var(--terracotta); color: #fff; }
+  .np-wolt-warning {
+    background: #fef3ec;
+    border: 1px solid #e8a87a;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: #7a3a10;
+    line-height: 1.5;
+  }
+  .np-wolt-warning strong { font-weight: 600; }
+  .np-wolt-warning-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .np-warn-btn {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.12s;
+    border: 1px solid;
+  }
+  .np-warn-btn.reassign { background: #C4531E; border-color: #C4531E; color: #fff; }
+  .np-warn-btn.reassign:hover { opacity: 0.88; }
+  .np-warn-btn.pick-other { background: transparent; border-color: #e8a87a; color: #7a3a10; }
+  .np-warn-btn.pick-other:hover { background: rgba(196,83,30,0.06); }
+  .np-summary {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .np-summary-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .np-summary-key { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-3); width: 88px; flex-shrink: 0; padding-top: 2px; }
+  .np-summary-val { font-family: var(--font-body); color: var(--ink); }
+  .np-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    gap: 10px;
   }
 
   /* ── NEW WOLT MODAL ──────────────────────────────────────── */
@@ -450,6 +593,180 @@
     color: #fff;
   }
 
+  /* ── CONNECTOR AUTH MODAL ───────────────────────────────── */
+
+  #connector-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(24,16,10,0.55);
+    backdrop-filter: blur(3px);
+    z-index: 600;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  #connector-modal.open { display: flex; }
+
+  .cm-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 400px;
+    max-width: 100%;
+    box-shadow: 0 24px 64px rgba(24,16,10,0.22);
+    overflow: hidden;
+  }
+
+  .cm-header {
+    padding: 32px 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cm-icon-wrap {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .cm-icon-wrap svg { width: 28px; height: 28px; }
+
+  .cm-service-name {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .cm-tagline {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    max-width: 300px;
+  }
+
+  .cm-body {
+    padding: 24px 32px;
+  }
+
+  .cm-permissions-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+  }
+
+  .cm-permissions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .cm-permission {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+
+  .cm-permission-check {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--green-light);
+    color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .cm-footer {
+    padding: 0 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cm-connect-btn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 7px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: #fff;
+    cursor: pointer;
+    transition: filter 0.15s, opacity 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .cm-connect-btn:hover { filter: brightness(1.1); }
+  .cm-connect-btn:disabled { opacity: 0.6; cursor: not-allowed; filter: none; }
+
+  .cm-cancel-btn {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    border: 1px solid var(--border-2);
+    border-radius: 7px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+  .cm-cancel-btn:hover { background: var(--bg); color: var(--ink-2); }
+
+  .cm-fine-print {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--ink-3);
+    padding: 0 32px 20px;
+    line-height: 1.5;
+  }
+
+  /* Disconnect variant */
+  .cm-disconnect-body {
+    padding: 28px 32px 24px;
+    text-align: center;
+  }
+  .cm-disconnect-msg {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .cm-disconnect-msg strong { color: var(--ink); }
+
+  /* Loading / success states */
+  .cm-spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   /* ── ONBOARDING ──────────────────────────────────────────── */
 
   #onboarding {
@@ -585,10 +902,17 @@
 
   #project-detail {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
     height: 100vh;
     background: var(--bg);
+  }
+
+  .pd-body {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
   }
 
   /* LEFT: chat panel */
@@ -602,6 +926,27 @@
     background: var(--bg);
     border-right: 1px solid var(--border);
     overflow: hidden;
+  }
+
+  .pd-chat-panel.fullscreen {
+    width: 100% !important;
+    max-width: none;
+    border-right: none;
+  }
+  .pd-chat-panel.fullscreen .pd-messages {
+    max-width: 680px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .pd-chat-panel.fullscreen .pd-input-area {
+    max-width: 680px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .pd-chat-panel.fullscreen .pd-wolt-head {
+    max-width: 680px;
+    width: 100%;
+    margin: 0 auto;
   }
 
   /* Drag handle */
@@ -625,11 +970,40 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 16px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
     background: var(--surface-2);
   }
+
+  .pd-toolbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .pd-toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .pd-toolbar-btn:hover { background: var(--bg); color: var(--ink-2); border-color: var(--border); }
+  .pd-toolbar-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .pd-toolbar-btn.share-btn { color: var(--ink-2); }
+  .pd-toolbar-btn.share-btn:hover { color: var(--terra); border-color: var(--terra-light); background: var(--terra-light); }
+  .pd-toolbar-divider { width: 1px; height: 18px; background: var(--border); margin: 0 6px; }
   .pd-back-btn {
     display: flex;
     align-items: center;
@@ -1055,6 +1429,7 @@
     gap: 16px;
     margin-bottom: 36px;
   }
+  .thread-header .back-btn { flex-shrink: 0; }
   .thread-header .btn { margin-left: auto; }
   .thread-header-wolt {
     display: flex;
@@ -1148,6 +1523,108 @@
   }
 
   /* ── All Sessions ── */
+  .sessions-filter-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .sessions-tab {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sessions-tab:hover { background: var(--surface-3, #e8e2d8); border-color: var(--ink-3); }
+  .sessions-tab.active { background: #2A1C12; border-color: #2A1C12; color: #EDE8DE; }
+  .sessions-tab-emoji { font-size: 13px; line-height: 1; }
+  .sessions-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .sessions-search {
+    flex: 1;
+    height: 36px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px 0 34px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+    background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 11px center;
+  }
+  .sessions-search::placeholder { color: var(--ink-3); }
+  .sessions-search:focus { border-color: var(--terracotta); }
+  .sessions-sort {
+    height: 36px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+    letter-spacing: 0.04em;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 26px;
+  }
+  .sessions-sort:focus { border-color: var(--terracotta); }
+  .sessions-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 32px;
+    padding-bottom: 24px;
+  }
+  .pg-btn {
+    height: 30px;
+    min-width: 30px;
+    padding: 0 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pg-btn:hover { background: var(--surface-3, #e8e2d8); border-color: var(--ink-3); }
+  .pg-btn.active { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
+  .pg-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+  .pg-ellipsis { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); padding: 0 4px; }
+  .sessions-empty {
+    text-align: center;
+    padding: 48px 16px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-3);
+  }
   .sessions-group {
     margin-bottom: 32px;
   }
@@ -1156,8 +1633,30 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 4px;
-    padding: 0 4px;
+    padding: 4px 4px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.12s;
+    user-select: none;
   }
+  .sessions-group-header:hover { background: var(--surface-2); }
+  .sessions-group-chevron {
+    margin-left: auto;
+    margin-right: 6px;
+    color: var(--ink-3);
+    display: flex; align-items: center;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .sessions-group-header.collapsed .sessions-group-chevron { transform: rotate(-90deg); }
+  .threads-list-wrap {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.25s ease;
+    overflow: hidden;
+  }
+  .sessions-group-header.collapsed + .threads-list-wrap { grid-template-rows: 0fr; }
+  .threads-list-wrap > .threads-list { min-height: 0; }
   .sessions-group-avatar {
     font-size: 18px;
     width: 28px; height: 28px;
@@ -1245,7 +1744,7 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 15px;
     flex-shrink: 0;
-    margin-top: 2px;
+    margin-top: 18px;
   }
   .msg-bubble-wrap { display: flex; flex-direction: column; gap: 4px; }
   .msg-row.user .msg-bubble-wrap { align-items: flex-end; }
@@ -1460,7 +1959,7 @@
 
   /* Creatures — tucked */
   .creatures-toggle {
-    margin: 0 24px 8px;
+    margin: 8px 12px 0;
     padding: 10px 12px;
     border-radius: 6px;
     background: rgba(255,255,255,0.04);
@@ -1492,13 +1991,19 @@
   .creatures-chevron.open { transform: rotate(180deg); }
 
   .creatures-list {
-    margin: 0 24px;
-    display: none;
+    margin: 0 12px;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s ease;
+  }
+  .creatures-list.open { grid-template-rows: 1fr; }
+  .creatures-list-inner {
+    overflow: hidden;
+    display: flex;
     flex-direction: column;
     gap: 4px;
-    margin-bottom: 8px;
+    min-height: 0;
   }
-  .creatures-list.open { display: flex; }
 
   .creature-row {
     display: flex;
@@ -1523,7 +2028,7 @@
 
   /* ── Connectors ── */
   .connectors-toggle {
-    margin: 8px 24px 0;
+    margin: 8px 12px 0;
     padding: 10px 12px;
     border-radius: 6px;
     background: rgba(255,255,255,0.04);
@@ -1563,12 +2068,19 @@
   .connectors-chevron.open { transform: rotate(180deg); }
 
   .connectors-list {
-    margin: 6px 12px 0;
-    display: none;
+    margin: 0 12px 14px;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s ease;
+  }
+  .connectors-list.open { grid-template-rows: 1fr; }
+  .connectors-list-inner {
+    overflow: hidden;
+    display: flex;
     flex-direction: column;
     gap: 2px;
+    min-height: 0;
   }
-  .connectors-list.open { display: flex; }
 
   .connector-row {
     display: flex;
@@ -1648,6 +2160,414 @@
     transition: color 0.15s;
   }
   .sidebar-footer a:hover { color: rgba(255,255,255,0.6); }
+
+  /* ── Status bar ── */
+  #status-bar {
+    position: fixed;
+    bottom: 0; left: 272px; right: 0;
+    height: 28px;
+    background: #0e0c0a;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    z-index: 410;
+    transform: translateY(100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.35);
+    overflow: hidden;
+  }
+  .sb-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 14px;
+    height: 100%;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .sb-item:last-child { border-right: none; margin-left: auto; }
+  .sb-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .sb-dot.green  { background: #5BC87A; box-shadow: 0 0 4px rgba(91,200,122,0.6); }
+  .sb-dot.amber  { background: #E8A23A; box-shadow: 0 0 4px rgba(232,162,58,0.5); }
+  .sb-dot.red    { background: #E85A3A; }
+  .sb-dot.dim    { background: rgba(255,255,255,0.15); }
+  .sb-pulse {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .sb-pulse-bar {
+    width: 2px;
+    background: rgba(91,200,122,0.5);
+    border-radius: 1px;
+    animation: sbpulse 1.4s ease-in-out infinite;
+  }
+  .sb-pulse-bar:nth-child(1) { height: 6px;  animation-delay: 0s; }
+  .sb-pulse-bar:nth-child(2) { height: 12px; animation-delay: 0.15s; }
+  .sb-pulse-bar:nth-child(3) { height: 8px;  animation-delay: 0.3s; }
+  .sb-pulse-bar:nth-child(4) { height: 14px; animation-delay: 0.45s; }
+  .sb-pulse-bar:nth-child(5) { height: 6px;  animation-delay: 0.6s; }
+  @keyframes sbpulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+    50%       { opacity: 1;   transform: scaleY(1); }
+  }
+  #status-bar.open { transform: translateY(0); }
+  .sb-highlight { color: rgba(255,255,255,0.6); }
+
+  /* ── Settings overlay ── */
+  #settings-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 500;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #settings-overlay.open { display: flex; }
+  .settings-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 28px;
+    height: 52px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+  .settings-back {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.12s;
+    background: none;
+  }
+  .settings-back:hover { background: var(--surface-2); border-color: var(--border); color: var(--ink-2); }
+  .settings-toolbar-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .settings-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  .settings-nav {
+    width: 200px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    padding: 24px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+  }
+  .settings-nav-item {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    border: 1px solid transparent;
+  }
+  .settings-nav-item:hover { background: var(--surface-2); color: var(--ink); }
+  .settings-nav-item.active { background: var(--surface-2); border-color: var(--border); color: var(--ink); }
+  .settings-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 36px 48px;
+    max-width: 680px;
+  }
+  .settings-section-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+  .settings-group {
+    margin-bottom: 36px;
+  }
+  .settings-group-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 24px;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row-label {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .settings-row-sub {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 2px;
+  }
+  .settings-input {
+    height: 34px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    width: 220px;
+    transition: border-color 0.15s;
+  }
+  .settings-input:focus { border-color: var(--terracotta); }
+  .settings-select {
+    height: 34px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0 28px 0 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: border-color 0.15s;
+  }
+  .settings-select:focus { border-color: var(--terracotta); }
+  /* Toggle switch */
+  .settings-toggle {
+    position: relative;
+    width: 38px; height: 22px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .settings-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .settings-toggle-track {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.12);
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 11px;
+    transition: all 0.2s;
+  }
+  .settings-toggle input:checked + .settings-toggle-track { background: #fff; border-color: #ddd; }
+  .settings-toggle-thumb {
+    position: absolute;
+    top: 4px; left: 3px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--ink-3);
+    transition: all 0.2s;
+  }
+  .settings-toggle input:checked ~ .settings-toggle-thumb { left: 19px; background: #5BC87A; }
+  /* Avatar picker */
+  .avatar-current {
+    width: 64px; height: 64px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .avatar-current:hover { border-color: var(--terracotta); }
+  .avatar-current img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-actions { display: flex; flex-direction: column; gap: 8px; }
+  .avatar-emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 36px);
+    gap: 4px;
+    margin-top: 16px;
+    display: none;
+  }
+  .avatar-emoji-grid.open { display: grid; }
+  .avatar-emoji-btn {
+    width: 36px; height: 36px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s;
+  }
+  .avatar-emoji-btn:hover { border-color: var(--terracotta); background: var(--surface-3, #e8e2d8); }
+  .avatar-emoji-btn.selected { border-color: var(--terracotta); background: rgba(196,83,30,0.08); }
+  .btn-small {
+    height: 30px;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+  }
+  .btn-small:hover { background: var(--surface-3, #e8e2d8); border-color: var(--ink-3); color: var(--ink); }
+  .btn-small.primary { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
+  .btn-small.primary:hover { opacity: 0.88; }
+  /* Accent swatches */
+  .accent-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+  .accent-swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .accent-swatch.selected { border-color: var(--ink); }
+  .accent-swatch.selected::after {
+    content: '✓';
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+    font-weight: 700;
+  }
+  /* Shortcuts */
+  .shortcut-table { width: 100%; border-collapse: collapse; }
+  .shortcut-table tr { border-bottom: 1px solid var(--border); }
+  .shortcut-table tr:last-child { border-bottom: none; }
+  .shortcut-table td { padding: 10px 0; font-size: 13px; }
+  .shortcut-table td:first-child { color: var(--ink-2); font-family: var(--font-body); }
+  .shortcut-table td:last-child { text-align: right; }
+  kbd {
+    display: inline-block;
+    padding: 2px 7px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+    letter-spacing: 0.04em;
+  }
+  .settings-about-logo { font-size: 36px; margin-bottom: 12px; }
+  .settings-about-name { font-family: var(--font-display); font-size: 28px; font-weight: 300; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 4px; }
+  .settings-about-ver  { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.08em; margin-bottom: 24px; }
+
+  /* ── Terminal panel ── */
+  #terminal-panel {
+    position: fixed;
+    bottom: 0; left: 272px; right: 0;
+    height: 320px;
+    background: #0e0c0a;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), bottom 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 400;
+    font-family: var(--font-mono);
+  }
+  #terminal-panel.open { transform: translateY(0); }
+  .term-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    height: 36px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    flex-shrink: 0;
+    cursor: ns-resize;
+    user-select: none;
+  }
+  .term-dots { display: flex; gap: 6px; }
+  .term-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .term-dot.close { background: #ff5f57; cursor: pointer; }
+  .term-dot.min   { background: #febc2e; }
+  .term-dot.max   { background: #28c840; }
+  .term-title {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.08em;
+    flex: 1;
+    text-align: center;
+  }
+  .term-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #c8c0b0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+  .term-line { display: flex; gap: 8px; flex-wrap: wrap; }
+  .term-prompt { color: #5a9e6f; flex-shrink: 0; }
+  .term-cmd { color: #e8dcc8; }
+  .term-output { color: rgba(200,192,176,0.6); padding-left: 0; }
+  .term-output.dim { color: rgba(200,192,176,0.3); }
+  .term-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 12px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    flex-shrink: 0;
+  }
+  .term-input-prompt { color: #5a9e6f; font-size: 12px; flex-shrink: 0; }
+  .term-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #e8dcc8;
+    caret-color: #5a9e6f;
+  }
 
   /* ── MAIN ────────────────────────────────────────────────── */
 
@@ -2068,22 +2988,43 @@
     z-index: 0;
   }
 
+  @keyframes geo-drift {
+    0%   { border-radius: 50%; transform: translate(0px, 0px) scale(1); }
+    25%  { border-radius: 46% 54% 52% 48% / 50% 48% 52% 50%; transform: translate(-8px, -6px) scale(1.012); }
+    50%  { border-radius: 52% 48% 45% 55% / 48% 53% 47% 52%; transform: translate(-14px, 5px) scale(0.988); }
+    75%  { border-radius: 48% 52% 55% 45% / 53% 47% 54% 46%; transform: translate(-5px, 10px) scale(1.006); }
+    100% { border-radius: 50%; transform: translate(0px, 0px) scale(1); }
+  }
+
+  @keyframes geo-drift-2 {
+    0%   { border-radius: 50%; transform: translate(0px, 0px) scale(1); }
+    30%  { border-radius: 54% 46% 48% 52% / 47% 52% 48% 53%; transform: translate(6px, -10px) scale(1.018); }
+    60%  { border-radius: 47% 53% 52% 48% / 52% 46% 54% 48%; transform: translate(10px, 4px) scale(0.982); }
+    100% { border-radius: 50%; transform: translate(0px, 0px) scale(1); }
+  }
+
   .geo-circle {
     width: 320px; height: 320px;
     border-radius: 50%;
-    border: 1px solid var(--border);
-    opacity: 0.5;
+    border: none;
+    background: rgba(244, 88, 68, 0.5);
     position: fixed;
     bottom: -80px; right: -80px;
+    animation: geo-drift 38s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
   }
 
   .geo-circle-2 {
     width: 160px; height: 160px;
     border-radius: 50%;
-    border: 1px solid var(--border);
-    opacity: 0.4;
+    border: none;
+    background: #558a86;
     position: fixed;
     bottom: 60px; right: 60px;
+    animation: geo-drift-2 26s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
   }
 
   /* ── MENU TOOLTIP ─────────────────────────────────────────── */
@@ -2178,6 +3119,7 @@
     </div>
   </div>
 
+  <div class="sidebar-scroll">
   <div class="sidebar-section">
     <div class="sidebar-section-label">
       Team <span style="color:rgba(255,255,255,0.4)">4</span>
@@ -2237,7 +3179,9 @@
       </div>
     </div>
   </div>
+  </div><!-- /.sidebar-scroll -->
 
+  <div class="sidebar-bottom">
   <!-- Creatures tucked away -->
   <div class="creatures-toggle" onclick="toggleCreatures(this)">
     <span class="creatures-toggle-label">
@@ -2246,15 +3190,17 @@
     <span class="creatures-chevron" id="creatures-chevron">▾</span>
   </div>
   <div class="creatures-list" id="creatures-list">
-    <div class="creature-row">
-      <span>🐺</span>
-      <span class="creature-name">wolf</span>
-      <span class="creature-desc">scheduler</span>
-    </div>
-    <div class="creature-row">
-      <span>🦅</span>
-      <span class="creature-name">eagle</span>
-      <span class="creature-desc">reaper</span>
+    <div class="creatures-list-inner">
+      <div class="creature-row">
+        <span>🐺</span>
+        <span class="creature-name">wolf</span>
+        <span class="creature-desc">scheduler</span>
+      </div>
+      <div class="creature-row">
+        <span>🦅</span>
+        <span class="creature-name">eagle</span>
+        <span class="creature-desc">reaper</span>
+      </div>
     </div>
   </div>
 
@@ -2264,6 +3210,7 @@
     <span class="connectors-chevron" id="connectors-chevron">▾</span>
   </div>
   <div class="connectors-list" id="connectors-list">
+  <div class="connectors-list-inner">
 
     <div class="connector-row connected" data-service="telegram" style="--brand-color:#2AABEE" onclick="toggleConnector(this)">
       <div class="connector-icon">
@@ -2331,13 +3278,15 @@
       <div class="connector-action">●</div>
     </div>
 
+  </div><!-- /.connectors-list-inner -->
   </div>
 
   <div class="sidebar-footer">
-    <a href="#">terminal</a>
-    <a href="#">status</a>
-    <a href="#">settings</a>
+    <a href="#" onclick="toggleTerminal(event)">terminal</a>
+    <a href="#" onclick="toggleStatusBar(event)">status</a>
+    <a href="#" onclick="openSettings(event)">settings</a>
   </div>
+  </div><!-- /.sidebar-bottom -->
 </aside>
 
 <!-- ── MAIN ──────────────────────────────────────────────────── -->
@@ -2348,7 +3297,7 @@
   <div class="home-scroll" id="home-scroll">
     <div class="home-hero" id="home-hero">
       <div class="home-greeting" id="home-greeting">Good to meet you.</div>
-      <div class="home-welcome-text" id="home-welcome-text">I'm just waking up in here. This space is yours — I'm going to help you make it feel like home.<br><br>Tell me a bit about yourself. What are you working on? What's been sitting in the back of your head?</div>
+      <div class="home-welcome-text" id="home-welcome-text">I'm just waking up in here. This space is yours — let's make it exactly what you want it to be.<br><br>Tell me a bit about yourself. What are you working on? What's been sitting in the back of your head?</div>
       <div class="home-prompt-hint">↓ start below</div>
     </div>
     <div class="home-persona" id="home-persona" style="display:none"></div>
@@ -2379,7 +3328,7 @@
     </div>
     <div class="header-actions">
       <button class="btn btn-ghost">⟳ refresh</button>
-      <button class="btn btn-primary">+ new project</button>
+      <button class="btn btn-primary" onclick="openNewProject()">+ new project</button>
     </div>
   </div>
 
@@ -2578,7 +3527,7 @@
     </div>
 
     <!-- New project -->
-    <a class="project-card-new" href="#">
+    <a class="project-card-new" href="#" onclick="openNewProject(event)">
       <div class="new-icon">+</div>
       <div class="new-label">New project</div>
       <div class="new-sub">deploy a wolt to build it</div>
@@ -2593,16 +3542,26 @@
   <div class="main-header">
     <div class="main-title-block">
       <div class="main-title">Sessions</div>
-      <div class="main-subtitle">all threads across all wolts</div>
+      <div class="main-subtitle">all conversations across all wolts</div>
     </div>
   </div>
+  <div id="sessions-filter-tabs" class="sessions-filter-tabs"></div>
+  <div class="sessions-toolbar">
+    <input id="sessions-search" class="sessions-search" type="text" placeholder="Search conversations…" oninput="asSearch()" />
+    <select id="sessions-sort" class="sessions-sort" onchange="asSort()">
+      <option value="recent">Most recent</option>
+      <option value="oldest">Oldest first</option>
+      <option value="wolt">By wolt</option>
+      <option value="unread">Unread first</option>
+    </select>
+  </div>
   <div id="all-sessions-list"></div>
+  <div id="sessions-pagination" class="sessions-pagination"></div>
 </div>
 
 <!-- ── THREADS VIEW ───────────────────────────────────────────── -->
 <div id="threads-view" style="display:none">
   <div class="thread-header">
-    <button class="back-btn" onclick="showProjects()">← Projects</button>
     <div class="thread-header-wolt">
       <div class="thread-wolt-avatar" id="tv-avatar"></div>
       <div>
@@ -2610,7 +3569,7 @@
         <div class="thread-wolt-meta" id="tv-meta"></div>
       </div>
     </div>
-    <button class="btn btn-primary" onclick="newThread()">+ new thread</button>
+    <button class="btn btn-primary" onclick="newThread()">+ New conversation</button>
   </div>
   <div class="threads-list" id="threads-list"></div>
 </div>
@@ -2618,7 +3577,7 @@
 <!-- ── CHAT VIEW ─────────────────────────────────────────────── -->
 <div id="chat-view" style="display:none">
   <div class="chat-header">
-    <button class="chat-back-btn" id="chat-back-btn">← <span id="chat-back-label">threads</span></button>
+    <button class="back-btn" onclick="navBack()">← back</button>
     <div class="chat-thread-title" id="chat-title"></div>
   </div>
   <div class="chat-messages" id="chat-messages"></div>
@@ -2669,31 +3628,150 @@
     chevron.classList.toggle('open');
   }
 
-  const CONNECTOR_HANDLES = {
-    telegram: '@meeglosh',
-    slack: 'meeglosh.slack.com',
-    discord: 'meeglosh#0001',
-    spotify: 'meeglosh',
-    notion: 'meeglosh',
-    github: 'meeglosh',
+  const CONNECTOR_DATA = {
+    telegram: {
+      name: 'Telegram',
+      color: '#2AABEE',
+      handle: '@meeglosh',
+      tagline: 'Woltspace is requesting access to your Telegram account.',
+      permissions: ['Send and receive messages on your behalf', 'Create and manage bots', 'Access your chats and channels'],
+      icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>`,
+    },
+    slack: {
+      name: 'Slack',
+      color: '#4A154B',
+      handle: 'meeglosh.slack.com',
+      tagline: 'Woltspace is requesting access to your Slack workspace.',
+      permissions: ['Post messages to channels', 'Read channel history', 'Access workspace members'],
+      icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zm10.122 2.521a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zm-1.268 0a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zm-2.523 10.122a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zm0-1.268a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>`,
+    },
+    discord: {
+      name: 'Discord',
+      color: '#5865F2',
+      handle: 'meeglosh#0001',
+      tagline: 'Woltspace is requesting access to your Discord account.',
+      permissions: ['Send messages to servers', 'Read server channels', 'Create and manage webhooks'],
+      icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>`,
+    },
+    spotify: {
+      name: 'Spotify',
+      color: '#1DB954',
+      handle: 'meeglosh',
+      tagline: 'Woltspace is requesting access to your Spotify account.',
+      permissions: ['Read your listening history and top tracks', 'Control playback on your devices', 'Access and modify your playlists'],
+      icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`,
+    },
+    notion: {
+      name: 'Notion',
+      color: '#000000',
+      handle: 'meeglosh',
+      tagline: 'Woltspace is requesting access to your Notion workspace.',
+      permissions: ['Read pages and databases', 'Create and edit content', 'Search across your workspace'],
+      icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.14c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z"/></svg>`,
+    },
+    github: {
+      name: 'GitHub',
+      color: '#24292F',
+      handle: 'meeglosh',
+      tagline: 'Woltspace is requesting access to your GitHub account.',
+      permissions: ['Read your repositories and code', 'Create issues and pull requests', 'Access commit history and branches'],
+      icon: `<svg viewBox="0 0 98 96" fill="currentColor"><path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>`,
+    },
   };
 
+  let cmCurrentRow = null;
+
   function toggleConnector(row) {
+    cmCurrentRow = row;
     const service = row.dataset.service;
+    const data = CONNECTOR_DATA[service];
+    if (!data) return;
+
     const isConnected = row.classList.contains('connected');
-    const handle = row.querySelector('.connector-handle');
-    const action = row.querySelector('.connector-action');
+    const card = document.getElementById('cm-card');
 
     if (isConnected) {
-      row.classList.remove('connected');
-      handle.textContent = '— not connected';
-      action.textContent = '＋';
+      card.innerHTML = `
+        <div class="cm-header">
+          <div class="cm-icon-wrap" style="background:${data.color}1a;color:${data.color}">${data.icon}</div>
+          <div class="cm-service-name">${data.name}</div>
+        </div>
+        <div class="cm-disconnect-body">
+          <div class="cm-disconnect-msg">Disconnect <strong>${data.name}</strong>? Wolts using this connection will lose access until you reconnect.</div>
+        </div>
+        <div class="cm-footer">
+          <button class="cm-connect-btn" style="background:#C4531E" onclick="cmConfirmDisconnect()">Disconnect ${data.name}</button>
+          <button class="cm-cancel-btn" onclick="cmClose()">Keep connected</button>
+        </div>`;
     } else {
-      row.classList.add('connected');
-      handle.textContent = CONNECTOR_HANDLES[service] || '';
-      action.textContent = '●';
+      card.innerHTML = `
+        <div class="cm-header">
+          <div class="cm-icon-wrap" style="background:${data.color}1a;color:${data.color}">${data.icon}</div>
+          <div class="cm-service-name">${data.name}</div>
+          <div class="cm-tagline">${data.tagline}</div>
+        </div>
+        <div class="cm-body">
+          <div class="cm-permissions-label">This will allow Woltspace to</div>
+          <div class="cm-permissions">
+            ${data.permissions.map(p => `
+              <div class="cm-permission">
+                <div class="cm-permission-check">✓</div>
+                <span>${p}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div class="cm-footer">
+          <button class="cm-connect-btn" id="cm-connect-btn" style="background:${data.color}" onclick="cmConnect('${service}')">
+            Connect with ${data.name}
+          </button>
+          <button class="cm-cancel-btn" onclick="cmClose()">Cancel</button>
+        </div>
+        <div class="cm-fine-print">You can disconnect at any time from your connectors panel.</div>`;
     }
-    syncConnectorDot();
+
+    document.getElementById('connector-modal').classList.add('open');
+  }
+
+  function cmConnect(service) {
+    const data = CONNECTOR_DATA[service];
+    const btn = document.getElementById('cm-connect-btn');
+    btn.disabled = true;
+    btn.innerHTML = `<div class="cm-spinner"></div> Connecting…`;
+
+    setTimeout(() => {
+      btn.innerHTML = `✓ Connected`;
+      setTimeout(() => {
+        cmClose();
+        if (cmCurrentRow) {
+          const handle = cmCurrentRow.querySelector('.connector-handle');
+          const action = cmCurrentRow.querySelector('.connector-action');
+          cmCurrentRow.classList.add('connected');
+          handle.textContent = data.handle;
+          action.textContent = '●';
+          syncConnectorDot();
+        }
+      }, 600);
+    }, 1400);
+  }
+
+  function cmConfirmDisconnect() {
+    const row = cmCurrentRow;
+    cmClose();
+    if (row) {
+      row.querySelector('.connector-handle').textContent = '— not connected';
+      row.querySelector('.connector-action').textContent = '＋';
+      row.classList.remove('connected');
+      syncConnectorDot();
+    }
+  }
+
+  function cmClose() {
+    document.getElementById('connector-modal').classList.remove('open');
+    cmCurrentRow = null;
+  }
+
+  function cmBackdropClick(e) {
+    if (e.target === document.getElementById('connector-modal')) cmClose();
   }
 
   function syncConnectorDot() {
@@ -2822,6 +3900,16 @@ const WOLT_DATA = {
 
 let currentWolt = null;
 let currentThread = null;
+let navStack = []; // tracks where to go back to
+
+function navBack() {
+  // Back from chat → return to that wolt's thread list
+  showThreads(currentWolt,
+    document.getElementById('tv-avatar').textContent.trim(),
+    document.getElementById('tv-meta').textContent.trim(),
+    ''
+  );
+}
 let pendingFiles = [];
 
 function setNavActive(id) {
@@ -2838,34 +3926,143 @@ function hideAllViews() {
   });
 }
 
+function setGeoVisible(visible) {
+  document.querySelectorAll('.geo-circle, .geo-circle-2').forEach(el => {
+    el.style.display = visible ? '' : 'none';
+  });
+}
+
 function showProjects() {
   hideAllViews();
   document.getElementById('projects-view').style.display = '';
   document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
   setNavActive('nav-projects');
+  setGeoVisible(true);
   currentWolt = null;
   currentThread = null;
 }
+
+const AS_WOLT_META = {
+  'Woltaire':     { emoji: '🦝', meta: 'raccoon · opus', project: 'creatorspace' },
+  'creationwolt': { emoji: '🦫', meta: 'beaver · sonnet', project: 'signal-desk' },
+  'lodgebuilder': { emoji: '🦫', meta: 'beaver · sonnet', project: 'daily-digest' },
+  'Wolten':       { emoji: '🐕', meta: 'dog · companion', project: '—' },
+};
+const AS_PAGE_SIZE = 10;
+let asCurrentPage = 1;
+let asCurrentSort = 'recent';
+let asCurrentQuery = '';
+let asCurrentWolt = 'all';
 
 function showAllSessions() {
   hideAllViews();
   document.getElementById('all-sessions-view').style.display = '';
   document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
   setNavActive('nav-all-sessions');
+  setGeoVisible(false);
   currentWolt = null;
+  asCurrentPage = 1;
+  asCurrentWolt = 'all';
+  document.getElementById('sessions-search').value = '';
+  asCurrentQuery = '';
+  document.getElementById('sessions-sort').value = 'recent';
+  asCurrentSort = 'recent';
+  renderAsFilterTabs();
+  renderAllSessions();
+}
 
-  const woltMeta = {
-    'Woltaire':     { emoji: '🦝', meta: 'raccoon · opus', project: 'creatorspace' },
-    'creationwolt': { emoji: '🦫', meta: 'beaver · sonnet', project: 'signal-desk' },
-    'lodgebuilder': { emoji: '🦫', meta: 'beaver · sonnet', project: 'daily-digest' },
-    'Wolten':       { emoji: '🐕', meta: 'dog · companion', project: '—' },
-  };
+function renderAsFilterTabs() {
+  const container = document.getElementById('sessions-filter-tabs');
+  const wolts = Object.keys(WOLT_DATA);
+  let html = `<button class="sessions-tab${asCurrentWolt === 'all' ? ' active' : ''}" onclick="asFilterWolt('all')">All</button>`;
+  wolts.forEach(name => {
+    const m = AS_WOLT_META[name] || { emoji: '🦫' };
+    html += `<button class="sessions-tab${asCurrentWolt === name ? ' active' : ''}" onclick="asFilterWolt('${name}')">
+      <span class="sessions-tab-emoji">${m.emoji}</span>${name}
+    </button>`;
+  });
+  container.innerHTML = html;
+}
+
+function asFilterWolt(name) {
+  asCurrentWolt = name;
+  asCurrentPage = 1;
+  renderAsFilterTabs();
+  renderAllSessions();
+}
+
+function asSearch() {
+  asCurrentQuery = document.getElementById('sessions-search').value.toLowerCase();
+  asCurrentPage = 1;
+  renderAllSessions();
+}
+
+function asSort() {
+  asCurrentSort = document.getElementById('sessions-sort').value;
+  asCurrentPage = 1;
+  renderAllSessions();
+}
+
+function asFlatThreads() {
+  const flat = [];
+  Object.entries(WOLT_DATA).forEach(([name, data]) => {
+    if (asCurrentWolt !== 'all' && asCurrentWolt !== name) return;
+    const m = AS_WOLT_META[name] || { emoji: '🦫', meta: '', project: '' };
+    (data.threads || []).forEach(t => {
+      flat.push({ woltName: name, woltEmoji: m.emoji, woltMeta: m.meta, woltProject: m.project, ...t });
+    });
+  });
+  return flat;
+}
+
+function renderAllSessions() {
+  let items = asFlatThreads();
+
+  // filter
+  if (asCurrentQuery) {
+    items = items.filter(t =>
+      t.title.toLowerCase().includes(asCurrentQuery) ||
+      t.preview.toLowerCase().includes(asCurrentQuery) ||
+      t.woltName.toLowerCase().includes(asCurrentQuery)
+    );
+  }
+
+  // sort
+  if (asCurrentSort === 'oldest') {
+    items = items.slice().reverse();
+  } else if (asCurrentSort === 'wolt') {
+    items.sort((a, b) => a.woltName.localeCompare(b.woltName));
+  } else if (asCurrentSort === 'unread') {
+    items.sort((a, b) => (b.unread ? 1 : 0) - (a.unread ? 1 : 0));
+  }
+
+  const total = items.length;
+  const totalPages = Math.max(1, Math.ceil(total / AS_PAGE_SIZE));
+  if (asCurrentPage > totalPages) asCurrentPage = totalPages;
+  const pageItems = items.slice((asCurrentPage - 1) * AS_PAGE_SIZE, asCurrentPage * AS_PAGE_SIZE);
 
   const list = document.getElementById('all-sessions-list');
-  list.innerHTML = Object.entries(WOLT_DATA).map(([name, data]) => {
-    const m = woltMeta[name] || { emoji: '🦫', meta: '', project: '' };
-    const threads = data.threads.map(t => `
-      <div class="thread-item" onclick="showThreads('${name}','${m.emoji}','${m.meta}','${m.project}'); showChat('${name}','${t.id}')">
+
+  if (total === 0) {
+    list.innerHTML = `<div class="sessions-empty">No conversations found.</div>`;
+    document.getElementById('sessions-pagination').innerHTML = '';
+    return;
+  }
+
+  // group page items by wolt (preserving order)
+  const groups = [];
+  pageItems.forEach(t => {
+    const last = groups[groups.length - 1];
+    if (last && last.woltName === t.woltName) {
+      last.threads.push(t);
+    } else {
+      groups.push({ woltName: t.woltName, woltEmoji: t.woltEmoji, woltMeta: t.woltMeta, woltProject: t.woltProject, threads: [t] });
+    }
+  });
+
+  list.innerHTML = groups.map(g => {
+    const threads = g.threads.map(t => `
+      <div class="thread-item" onclick="showThreads('${g.woltName}','${g.woltEmoji}','${g.woltMeta}','${g.woltProject}','all-sessions'); showChat('${g.woltName}','${t.id}')">
         <div class="thread-dot${t.unread ? ' unread' : ''}"></div>
         <div class="thread-body">
           <div class="thread-title">${t.title}</div>
@@ -2875,21 +4072,64 @@ function showAllSessions() {
       </div>`).join('');
     return `
       <div class="sessions-group">
-        <div class="sessions-group-header">
-          <div class="sessions-group-avatar">${m.emoji}</div>
-          <div class="sessions-group-name">${name}</div>
-          <div class="sessions-group-meta">${m.meta}</div>
+        <div class="sessions-group-header" onclick="asToggleGroup(this)">
+          <div class="sessions-group-avatar">${g.woltEmoji}</div>
+          <div class="sessions-group-name">${g.woltName}</div>
+          <div class="sessions-group-meta">${g.woltMeta}</div>
+          <div class="sessions-group-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
         </div>
-        <div class="threads-list">${threads}</div>
+        <div class="threads-list-wrap"><div class="threads-list">${threads}</div></div>
       </div>`;
   }).join('');
+
+  // pagination
+  renderAsPagination(totalPages);
 }
 
-function showThreads(name, emoji, meta, project) {
+function renderAsPagination(totalPages) {
+  const pg = document.getElementById('sessions-pagination');
+  if (totalPages <= 1) { pg.innerHTML = ''; return; }
+
+  const cur = asCurrentPage;
+  let html = `<button class="pg-btn" onclick="asGoPage(${cur - 1})" ${cur === 1 ? 'disabled' : ''}>←</button>`;
+
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - cur) <= 1) pages.push(i);
+    else if (pages[pages.length - 1] !== '…') pages.push('…');
+  }
+
+  pages.forEach(p => {
+    if (p === '…') {
+      html += `<span class="pg-ellipsis">…</span>`;
+    } else {
+      html += `<button class="pg-btn${p === cur ? ' active' : ''}" onclick="asGoPage(${p})">${p}</button>`;
+    }
+  });
+
+  html += `<button class="pg-btn" onclick="asGoPage(${cur + 1})" ${cur === totalPages ? 'disabled' : ''}>→</button>`;
+  pg.innerHTML = html;
+}
+
+function asToggleGroup(header) {
+  header.classList.toggle('collapsed');
+}
+
+function asGoPage(n) {
+  asCurrentPage = n;
+  renderAllSessions();
+  document.getElementById('all-sessions-view').scrollTop = 0;
+}
+
+function showThreads(name, emoji, meta, project, fromView) {
   currentWolt = name;
+  // Record what called us so back knows where to go
+  if (fromView) navStack = [fromView];
+  else if (!navStack.length) navStack = ['projects'];
   hideAllViews();
   document.getElementById('threads-view').style.display = '';
   setNavActive(null);
+  setGeoVisible(false);
   document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
   document.querySelectorAll('.wolt-card').forEach(c => {
     if (c.getAttribute('onclick')?.includes(`'${name}'`)) c.classList.add('active');
@@ -2897,7 +4137,7 @@ function showThreads(name, emoji, meta, project) {
 
   document.getElementById('tv-avatar').textContent = emoji;
   document.getElementById('tv-name').textContent = name;
-  document.getElementById('tv-meta').textContent = meta + (project !== '—' ? ' · ' + project : '');
+  document.getElementById('tv-meta').textContent = meta;
 
   const data = WOLT_DATA[name] || { threads: [] };
   const list = document.getElementById('threads-list');
@@ -2927,16 +4167,12 @@ function showChat(woltName, threadId) {
   document.getElementById('threads-view').style.display = 'none';
   const chatEl = document.getElementById('chat-view');
   chatEl.style.display = 'flex';
+  setGeoVisible(false);
 
   const wolt = Object.keys(WOLT_DATA).find(k => k === woltName);
   const emoji = document.querySelector(`.wolt-card[onclick*="${woltName}"] .wolt-avatar`)?.childNodes[0]?.textContent?.trim() || '🦫';
 
   document.getElementById('chat-title').textContent = thread.title;
-  document.getElementById('chat-back-label').textContent = woltName;
-  document.getElementById('chat-back-btn').onclick = () => {
-    chatEl.style.display = 'none';
-    document.getElementById('threads-view').style.display = '';
-  };
 
   pendingFiles = [];
   renderPendingFiles();
@@ -2950,7 +4186,7 @@ function showChat(woltName, threadId) {
 function renderMessage(m, woltEmoji) {
   const isUser = m.from === 'user';
   const avatar = isUser
-    ? `<div class="msg-avatar">👤</div>`
+    ? `<div class="msg-avatar">🌿</div>`
     : `<div class="msg-avatar">${woltEmoji}</div>`;
   const files = (m.files || []).map(f =>
     `<div class="msg-file-chip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>${f}</div>`
@@ -2967,15 +4203,12 @@ function renderMessage(m, woltEmoji) {
 }
 
 function newThread() {
-  const title = prompt('Thread title:');
-  if (!title || !currentWolt) return;
+  if (!currentWolt) return;
   const data = WOLT_DATA[currentWolt];
   const id = 'new-' + Date.now();
-  data.threads.unshift({ id, title, date: 'just now', unread: false, preview: 'New thread', messages: [] });
-  showThreads(currentWolt, ...['','',''].map(() => ''));
-  // re-render with correct args from the clicked card
-  const card = document.querySelector(`.wolt-card[onclick*="${currentWolt}"]`);
-  if (card) { const fn = card.getAttribute('onclick'); eval(fn); }
+  data.threads.unshift({ id, title: 'New conversation', date: 'just now', unread: false, preview: '', messages: [
+    { from: 'wolt', text: "Hey there, what's on your mind today?", time: 'just now' }
+  ] });
   showChat(currentWolt, id);
 }
 
@@ -3057,6 +4290,7 @@ function showHome() {
   el.style.display = 'flex';
   setNavActive('nav-home');
   document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
+  setGeoVisible(true);
   setTimeout(() => document.getElementById('home-input').focus(), 100);
 }
 
@@ -3353,15 +4587,17 @@ function openProject(name) {
   const proj = PROJECT_DATA[name];
   if (!proj) return;
 
-  document.querySelector('aside.sidebar').style.display = 'none';
+  document.querySelector('aside.sidebar').classList.add('hidden');
   document.querySelector('main.main').style.display = 'none';
   document.querySelectorAll('.geo-circle, .geo-circle-2').forEach(el => el.style.display = 'none');
   const overlay = document.getElementById('project-detail');
   overlay.style.display = 'flex';
 
   // Browser chrome
-  document.getElementById('pd-chrome-url').textContent = proj.url;
+  pdCurrentUrl = proj.url;
   document.getElementById('pd-back-project').textContent = name;
+  pdMode = 'split'; // ensure toggle logic starts fresh
+  pdSetMode('split');
 
   // Load fake page into iframe
   const iframe = document.getElementById('pd-iframe');
@@ -3417,9 +4653,66 @@ function renderPdChat(proj) {
 function closeProject() {
   document.getElementById('project-detail').style.display = 'none';
   document.getElementById('pd-iframe').srcdoc = '';
-  document.querySelector('aside.sidebar').style.display = '';
+  document.querySelector('aside.sidebar').classList.remove('hidden');
   document.querySelector('main.main').style.display = '';
   document.querySelectorAll('.geo-circle, .geo-circle-2').forEach(el => el.style.display = '');
+  pdMode = 'split'; // reset state for next open
+}
+
+let pdCurrentUrl = '';
+let pdMode = 'split';
+let pdSavedChatWidth = '380px';
+
+function pdSetMode(mode) {
+  const chat    = document.getElementById('pd-chat-panel');
+  const preview = document.getElementById('pd-preview-panel');
+  const handle  = document.getElementById('pd-drag-handle');
+  const btnChat = document.getElementById('pd-btn-chat');
+  const btnProj = document.getElementById('pd-btn-project');
+
+  // Clicking the active toggle returns to split
+  if (mode === pdMode) mode = 'split';
+
+  // Save panel width before leaving split
+  if (pdMode === 'split' && mode !== 'split') {
+    pdSavedChatWidth = chat.style.width || '380px';
+  }
+
+  if (mode === 'chat') {
+    chat.style.display = '';
+    chat.classList.add('fullscreen');
+    preview.style.display = 'none';
+    handle.style.display = 'none';
+    btnChat.classList.add('active');
+    btnProj.classList.remove('active');
+  } else if (mode === 'project') {
+    chat.style.display = 'none';
+    chat.classList.remove('fullscreen');
+    preview.style.display = '';
+    handle.style.display = 'none';
+    btnChat.classList.remove('active');
+    btnProj.classList.add('active');
+  } else { // split
+    chat.style.display = '';
+    chat.classList.remove('fullscreen');
+    chat.style.width = pdSavedChatWidth;
+    preview.style.display = '';
+    handle.style.display = '';
+    btnChat.classList.remove('active');
+    btnProj.classList.remove('active');
+  }
+
+  pdMode = mode;
+}
+
+function pdShare() {
+  const btn = document.getElementById('pd-share-btn');
+  navigator.clipboard.writeText(pdCurrentUrl).then(() => {
+    const orig = btn.innerHTML;
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 1800);
+  });
 }
 
 function triggerPdFile() { document.getElementById('pd-file-input').click(); }
@@ -3707,68 +5000,144 @@ document.addEventListener('keydown', e => {
 <!-- ── Project Detail Overlay ────────────────────────────── -->
 <div id="project-detail" style="display:none">
 
-  <!-- LEFT: Chat panel -->
-  <div class="pd-chat-panel">
-
-    <!-- Back bar -->
-    <div class="pd-back-bar">
-      <button class="pd-back-btn" onclick="closeProject()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Lodge
+  <!-- Full-width toolbar -->
+  <div class="pd-back-bar">
+    <button class="pd-back-btn" onclick="closeProject()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Lodge
+    </button>
+    <div class="pd-back-project" id="pd-back-project"></div>
+    <div class="pd-toolbar-right">
+      <button class="pd-toolbar-btn share-btn" id="pd-share-btn" onclick="pdShare()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Share
       </button>
-      <div class="pd-back-project" id="pd-back-project"></div>
+      <div class="pd-toolbar-divider"></div>
+      <button class="pd-toolbar-btn" id="pd-btn-chat" onclick="pdSetMode('chat')">Chat</button>
+      <button class="pd-toolbar-btn" id="pd-btn-project" onclick="pdSetMode('project')">Project</button>
+      <button class="pd-toolbar-btn" id="pd-btn-external" title="Open live site" onclick="window.open(pdCurrentUrl,'_blank')" style="padding:6px 8px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Split body -->
+  <div class="pd-body">
+
+    <!-- LEFT: Chat panel -->
+    <div class="pd-chat-panel" id="pd-chat-panel">
+
+      <!-- Wolt header -->
+      <div class="pd-wolt-head" id="pd-wolt-head"></div>
+
+      <!-- Messages -->
+      <div class="pd-messages" id="pd-messages"></div>
+
+      <!-- Input -->
+      <div class="pd-input-area" id="pd-input-area">
+        <div class="pd-pending-files" id="pd-pending-files"></div>
+        <div class="pd-input-row">
+          <button class="attach-btn" onclick="triggerPdFile()" title="Attach file">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </button>
+          <textarea class="chat-textarea" id="pd-input" placeholder="Message…" rows="1" onkeydown="handlePdKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" onclick="sendPdMessage()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <input type="file" id="pd-file-input" multiple style="display:none" onchange="handlePdFile(event)">
+      </div>
+
     </div>
 
-    <!-- Wolt header -->
-    <div class="pd-wolt-head" id="pd-wolt-head"></div>
+    <!-- Drag handle -->
+    <div class="pd-drag-handle" id="pd-drag-handle"></div>
 
-    <!-- Messages -->
-    <div class="pd-messages" id="pd-messages"></div>
-
-    <!-- Input -->
-    <div class="pd-input-area" id="pd-input-area">
-      <div class="pd-pending-files" id="pd-pending-files"></div>
-      <div class="pd-input-row">
-        <button class="attach-btn" onclick="triggerPdFile()" title="Attach file">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-        </button>
-        <textarea class="chat-textarea" id="pd-input" placeholder="Message…" rows="1" onkeydown="handlePdKey(event)" oninput="autoResize(this)"></textarea>
-        <button class="send-btn" onclick="sendPdMessage()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-      <input type="file" id="pd-file-input" multiple style="display:none" onchange="handlePdFile(event)">
+    <!-- RIGHT: Live preview -->
+    <div class="pd-preview-panel" id="pd-preview-panel">
+      <iframe class="pd-iframe" id="pd-iframe" sandbox="allow-scripts"></iframe>
     </div>
 
   </div>
+</div>
 
-  <!-- Drag handle -->
-  <div class="pd-drag-handle" id="pd-drag-handle"></div>
+<!-- ── New Project Modal ───────────────────────────────────── -->
+<div class="modal-backdrop" id="new-project-modal" onclick="npHandleBackdrop(event)">
+  <div class="modal" style="width:520px">
+    <div class="modal-header">
+      <div class="modal-title" id="np-modal-title">New project</div>
+      <button class="modal-close" onclick="closeNewProject()">✕</button>
+    </div>
+    <div class="np-steps">
+      <div class="np-step active" id="np-step-1"><div class="np-step-dot">1</div>Details</div>
+      <div class="np-step-divider"></div>
+      <div class="np-step" id="np-step-2"><div class="np-step-dot">2</div>Keeper</div>
+      <div class="np-step-divider"></div>
+      <div class="np-step" id="np-step-3"><div class="np-step-dot">3</div>Confirm</div>
+    </div>
 
-  <!-- RIGHT: Live preview -->
-  <div class="pd-preview-panel">
-
-    <!-- Browser chrome -->
-    <div class="pd-chrome">
-      <div class="pd-chrome-dots">
-        <span style="background:#FF5F57"></span>
-        <span style="background:#FFBD2E"></span>
-        <span style="background:#28CA41"></span>
+    <!-- Step 1: Details -->
+    <div class="modal-body" id="np-body-1">
+      <div class="modal-field">
+        <label class="modal-label">Project name</label>
+        <input class="modal-input" id="np-name" type="text" placeholder="e.g. daily-digest" oninput="npValidate()" />
       </div>
-      <div class="pd-chrome-url" id="pd-chrome-url"></div>
-      <div class="pd-chrome-actions">
-        <button class="pd-chrome-btn" title="Refresh">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        </button>
-        <button class="pd-chrome-btn" title="Open in new tab">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </button>
+      <div class="modal-field">
+        <label class="modal-label">Description <span style="color:var(--ink-3);font-weight:400">(optional)</span></label>
+        <input class="modal-input" id="np-desc" type="text" placeholder="What does this project do?" />
       </div>
     </div>
 
-    <!-- The "site" -->
-    <iframe class="pd-iframe" id="pd-iframe" sandbox="allow-scripts"></iframe>
+    <!-- Step 2: Keeper (wolt) -->
+    <div class="modal-body" id="np-body-2" style="display:none">
+      <div style="font-family:var(--font-body);font-size:13px;color:var(--ink-2);line-height:1.5">
+        Assign a keeper — the wolt responsible for building and running this project.
+      </div>
+      <div id="np-wolt-warning" style="display:none" class="np-wolt-warning"></div>
+      <div class="np-wolt-grid">
+        <div class="np-wolt-row" data-wolt="none" onclick="npPickWolt(this)">
+          <div class="np-wolt-avatar">—</div>
+          <div><div class="np-wolt-name">No keeper yet</div><div class="np-wolt-meta">assign later</div></div>
+          <div class="np-wolt-check">✓</div>
+        </div>
+        <div class="np-wolt-row" data-wolt="Woltaire" onclick="npPickWolt(this)">
+          <div class="np-wolt-avatar">🦝</div>
+          <div><div class="np-wolt-name">Woltaire</div><div class="np-wolt-meta">raccoon · opus</div></div>
+          <div class="np-wolt-check">✓</div>
+        </div>
+        <div class="np-wolt-row" data-wolt="creationwolt" onclick="npPickWolt(this)">
+          <div class="np-wolt-avatar">🦫</div>
+          <div><div class="np-wolt-name">creationwolt</div><div class="np-wolt-meta">beaver · sonnet</div></div>
+          <div class="np-wolt-check">✓</div>
+        </div>
+        <div class="np-wolt-row" data-wolt="lodgebuilder" onclick="npPickWolt(this)">
+          <div class="np-wolt-avatar">🦫</div>
+          <div><div class="np-wolt-name">lodgebuilder</div><div class="np-wolt-meta">beaver · sonnet</div></div>
+          <div class="np-wolt-check">✓</div>
+        </div>
+        <div class="np-wolt-row" data-wolt="Wolten" onclick="npPickWolt(this)">
+          <div class="np-wolt-avatar">🐕</div>
+          <div><div class="np-wolt-name">Wolten</div><div class="np-wolt-meta">dog · companion</div></div>
+          <div class="np-wolt-check">✓</div>
+        </div>
+      </div>
+    </div>
 
+    <!-- Step 3: Confirm -->
+    <div class="modal-body" id="np-body-3" style="display:none">
+      <div class="np-summary" id="np-summary"></div>
+      <div style="font-family:var(--font-body);font-size:12px;color:var(--ink-3);line-height:1.6">
+        The project will be created and appear in your projects board. Your keeper wolt can start building immediately.
+      </div>
+    </div>
+
+    <div class="np-footer">
+      <button class="btn btn-ghost" id="np-btn-back" style="display:none" onclick="npBack()">← Back</button>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="closeNewProject()">Cancel</button>
+        <button class="btn btn-primary" id="np-btn-next" disabled onclick="npNext()">Next →</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3883,6 +5252,190 @@ document.addEventListener('keydown', e => {
 </div>
 
 <script>
+  /* ── New Project ── */
+  let npCurrentStep = 1;
+  let npData = { name: '', desc: '', wolt: 'none' };
+
+  function openNewProject(e) {
+    e && e.preventDefault();
+    npCurrentStep = 1;
+    npData = { name: '', desc: '', stack: 'html', emoji: '🏗️', wolt: 'none' };
+    document.getElementById('np-name').value = '';
+    document.getElementById('np-desc').value = '';
+    document.querySelectorAll('.np-wolt-row').forEach(r => r.classList.remove('selected'));
+    npSetStep(1);
+    document.getElementById('new-project-modal').classList.add('open');
+    setTimeout(() => document.getElementById('np-name').focus(), 50);
+  }
+
+  function closeNewProject() {
+    document.getElementById('new-project-modal').classList.remove('open');
+  }
+
+  function npHandleBackdrop(e) {
+    if (e.target === document.getElementById('new-project-modal')) closeNewProject();
+  }
+
+  function npSetStep(n) {
+    npCurrentStep = n;
+    [1,2,3].forEach(i => {
+      document.getElementById('np-body-' + i).style.display = i === n ? '' : 'none';
+      const step = document.getElementById('np-step-' + i);
+      step.classList.remove('active','done');
+      if (i === n) step.classList.add('active');
+      else if (i < n) step.classList.add('done');
+    });
+    document.getElementById('np-btn-back').style.display = n > 1 ? '' : 'none';
+    const nextBtn = document.getElementById('np-btn-next');
+    if (n === 3) { nextBtn.textContent = 'Create project'; nextBtn.disabled = false; }
+    else { nextBtn.textContent = 'Next →'; }
+    if (n === 1) npValidate();
+    if (n === 2) nextBtn.disabled = false;
+    if (n === 3) npRenderSummary();
+  }
+
+  function npValidate() {
+    const name = document.getElementById('np-name').value.trim();
+    document.getElementById('np-btn-next').disabled = !name;
+  }
+
+
+
+  function npPickWolt(row) {
+    const woltName = row.dataset.wolt;
+    document.querySelectorAll('.np-wolt-row').forEach(r => r.classList.remove('selected'));
+    row.classList.add('selected');
+    npData.wolt = woltName;
+    npData.woltReassign = false;
+
+    // Check if this wolt is already keeper of another project
+    const warning = document.getElementById('np-wolt-warning');
+    if (woltName === 'none') { warning.style.display = 'none'; return; }
+
+    const existing = Object.entries(PROJECTS_DATA).find(([name, p]) => p.keeper === woltName);
+    if (existing) {
+      const [existingProject] = existing;
+      warning.style.display = '';
+      warning.innerHTML = `
+        <strong>${woltName}</strong> is currently the keeper of <strong>${existingProject}</strong>.
+        Do you want to reassign them to <strong>${npData.name || 'this project'}</strong>, or pick a different wolt?
+        <div class="np-wolt-warning-actions">
+          <button class="np-warn-btn reassign" onclick="npConfirmReassign('${woltName}','${existingProject}')">Reassign</button>
+          <button class="np-warn-btn pick-other" onclick="npCancelWolt()">Pick a different wolt</button>
+        </div>
+      `;
+      document.getElementById('np-btn-next').disabled = true;
+    } else {
+      warning.style.display = 'none';
+      document.getElementById('np-btn-next').disabled = false;
+    }
+  }
+
+  function npConfirmReassign(woltName, fromProject) {
+    npData.woltReassign = true;
+    npData.woltReassignFrom = fromProject;
+    document.getElementById('np-wolt-warning').style.display = 'none';
+    document.getElementById('np-btn-next').disabled = false;
+  }
+
+  function npCancelWolt() {
+    document.querySelectorAll('.np-wolt-row').forEach(r => r.classList.remove('selected'));
+    npData.wolt = 'none';
+    document.getElementById('np-wolt-warning').style.display = 'none';
+    document.getElementById('np-btn-next').disabled = false;
+  }
+
+  function npNext() {
+    if (npCurrentStep === 1) {
+      npData.name = document.getElementById('np-name').value.trim();
+      npData.desc = document.getElementById('np-desc').value.trim();
+      document.getElementById('np-wolt-warning').style.display = 'none';
+      npSetStep(2);
+    } else if (npCurrentStep === 2) {
+      if (!document.querySelector('.np-wolt-row.selected')) {
+        document.querySelector('.np-wolt-row[data-wolt="none"]').classList.add('selected');
+      }
+      npSetStep(3);
+    } else if (npCurrentStep === 3) {
+      npCreate();
+    }
+  }
+
+  function npBack() {
+    npSetStep(npCurrentStep - 1);
+  }
+
+  function npRenderSummary() {
+    const woltRow = document.querySelector('.np-wolt-row.selected');
+    const woltLabel = woltRow ? woltRow.querySelector('.np-wolt-name').textContent : 'None';
+    document.getElementById('np-summary').innerHTML = `
+      <div class="np-summary-row"><span class="np-summary-key">NAME</span><span class="np-summary-val">${npData.name}</span></div>
+      ${npData.desc ? `<div class="np-summary-row"><span class="np-summary-key">DESC</span><span class="np-summary-val">${npData.desc}</span></div>` : ''}
+
+      <div class="np-summary-row"><span class="np-summary-key">KEEPER</span><span class="np-summary-val">${woltLabel}${npData.woltReassign ? ` <span style="font-family:var(--font-mono);font-size:10px;color:#C4531E;margin-left:6px">reassigned from ${npData.woltReassignFrom}</span>` : ''}</span></div>
+    `;
+  }
+
+  function npCreate() {
+    const woltRow = document.querySelector('.np-wolt-row.selected');
+    const keeperName = npData.wolt === 'none' ? null : npData.wolt;
+    const keeperEmoji = woltRow?.querySelector('.np-wolt-avatar')?.textContent?.trim() || null;
+    const keeperMeta = woltRow?.querySelector('.np-wolt-meta')?.textContent?.trim() || null;
+    const projectName = npData.name;
+
+    // Apply reassignment — remove keeper from old project
+    if (npData.woltReassign && npData.woltReassignFrom && PROJECTS_DATA[npData.woltReassignFrom]) {
+      PROJECTS_DATA[npData.woltReassignFrom].keeper = null;
+      PROJECTS_DATA[npData.woltReassignFrom].keeperEmoji = null;
+      PROJECTS_DATA[npData.woltReassignFrom].keeperMeta = null;
+    }
+
+    // Register in PROJECTS_DATA for openProject()
+    PROJECTS_DATA[projectName] = {
+      keeper: keeperName, keeperEmoji, keeperMeta,
+      url: `/project/${projectName.toLowerCase().replace(/\s+/g,'-')}/`,
+      threads: keeperName && WOLT_DATA[keeperName] ? WOLT_DATA[keeperName].threads : [],
+      previewSrcdoc: `<html><body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;background:#1a1410;color:rgba(255,255,255,0.3);font-size:13px">${projectName} — not yet deployed</body></html>`,
+    };
+
+    // Build and insert a new card before the "New project" placeholder
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.style.cssText = 'position:relative;cursor:pointer';
+    card.setAttribute('onclick', `openProject('${projectName}')`);
+    card.innerHTML = `
+      <div class="project-card-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div class="project-status stopped" style="position:relative;margin-top:2px">
+            <div class="project-status-dot"></div> stopped
+          </div>
+        </div>
+        <div class="project-name">${projectName}</div>
+        ${npData.desc ? `<div class="project-desc">${npData.desc}</div>` : ''}
+        <div class="project-meta-row">
+          ${keeperName ? `<span class="project-keeper">${keeperEmoji} ${keeperName}</span>` : ''}
+        </div>
+      </div>
+      <div class="project-card-footer">
+        <button class="action-btn start" onclick="toggleProjectState(this,event)" title="Start">▶</button>
+        <div class="card-menu-wrap" style="position:relative">
+          <button class="action-btn" onclick="toggleCardMenu(this,event)" title="Options">⋯</button>
+          <div class="card-context-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:4px;z-index:200;min-width:120px;box-shadow:0 8px 24px rgba(0,0,0,0.12)">
+            <div class="context-item" onclick="event.stopPropagation()">Edit</div>
+            <div class="context-item" onclick="event.stopPropagation()">Duplicate</div>
+            <div class="context-item danger" onclick="event.stopPropagation()">Delete</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const newCard = document.querySelector('.project-card-new');
+    newCard.parentNode.insertBefore(card, newCard);
+
+    closeNewProject();
+    showProjects();
+  }
+
   function openWoltModal(e) {
     e && e.preventDefault();
     document.getElementById('wolt-name').value = '';
@@ -3964,6 +5517,11 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeWoltModal();
   });
 </script>
+
+<!-- ── Connector Auth Modal ──────────────────────────────── -->
+<div id="connector-modal" onclick="cmBackdropClick(event)">
+  <div class="cm-card" id="cm-card"></div>
+</div>
 
 <!-- ── Onboarding ─────────────────────────────────────────── -->
 <div id="onboarding">
@@ -4071,6 +5629,604 @@ function completeOnboarding() {
     showHome();
   }, 500);
 }
+
+/* ── Settings ── */
+let currentUserAvatar = '🌿';
+
+function openSettings(e) {
+  e.preventDefault();
+  document.getElementById('settings-overlay').classList.add('open');
+  document.querySelector('aside.sidebar').classList.add('hidden');
+  autoSelectTimezone();
+}
+
+function autoSelectTimezone() {
+  const sel = document.getElementById('tz-select');
+  if (!sel || sel.dataset.userSet) return;
+  try {
+    const iana = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Try exact match first
+    for (const opt of sel.options) {
+      if (opt.value === iana) { sel.value = iana; return; }
+    }
+    // Fall back: match by region/city keyword in IANA name
+    const city = iana.split('/').pop().replace(/_/g, ' ').toLowerCase();
+    for (const opt of sel.options) {
+      if (opt.text.toLowerCase().includes(city)) { sel.value = opt.value; return; }
+    }
+    // Fall back: match by UTC offset
+    const offset = -new Date().getTimezoneOffset(); // minutes east of UTC
+    const h = Math.floor(Math.abs(offset) / 60);
+    const m = Math.abs(offset) % 60;
+    const sign = offset >= 0 ? '+' : '−';
+    const offsetStr = `UTC${sign}${h}${m ? ':' + String(m).padStart(2,'0') : ''}`;
+    for (const opt of sel.options) {
+      if (opt.text.startsWith(offsetStr)) { sel.value = opt.value; return; }
+    }
+  } catch(_) {}
+}
+
+// Mark as user-set when changed manually
+document.addEventListener('DOMContentLoaded', () => {
+  const sel = document.getElementById('tz-select');
+  if (sel) sel.addEventListener('change', () => sel.dataset.userSet = '1');
+});
+
+function closeSettings() {
+  document.getElementById('settings-overlay').classList.remove('open');
+  document.querySelector('aside.sidebar').classList.remove('hidden');
+}
+
+function settingsNav(el, section) {
+  document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.settings-content').forEach(c => c.style.display = 'none');
+  document.getElementById('settings-' + section).style.display = '';
+}
+
+function toggleAvatarGrid() {
+  document.getElementById('avatar-emoji-grid').classList.toggle('open');
+}
+
+function setAvatar(btn, emoji) {
+  currentUserAvatar = emoji;
+  document.getElementById('avatar-preview').textContent = emoji;
+  document.getElementById('avatar-preview').style.backgroundImage = '';
+  document.querySelectorAll('.avatar-emoji-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function handleAvatarUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const preview = document.getElementById('avatar-preview');
+    preview.textContent = '';
+    preview.style.backgroundImage = `url(${ev.target.result})`;
+    preview.style.backgroundSize = 'cover';
+    preview.style.backgroundPosition = 'center';
+    currentUserAvatar = ev.target.result;
+    document.getElementById('avatar-emoji-grid').classList.remove('open');
+  };
+  reader.readAsDataURL(file);
+}
+
+function setAccent(swatch, color) {
+  document.querySelectorAll('.accent-swatch').forEach(s => s.classList.remove('selected'));
+  swatch.classList.add('selected');
+  document.documentElement.style.setProperty('--terracotta', color);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('settings-overlay').classList.contains('open')) {
+    closeSettings();
+  }
+  if (e.key === ',' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    openSettings({ preventDefault: () => {} });
+  }
+});
+
+/* ── Terminal ── */
+const TERM_HISTORY = [
+  { type: 'line', prompt: 'lodgebuilder@woltspace ~ $', cmd: 'ls projects/' },
+  { type: 'output', text: 'creatorspace/   signal-desk/   daily-digest/   memex/' },
+  { type: 'line', prompt: 'lodgebuilder@woltspace ~ $', cmd: 'wolt status' },
+  { type: 'output', text: 'Woltaire      🦝  running   creatorspace' },
+  { type: 'output', text: 'creationwolt  🦫  running   signal-desk' },
+  { type: 'output', text: 'lodgebuilder  🦫  running   daily-digest' },
+  { type: 'output', text: 'Wolten        🐕  idle      —' },
+  { type: 'line', prompt: 'lodgebuilder@woltspace ~ $', cmd: '' },
+];
+
+let termOpen = false;
+
+function toggleTerminal(e) {
+  e.preventDefault();
+  termOpen = !termOpen;
+  const panel = document.getElementById('terminal-panel');
+  panel.classList.toggle('open', termOpen);
+  if (termOpen) {
+    setTimeout(() => document.getElementById('term-input').focus(), 310);
+  }
+}
+
+function termHandleKey(e) {
+  if (e.key === 'Enter') {
+    const input = document.getElementById('term-input');
+    const cmd = input.value.trim();
+    input.value = '';
+    const body = document.getElementById('term-body');
+    const prompt = 'lodgebuilder@woltspace ~ $';
+    body.insertAdjacentHTML('beforeend', `
+      <div class="term-line"><span class="term-prompt">${prompt}</span><span class="term-cmd">${cmd || ''}</span></div>
+      ${cmd ? `<div class="term-line term-output dim">command not found: ${cmd}</div>` : ''}
+    `);
+    body.scrollTop = body.scrollHeight;
+  }
+}
+
+let statusOpen = false;
+
+function toggleStatusBar(e) {
+  e.preventDefault();
+  statusOpen = !statusOpen;
+  document.getElementById('status-bar').classList.toggle('open', statusOpen);
+  syncTerminalBottom();
+}
+
+function syncTerminalBottom() {
+  document.getElementById('terminal-panel').style.bottom = statusOpen ? '28px' : '0';
+}
+
+function closeTerminal() {
+  termOpen = false;
+  document.getElementById('terminal-panel').classList.remove('open');
+}
 </script>
+
+<!-- ── SETTINGS OVERLAY ── -->
+<div id="settings-overlay">
+  <div class="settings-toolbar">
+    <button class="settings-back" onclick="closeSettings()">← Lodge</button>
+    <div class="settings-toolbar-title">Settings</div>
+  </div>
+  <div class="settings-body">
+    <nav class="settings-nav">
+      <div class="settings-nav-item active" onclick="settingsNav(this,'profile')">Profile</div>
+      <div class="settings-nav-item" onclick="settingsNav(this,'appearance')">Appearance</div>
+      <div class="settings-nav-item" onclick="settingsNav(this,'workspace')">Workspace</div>
+      <div class="settings-nav-item" onclick="settingsNav(this,'notifications')">Notifications</div>
+      <div class="settings-nav-item" onclick="settingsNav(this,'shortcuts')">Shortcuts</div>
+      <div class="settings-nav-item" onclick="settingsNav(this,'about')">About</div>
+    </nav>
+
+    <!-- Profile -->
+    <div class="settings-content" id="settings-profile">
+      <div class="settings-section-title">Profile</div>
+
+      <div class="settings-group">
+        <div class="settings-group-label">Avatar</div>
+        <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:4px">
+          <div class="avatar-current" id="avatar-preview" onclick="toggleAvatarGrid()">🌿</div>
+          <div class="avatar-actions">
+            <button class="btn-small" onclick="toggleAvatarGrid()">Choose emoji</button>
+            <label class="btn-small" style="cursor:pointer">
+              Upload image
+              <input type="file" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
+            </label>
+          </div>
+        </div>
+        <div class="avatar-emoji-grid" id="avatar-emoji-grid">
+          <div class="avatar-emoji-btn selected" onclick="setAvatar(this,'🌿')">🌿</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🌱')">🌱</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🌲')">🌲</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🌾')">🌾</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🍄')">🍄</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🌸')">🌸</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🌻')">🌻</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🪷')">🪷</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦊')">🦊</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🐺')">🐺</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦁')">🦁</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🐻')">🐻</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🐼')">🐼</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦝')">🦝</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦦')">🦦</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦫')">🦫</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦅')">🦅</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦉')">🦉</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦜')">🦜</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🐦')">🐦</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦋')">🦋</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🐝')">🐝</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🐢')">🐢</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🦎')">🦎</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🌊')">🌊</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🏔️')">🏔️</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🌙')">🌙</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'☀️')">☀️</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'⛰️')">⛰️</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🪨')">🪨</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🌵')">🌵</div>
+          <div class="avatar-emoji-btn" onclick="setAvatar(this,'🪸')">🪸</div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-label">Identity</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Display name</div>
+            <div class="settings-row-sub">How you appear across the workspace</div>
+          </div>
+          <input class="settings-input" type="text" value="meeglosh" placeholder="Your name" />
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Timezone</div>
+            <div class="settings-row-sub">Used for greetings and scheduling</div>
+          </div>
+          <select id="tz-select" class="settings-select" style="width:220px">
+            <optgroup label="Americas">
+              <option value="Etc/GMT+12">UTC−12 · Baker Island</option>
+              <option value="Pacific/Pago_Pago">UTC−11 · Samoa</option>
+              <option value="Pacific/Honolulu">UTC−10 · Hawaii</option>
+              <option value="Pacific/Marquesas">UTC−9:30 · Marquesas Islands</option>
+              <option value="America/Anchorage">UTC−9 · Alaska</option>
+              <option value="America/Los_Angeles">UTC−8 · Pacific · Los Angeles</option>
+              <option value="America/Denver">UTC−7 · Mountain · Denver</option>
+              <option value="America/Phoenix">UTC−7 · Arizona (no DST)</option>
+              <option value="America/Chicago">UTC−6 · Central · Chicago</option>
+              <option value="America/Mexico_City">UTC−6 · Mexico City</option>
+              <option value="America/New_York">UTC−5 · Eastern · New York</option>
+              <option value="America/Bogota">UTC−5 · Bogotá / Lima</option>
+              <option value="America/Caracas">UTC−4:30 · Venezuela</option>
+              <option value="America/Halifax">UTC−4 · Atlantic · Halifax</option>
+              <option value="America/La_Paz">UTC−4 · Caracas / La Paz</option>
+              <option value="America/Santiago">UTC−4 · Santiago</option>
+              <option value="America/St_Johns">UTC−3:30 · Newfoundland</option>
+              <option value="America/Argentina/Buenos_Aires">UTC−3 · Buenos Aires</option>
+              <option value="America/Sao_Paulo">UTC−3 · São Paulo</option>
+              <option value="America/Godthab">UTC−3 · Greenland</option>
+              <option value="Etc/GMT+2">UTC−2 · South Georgia</option>
+              <option value="Atlantic/Azores">UTC−1 · Azores</option>
+              <option value="Atlantic/Cape_Verde">UTC−1 · Cape Verde</option>
+            </optgroup>
+            <optgroup label="Europe & Africa">
+              <option value="Europe/London">UTC+0 · London / Dublin / Lisbon</option>
+              <option value="Atlantic/Reykjavik">UTC+0 · Reykjavik</option>
+              <option value="Africa/Accra">UTC+0 · Accra / Dakar</option>
+              <option value="Europe/Paris">UTC+1 · Paris / Berlin / Madrid</option>
+              <option value="Europe/Amsterdam">UTC+1 · Amsterdam / Rome / Zurich</option>
+              <option value="Africa/Lagos">UTC+1 · Lagos / Kinshasa</option>
+              <option value="Africa/Casablanca">UTC+1 · Casablanca</option>
+              <option value="Europe/Athens">UTC+2 · Athens / Helsinki / Kyiv</option>
+              <option value="Africa/Cairo">UTC+2 · Cairo / Johannesburg</option>
+              <option value="Asia/Jerusalem">UTC+2 · Jerusalem</option>
+              <option value="Europe/Moscow">UTC+3 · Moscow / Istanbul</option>
+              <option value="Asia/Riyadh">UTC+3 · Riyadh / Baghdad</option>
+              <option value="Africa/Nairobi">UTC+3 · Nairobi</option>
+              <option value="Asia/Tehran">UTC+3:30 · Tehran</option>
+              <option value="Asia/Dubai">UTC+4 · Dubai / Abu Dhabi</option>
+              <option value="Asia/Baku">UTC+4 · Baku / Tbilisi</option>
+              <option value="Asia/Kabul">UTC+4:30 · Kabul</option>
+              <option value="Asia/Karachi">UTC+5 · Islamabad / Karachi</option>
+              <option value="Asia/Tashkent">UTC+5 · Tashkent</option>
+              <option value="Asia/Kolkata">UTC+5:30 · Mumbai / New Delhi</option>
+              <option value="Asia/Kathmandu">UTC+5:45 · Kathmandu</option>
+            </optgroup>
+            <optgroup label="Asia & Pacific">
+              <option value="Asia/Dhaka">UTC+6 · Dhaka / Almaty</option>
+              <option value="Asia/Yangon">UTC+6:30 · Yangon (Rangoon)</option>
+              <option value="Asia/Bangkok">UTC+7 · Bangkok / Hanoi / Jakarta</option>
+              <option value="Asia/Ho_Chi_Minh">UTC+7 · Ho Chi Minh City</option>
+              <option value="Asia/Singapore">UTC+8 · Singapore / Kuala Lumpur</option>
+              <option value="Asia/Shanghai">UTC+8 · Beijing / Shanghai / Hong Kong</option>
+              <option value="Asia/Taipei">UTC+8 · Taipei</option>
+              <option value="Australia/Perth">UTC+8 · Perth</option>
+              <option value="Australia/Eucla">UTC+8:45 · Eucla</option>
+              <option value="Asia/Tokyo">UTC+9 · Tokyo / Seoul</option>
+              <option value="Asia/Seoul">UTC+9 · Osaka / Sapporo</option>
+              <option value="Australia/Adelaide">UTC+9:30 · Adelaide</option>
+              <option value="Australia/Darwin">UTC+9:30 · Darwin</option>
+              <option value="Australia/Sydney">UTC+10 · Sydney / Melbourne / Brisbane</option>
+              <option value="Pacific/Guam">UTC+10 · Guam / Port Moresby</option>
+              <option value="Australia/Lord_Howe">UTC+10:30 · Lord Howe Island</option>
+              <option value="Pacific/Guadalcanal">UTC+11 · Solomon Islands / Vladivostok</option>
+              <option value="Pacific/Auckland">UTC+12 · Auckland / Wellington</option>
+              <option value="Pacific/Fiji">UTC+12 · Fiji</option>
+              <option value="Pacific/Chatham">UTC+12:45 · Chatham Islands</option>
+              <option value="Pacific/Tongatapu">UTC+13 · Tonga / Samoa (DST)</option>
+              <option value="Pacific/Kiritimati">UTC+14 · Line Islands</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appearance -->
+    <div class="settings-content" id="settings-appearance" style="display:none">
+      <div class="settings-section-title">Appearance</div>
+
+      <div class="settings-group">
+        <div class="settings-group-label">Accent colour</div>
+        <div class="accent-swatches">
+          <div class="accent-swatch selected" style="background:#C4531E" title="Terracotta" onclick="setAccent(this,'#C4531E')"></div>
+          <div class="accent-swatch" style="background:#4A7C59" title="Forest" onclick="setAccent(this,'#4A7C59')"></div>
+          <div class="accent-swatch" style="background:#558A86" title="Teal" onclick="setAccent(this,'#558A86')"></div>
+          <div class="accent-swatch" style="background:#9B6B3A" title="Amber" onclick="setAccent(this,'#9B6B3A')"></div>
+          <div class="accent-swatch" style="background:#6B4A7A" title="Plum" onclick="setAccent(this,'#6B4A7A')"></div>
+          <div class="accent-swatch" style="background:#2A6B8A" title="Slate" onclick="setAccent(this,'#2A6B8A')"></div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-label">Layout</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Sidebar density</div>
+            <div class="settings-row-sub">Comfortable shows more breathing room</div>
+          </div>
+          <select class="settings-select">
+            <option>Comfortable</option>
+            <option>Compact</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Show status bar</div>
+            <div class="settings-row-sub">Persistent system health strip</div>
+          </div>
+          <label class="settings-toggle">
+            <input type="checkbox" onchange="toggleStatusBar({preventDefault:()=>{},...arguments[0]})">
+            <div class="settings-toggle-track"></div>
+            <div class="settings-toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="settings-content" id="settings-workspace" style="display:none">
+      <div class="settings-section-title">Workspace</div>
+
+      <div class="settings-group">
+        <div class="settings-group-label">Navigation</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Default landing page</div>
+            <div class="settings-row-sub">Where you land on every open</div>
+          </div>
+          <select class="settings-select">
+            <option>Home</option>
+            <option>Projects</option>
+            <option>Last visited</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-label">Conversations</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Opening message</div>
+            <div class="settings-row-sub">Wolt sends a greeting to start new conversations</div>
+          </div>
+          <label class="settings-toggle">
+            <input type="checkbox" checked>
+            <div class="settings-toggle-track"></div>
+            <div class="settings-toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Auto-open last conversation</div>
+            <div class="settings-row-sub">Resume where you left off per wolt</div>
+          </div>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <div class="settings-toggle-track"></div>
+            <div class="settings-toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-label">Projects</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Default project view</div>
+            <div class="settings-row-sub">How projects open by default</div>
+          </div>
+          <select class="settings-select">
+            <option>Split</option>
+            <option>Chat only</option>
+            <option>Preview only</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="settings-content" id="settings-notifications" style="display:none">
+      <div class="settings-section-title">Notifications</div>
+
+      <div class="settings-group">
+        <div class="settings-group-label">Channels</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Telegram alerts</div>
+            <div class="settings-row-sub">Get notified when a wolt finishes a task</div>
+          </div>
+          <label class="settings-toggle">
+            <input type="checkbox" checked>
+            <div class="settings-toggle-track"></div>
+            <div class="settings-toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Sound effects</div>
+            <div class="settings-row-sub">Subtle audio cues on message receive</div>
+          </div>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <div class="settings-toggle-track"></div>
+            <div class="settings-toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-label">Digest</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Activity digest</div>
+            <div class="settings-row-sub">Summary of wolt activity delivered to you</div>
+          </div>
+          <select class="settings-select">
+            <option>Daily</option>
+            <option>Weekly</option>
+            <option>Never</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Digest time</div>
+            <div class="settings-row-sub">When to receive your daily summary</div>
+          </div>
+          <select class="settings-select">
+            <option>7:00 am</option>
+            <option>8:00 am</option>
+            <option>9:00 am</option>
+            <option>6:00 pm</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shortcuts -->
+    <div class="settings-content" id="settings-shortcuts" style="display:none">
+      <div class="settings-section-title">Keyboard shortcuts</div>
+      <div class="settings-group">
+        <div class="settings-group-label">Navigation</div>
+        <table class="shortcut-table">
+          <tr><td>Go to Home</td><td><kbd>G</kbd> then <kbd>H</kbd></td></tr>
+          <tr><td>Go to Projects</td><td><kbd>G</kbd> then <kbd>P</kbd></td></tr>
+          <tr><td>All Sessions</td><td><kbd>G</kbd> then <kbd>S</kbd></td></tr>
+          <tr><td>Open Settings</td><td><kbd>,</kbd></td></tr>
+          <tr><td>Close / back</td><td><kbd>Esc</kbd></td></tr>
+        </table>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-label">Conversations</div>
+        <table class="shortcut-table">
+          <tr><td>New conversation</td><td><kbd>N</kbd></td></tr>
+          <tr><td>Send message</td><td><kbd>Enter</kbd></td></tr>
+          <tr><td>Newline in message</td><td><kbd>Shift</kbd> + <kbd>Enter</kbd></td></tr>
+        </table>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-label">Interface</div>
+        <table class="shortcut-table">
+          <tr><td>Toggle terminal</td><td><kbd>Ctrl</kbd> + <kbd>`</kbd></td></tr>
+          <tr><td>Toggle status bar</td><td><kbd>Ctrl</kbd> + <kbd>.</kbd></td></tr>
+          <tr><td>Open project (split)</td><td><kbd>O</kbd></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="settings-content" id="settings-about" style="display:none">
+      <div class="settings-section-title">About</div>
+      <div class="settings-about-logo">🌿</div>
+      <div class="settings-about-name">Woltspace</div>
+      <div class="settings-about-ver">v0.3.0 · session 3 · build 2026.03</div>
+      <div class="settings-group">
+        <div class="settings-group-label">Stack</div>
+        <div class="settings-row">
+          <div class="settings-row-label">Interface</div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:var(--ink-3)">HTML / CSS / JS</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-label">Keeper</div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:var(--ink-3)">lodgebuilder 🦫</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-label">Repository</div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:var(--ink-3)">meeglosh/woltspace-lodge</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── STATUS BAR ── -->
+<div id="status-bar">
+  <div class="sb-item">
+    <div class="sb-dot green"></div>
+    <span><span class="sb-highlight">3</span> wolts running</span>
+  </div>
+  <div class="sb-item">
+    <div class="sb-dot dim"></div>
+    <span><span class="sb-highlight">1</span> idle</span>
+  </div>
+  <div class="sb-item">
+    <div class="sb-dot green"></div>
+    <span>Telegram</span>
+  </div>
+  <div class="sb-item">
+    <div class="sb-dot green"></div>
+    <span>GitHub</span>
+  </div>
+  <div class="sb-item">
+    <div class="sb-dot dim"></div>
+    <span>Slack</span>
+  </div>
+  <div class="sb-item">
+    <div class="sb-pulse">
+      <div class="sb-pulse-bar"></div>
+      <div class="sb-pulse-bar"></div>
+      <div class="sb-pulse-bar"></div>
+      <div class="sb-pulse-bar"></div>
+      <div class="sb-pulse-bar"></div>
+    </div>
+    <span>system nominal</span>
+  </div>
+  <div class="sb-item">
+    <span>last activity <span class="sb-highlight">2m ago</span></span>
+  </div>
+</div>
+
+<!-- ── TERMINAL PANEL ── -->
+<div id="terminal-panel">
+  <div class="term-titlebar">
+    <div class="term-dots">
+      <div class="term-dot close" onclick="closeTerminal()" title="Close"></div>
+      <div class="term-dot min"></div>
+      <div class="term-dot max"></div>
+    </div>
+    <div class="term-title">terminal — woltspace</div>
+  </div>
+  <div class="term-body" id="term-body">
+    <div class="term-line term-output dim">woltspace terminal v0.1 — type to interact</div>
+    <div class="term-line term-output dim">————————————————————————————————</div>
+    <div class="term-line"><span class="term-prompt">lodgebuilder@woltspace ~ $</span><span class="term-cmd"> ls projects/</span></div>
+    <div class="term-line term-output">creatorspace/&nbsp;&nbsp; signal-desk/&nbsp;&nbsp; daily-digest/&nbsp;&nbsp; memex/</div>
+    <div class="term-line"><span class="term-prompt">lodgebuilder@woltspace ~ $</span><span class="term-cmd"> wolt status</span></div>
+    <div class="term-line term-output">Woltaire&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🦝&nbsp; running&nbsp;&nbsp; creatorspace</div>
+    <div class="term-line term-output">creationwolt&nbsp; 🦫&nbsp; running&nbsp;&nbsp; signal-desk</div>
+    <div class="term-line term-output">lodgebuilder&nbsp; 🦫&nbsp; running&nbsp;&nbsp; daily-digest</div>
+    <div class="term-line term-output">Wolten&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🐕&nbsp; idle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; —</div>
+    <div class="term-line"><span class="term-prompt">lodgebuilder@woltspace ~ $</span><span class="term-cmd"> </span></div>
+  </div>
+  <div class="term-input-row">
+    <span class="term-input-prompt">lodgebuilder@woltspace ~ $</span>
+    <input id="term-input" class="term-input" type="text" spellcheck="false" autocomplete="off" onkeydown="termHandleKey(event)" placeholder="" />
+  </div>
+</div>
+
 </body>
 </html>
