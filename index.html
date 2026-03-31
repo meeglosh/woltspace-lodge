@@ -6,7 +6,7 @@
 <title>Woltspace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Preahvihear&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:         #EDE8DE;
@@ -25,7 +25,7 @@
     --green-light:#C8DECE;
     --cream:      #FAF7F0;
 
-    --font-display: 'Fraunces', serif;
+    --font-display: 'Preahvihear', sans-serif;
     --font-body:    'DM Sans', sans-serif;
     --font-mono:    'JetBrains Mono', monospace;
   }
@@ -53,6 +53,7 @@
     position: sticky;
     top: 0;
     height: 100vh;
+    z-index: 1;
     overflow: hidden;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -906,7 +907,31 @@
     width: 100%;
     height: 100vh;
     background: var(--bg);
+    position: relative;
   }
+
+  #pd-menu-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 299;
+  }
+  #pd-menu-backdrop.open { display: block; }
+
+  #pd-project-menu {
+    position: absolute;
+    right: 8px; top: 46px;
+    background: var(--ink);
+    border-radius: 6px;
+    padding: 4px;
+    z-index: 300;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 210px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+  #pd-project-menu.open { display: flex; }
 
   .pd-body {
     display: flex;
@@ -944,9 +969,9 @@
     margin: 0 auto;
   }
   .pd-chat-panel.fullscreen .pd-wolt-head {
-    max-width: 680px;
+    max-width: none;
     width: 100%;
-    margin: 0 auto;
+    margin: 0;
   }
 
   /* Drag handle */
@@ -1876,6 +1901,109 @@
   }
   .send-btn:hover { background: var(--terra); }
 
+  /* ── Chat mode toggle ─────────────────────────────────────── */
+  .chat-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+  .mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border: none;
+    border-radius: 5px;
+    background: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mode-btn.active {
+    background: var(--bg);
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .mode-btn:hover:not(.active) { color: var(--ink-2); }
+
+  /* ── Terminal view (matches sidebar terminal panel aesthetic) ── */
+  .chat-terminal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    background: #0e0c0a;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: #c8c0b0;
+    display: none;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+  .chat-view-terminal .chat-terminal-body { display: flex; }
+  .chat-view-terminal .chat-messages      { display: none; }
+  .chat-view-terminal .chat-input-area    { display: none; }
+
+  /* terminal input row — replaces chat input area in terminal mode */
+  .chat-term-input-row {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 12px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    background: #0e0c0a;
+    flex-shrink: 0;
+  }
+  .chat-view-terminal .chat-term-input-row { display: flex; }
+
+  /* pd terminal body */
+  .pd-terminal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    background: #0e0c0a;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: #c8c0b0;
+    display: none;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+  .pd-chat-terminal .pd-terminal-body { display: flex; }
+  .pd-chat-terminal .pd-messages      { display: none; }
+  .pd-chat-terminal .pd-input-area    { display: none; }
+
+  /* pd terminal input row */
+  .pd-term-input-row {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 12px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    background: #0e0c0a;
+    flex-shrink: 0;
+  }
+  .pd-chat-terminal .pd-term-input-row { display: flex; }
+
+  /* ── pd-chat-panel mode toggle ──────────────────────────────── */
+  .pd-mode-toggle {
+    display: flex; align-items: center; gap: 2px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 3px; flex-shrink: 0;
+  }
+
   .sidebar-section-label a {
     color: var(--terra);
     text-decoration: none;
@@ -2013,6 +2141,11 @@
     border-radius: 5px;
     background: rgba(255,255,255,0.03);
   }
+  .creature-row.clickable {
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .creature-row.clickable:hover { background: rgba(255,255,255,0.08); }
   .creature-row span:first-child { font-size: 14px; }
   .creature-name {
     font-family: var(--font-mono);
@@ -2024,6 +2157,75 @@
     font-size: 11px;
     color: rgba(255,255,255,0.18);
     margin-left: auto;
+  }
+
+  /* ── Cron jobs modal ── */
+  .cron-job-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 7px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+  .cron-status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #5a9e6f;
+    box-shadow: 0 0 6px rgba(90,158,111,0.6);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .cron-job-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-2);
+    flex: 1;
+    min-width: 0;
+  }
+  .cron-schedule {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    flex-shrink: 0;
+  }
+  .cron-next {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(var(--ink-rgb, 30,20,10), 0.35);
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 80px;
+  }
+  .cron-ask-wolt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 7px;
+    border: 1px dashed var(--border-2);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .cron-ask-wolt:hover { background: var(--bg); border-color: var(--border); }
+  .cron-ask-wolt-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    flex: 1;
+  }
+  .cron-ask-wolt-text strong {
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+  .cron-empty {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-align: center;
+    padding: 20px 0 8px;
   }
 
   /* ── Connectors ── */
@@ -2578,12 +2780,14 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 1;
   }
   .main:has(#chat-view[style*="flex"]),
   .main:has(#home-view[style*="flex"]) {
     padding: 0;
     overflow: hidden;
-    height: 100%;
+    height: 100vh;
   }
 
   .main-header {
@@ -2780,6 +2984,11 @@
     letter-spacing: -0.02em;
     color: var(--ink);
     margin-bottom: 16px;
+    cursor: pointer;
+  }
+  .project-name:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .project-stack {
@@ -2988,43 +3197,197 @@
     z-index: 0;
   }
 
-  @keyframes geo-drift {
-    0%   { border-radius: 50%; transform: translate(0px, 0px) scale(1); }
-    25%  { border-radius: 46% 54% 52% 48% / 50% 48% 52% 50%; transform: translate(-8px, -6px) scale(1.012); }
-    50%  { border-radius: 52% 48% 45% 55% / 48% 53% 47% 52%; transform: translate(-14px, 5px) scale(0.988); }
-    75%  { border-radius: 48% 52% 55% 45% / 53% 47% 54% 46%; transform: translate(-5px, 10px) scale(1.006); }
-    100% { border-radius: 50%; transform: translate(0px, 0px) scale(1); }
-  }
-
-  @keyframes geo-drift-2 {
-    0%   { border-radius: 50%; transform: translate(0px, 0px) scale(1); }
-    30%  { border-radius: 54% 46% 48% 52% / 47% 52% 48% 53%; transform: translate(6px, -10px) scale(1.018); }
-    60%  { border-radius: 47% 53% 52% 48% / 52% 46% 54% 48%; transform: translate(10px, 4px) scale(0.982); }
-    100% { border-radius: 50%; transform: translate(0px, 0px) scale(1); }
-  }
-
-  .geo-circle {
-    width: 320px; height: 320px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(244, 88, 68, 0.5);
+  /* ── BACKGROUND SCENE (8-bit critters) ─────────────────────── */
+  .bg-scene {
     position: fixed;
-    bottom: -80px; right: -80px;
-    animation: geo-drift 38s ease-in-out infinite;
+    inset: 0;
+    pointer-events: none;
     z-index: 0;
+    overflow: hidden;
+  }
+
+  @keyframes swim-across {
+    0%    { transform: translateX(-240px); }
+    49%   { transform: translateX(calc(100vw + 240px)); }
+    49.1% { transform: translateX(calc(100vw + 240px)) scaleX(-1); }
+    98%   { transform: translateX(-240px) scaleX(-1); }
+    98.1% { transform: translateX(-240px); }
+    100%  { transform: translateX(-240px); }
+  }
+  @keyframes walk-bob {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-10px); }
+  }
+  @keyframes raccoon-wander {
+    0%    { transform: translateX(12vw); }
+    44%   { transform: translateX(62vw); }
+    44.1% { transform: translateX(62vw) scaleX(-1); }
+    88%   { transform: translateX(12vw) scaleX(-1); }
+    88.1% { transform: translateX(12vw); }
+    100%  { transform: translateX(12vw); }
+  }
+  @keyframes beaver-side-bob {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-14px); }
+  }
+  @keyframes log-bob {
+    0%, 100% { transform: translateY(0px) rotate(-2deg); }
+    50%       { transform: translateY(-9px) rotate(3deg); }
+  }
+  @keyframes leaf-fall {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+    6%   { opacity: 0.8; }
+    94%  { opacity: 0.8; }
+    100% { transform: translate(80px, 60vh) rotate(480deg); opacity: 0; }
+  }
+  @keyframes leaf-fall-2 {
+    0%   { transform: translate(0, 0) rotate(30deg); opacity: 0; }
+    6%   { opacity: 0.7; }
+    94%  { opacity: 0.7; }
+    100% { transform: translate(-60px, 60vh) rotate(-380deg); opacity: 0; }
+  }
+  @keyframes ripple-out {
+    0%   { transform: translate(-50%,-50%) scale(0.1); opacity: 0.5; }
+    100% { transform: translate(-50%,-50%) scale(1); opacity: 0; }
+  }
+  @keyframes peek-up {
+    0%   { transform: translateY(120%); }
+    18%  { transform: translateY(-4%); }
+    82%  { transform: translateY(-4%); }
+    100% { transform: translateY(120%); }
+  }
+  @keyframes float-up-fade {
+    0%   { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-90px); opacity: 0; }
+  }
+  @keyframes fish-jump {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    40%  { transform: translateY(-110px) rotate(-28deg); opacity: 1; }
+    80%  { transform: translateY(12px) rotate(50deg); opacity: 0.4; }
+    100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  }
+  @keyframes frm-a-on { 0%,49.9%{opacity:1} 50%,100%{opacity:0} }
+  @keyframes frm-b-on { 0%,49.9%{opacity:0} 50%,100%{opacity:1} }
+
+  .sprite-2frame { position:relative; display:inline-block; }
+  .sprite-2frame > .frm-a { position:relative; display:block; }
+  .sprite-2frame > .frm-b { position:absolute; top:0; left:0; }
+  .frm-a { animation: frm-a-on 0.38s steps(1,end) infinite; }
+  .frm-b { animation: frm-b-on 0.38s steps(1,end) infinite; }
+
+  .bg-beaver-main {
+    position: absolute;
+    bottom: 55px; left: 0;
+    animation: swim-across 78s linear infinite;
+  }
+  .bg-beaver-main .sprite-2frame { animation: walk-bob 0.38s ease-in-out infinite; }
+
+  .bg-beaver-2 {
+    position: absolute;
+    bottom: 68px; right: 260px;
+    animation: beaver-side-bob 3.6s ease-in-out infinite;
+  }
+  .bg-raccoon {
+    position: absolute;
+    bottom: 55px;
+    animation: raccoon-wander 50s linear 6s infinite;
+  }
+  .bg-raccoon .sprite-2frame { animation: walk-bob 0.42s ease-in-out infinite; }
+
+  .bg-log {
+    position: absolute;
+    bottom: 42px; right: 190px;
+    animation: log-bob 4.2s ease-in-out infinite;
+  }
+  .bg-ripple-container {
+    position: absolute;
+    bottom: 28px; right: 60px;
+    width: 90px; height: 50px;
+  }
+  .bg-ripple {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 70px; height: 36px;
+    border: 2px solid rgba(74,139,168,0.4);
+    border-radius: 50%;
+    animation: ripple-out 3.2s ease-out infinite;
+  }
+  .bg-ripple:nth-child(2) { animation-delay: 1.1s; }
+  .bg-ripple:nth-child(3) { animation-delay: 2.2s; }
+
+  .bg-leaf {
+    position: absolute;
+    top: 48%; right: 28%;
+    animation: leaf-fall 14s ease-in 0s infinite;
+    opacity: 0;
+  }
+  .bg-leaf-2 {
+    position: absolute;
+    top: 52%; right: 55%;
+    animation: leaf-fall-2 19s ease-in 5s infinite;
+    opacity: 0;
+  }
+  .bg-peek {
+    position: absolute;
+    bottom: 0;
+    display: none;
+  }
+  .bg-peek.active {
+    display: block;
+    animation: peek-up 5s ease-in-out forwards;
+  }
+  .bg-emoji-float {
+    position: absolute;
+    font-size: 22px;
+    animation: float-up-fade 3.2s ease-out forwards;
+    pointer-events: none;
+  }
+  .bg-fish {
+    position: absolute;
+    bottom: 8px;
+    display: none;
+  }
+  .bg-fish.active {
+    display: block;
+    animation: fish-jump 2.5s ease-in-out forwards;
+  }
+
+  /* ── LANDSCAPE BACKGROUND ─────────────────────────────────── */
+  #bg-nature {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+  }
+  @keyframes river-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(60px); }
+  }
+  .bg-river-shimmer {
+    position: absolute;
+    bottom: 0;
+    left: -60px;
+    width: calc(100% + 120px);
+    height: 40px;
+    background: repeating-linear-gradient(90deg,
+      transparent 0px, transparent 10px,
+      rgba(144,212,232,0.18) 10px, rgba(144,212,232,0.18) 15px
+    );
+    animation: river-scroll 1.4s linear infinite;
     pointer-events: none;
   }
 
-  .geo-circle-2 {
-    width: 160px; height: 160px;
-    border-radius: 50%;
-    border: none;
-    background: #558a86;
-    position: fixed;
-    bottom: 60px; right: 60px;
-    animation: geo-drift-2 26s ease-in-out infinite;
-    z-index: 0;
+  /* ── CLOUDS ───────────────────────────────────────────────── */
+  @keyframes cloud-drift {
+    0%   { transform: translateX(calc(100vw + 400px)); }
+    100% { transform: translateX(-400px); }
+  }
+  .bg-cloud {
+    position: absolute;
     pointer-events: none;
+    animation: cloud-drift linear infinite;
+    opacity: 0.88;
   }
 
   /* ── MENU TOOLTIP ─────────────────────────────────────────── */
@@ -3081,19 +3444,208 @@
     color: #E8A080;
   }
   .context-menu-item.unlink:hover { background: rgba(196,83,30,0.15); }
+
+  /* ── WOLT PICKER ───────────────────────────────────────────── */
+  #wolt-picker {
+    position: fixed;
+    background: var(--ink);
+    border-radius: 8px;
+    padding: 6px;
+    z-index: 500;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    min-width: 190px;
+  }
+  #wolt-picker.open { display: flex; }
+  .wolt-picker-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    padding: 5px 10px 3px;
+  }
+  .wolt-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    transition: background 0.12s;
+  }
+  .wolt-picker-item:hover { background: rgba(255,255,255,0.1); }
+  .wolt-picker-item.active { color: #fff; }
+  .wolt-picker-emoji { font-size: 17px; line-height: 1; flex-shrink: 0; }
+  .wolt-picker-check { margin-left: auto; color: #5a9e6f; font-size: 12px; }
+  .wolt-picker-meta { color: rgba(255,255,255,0.35); font-size: 10px; margin-left: auto; }
+  .wolt-picker-item.unassign-opt { color: rgba(255,255,255,0.4); }
+  .wolt-picker-item.unassign-opt:hover { background: rgba(196,83,30,0.15); color: #F08070; }
+  .wolt-picker-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 4px 0; }
+
+  /* ── HAMBURGER & RESPONSIVE ─────────────────────────────────── */
+  #hamburger {
+    display: none;
+    position: fixed;
+    top: 14px; left: 14px;
+    z-index: 300;
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: var(--ink);
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    padding: 0;
+    transition: background 0.15s;
+  }
+  #hamburger:hover { background: rgba(30,25,20,0.98); }
+  #hamburger .hb-bar {
+    width: 16px; height: 1.5px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 2px;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  body.nav-open #hamburger .hb-bar:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  body.nav-open #hamburger .hb-bar:nth-child(2) { opacity: 0; }
+  body.nav-open #hamburger .hb-bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  #nav-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 98;
+    backdrop-filter: blur(2px);
+  }
+  body.nav-open #nav-overlay { display: block; }
+
+  @media (max-width: 900px) {
+    #hamburger { display: flex; }
+
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      z-index: 99;
+      transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 272px;
+      opacity: 1;
+    }
+    .sidebar.hidden {
+      transform: translateX(-100%);
+      width: 272px;
+      opacity: 1;
+    }
+    body.nav-open .sidebar {
+      transform: translateX(0);
+    }
+
+    .main {
+      padding: 64px 20px 32px;
+      width: 100%;
+    }
+    .main:has(#chat-view[style*="flex"]),
+    .main:has(#home-view[style*="flex"]) {
+      padding: 0;
+    }
+
+    /* Project detail — mobile */
+    body.project-open #hamburger { display: none; }
+
+    #pd-drag-handle { display: none !important; }
+
+    .pd-back-bar {
+      padding-left: 12px;
+    }
+
+    /* hide split-only controls; Chat/Project buttons remain useful */
+    #pd-btn-external { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .main {
+      padding: 64px 14px 24px;
+    }
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+    .main-title { font-size: 28px; }
+
+    /* Tighter toolbar on small phones */
+    .pd-back-bar { gap: 6px; padding: 0 10px; height: 46px; }
+    #pd-share-btn { display: none; }
+    .pd-toolbar-divider { display: none; }
+  }
 </style>
 </head>
 <body>
 
-<!-- Geometric accents (mid-century) -->
-<div class="geo-circle"></div>
-<div class="geo-circle-2"></div>
+<div id="nav-overlay" onclick="closeSidebarNav()"></div>
+<button id="hamburger" onclick="toggleSidebarNav()" aria-label="Toggle navigation">
+  <span class="hb-bar"></span>
+  <span class="hb-bar"></span>
+  <span class="hb-bar"></span>
+</button>
+
+<!-- 8-bit critter scene -->
+<div class="bg-scene" id="bg-scene">
+  <div id="bg-nature"></div>
+  <div class="bg-river-shimmer"></div>
+  <!-- Clouds -->
+  <div id="cl-1" class="bg-cloud" style="top:38%; animation-duration:150s; animation-delay:0s"></div>
+  <div id="cl-2" class="bg-cloud" style="top:52%; animation-duration:115s; animation-delay:-42s"></div>
+  <div id="cl-3" class="bg-cloud" style="top:42%; animation-duration:185s; animation-delay:-92s"></div>
+  <div id="cl-4" class="bg-cloud" style="top:56%; animation-duration:135s; animation-delay:-68s"></div>
+  <div id="cl-5" class="bg-cloud" style="top:46%; animation-duration:165s; animation-delay:-125s"></div>
+  <div id="cl-6" class="bg-cloud" style="top:49%; animation-duration:200s; animation-delay:-28s"></div>
+  <!-- Main beaver: 2-frame walk, crosses screen -->
+  <div class="bg-beaver-main" id="bg-beaver-main">
+    <div class="sprite-2frame">
+      <div class="frm-a" id="sp-bv-main-a"></div>
+      <div class="frm-b" id="sp-bv-main-b"></div>
+    </div>
+  </div>
+  <!-- Second beaver (bobs near right side) -->
+  <div class="bg-beaver-2" id="bg-beaver-2">
+    <div id="sp-bv-side"></div>
+  </div>
+  <!-- Raccoon wandering -->
+  <div class="bg-raccoon" id="bg-raccoon">
+    <div class="sprite-2frame">
+      <div class="frm-a" id="sp-rc-a"></div>
+      <div class="frm-b" id="sp-rc-b"></div>
+    </div>
+  </div>
+  <!-- Floating log -->
+  <div class="bg-log" id="bg-log">
+    <div id="sp-log"></div>
+  </div>
+  <!-- Water ripples -->
+  <div class="bg-ripple-container">
+    <div class="bg-ripple"></div>
+    <div class="bg-ripple"></div>
+    <div class="bg-ripple"></div>
+  </div>
+  <!-- Falling leaves -->
+  <div class="bg-leaf"><div id="sp-leaf-g"></div></div>
+  <div class="bg-leaf-2"><div id="sp-leaf-r"></div></div>
+  <!-- Random events -->
+  <div class="bg-peek" id="bg-peek"><div id="sp-peek"></div></div>
+  <div class="bg-fish" id="bg-fish"><div id="sp-fish"></div></div>
+</div>
 
 <!-- ── SIDEBAR ───────────────────────────────────────────────── -->
 <aside class="sidebar">
   <div class="sidebar-brand">
     <div class="brand-name">
-      <span class="brand-emoji">🌿</span>
+      <span class="brand-emoji">🦫</span>
       Woltspace
     </div>
   </div>
@@ -3131,7 +3683,7 @@
       <span class="sidebar-nav-label">All Sessions</span>
     </div>
 
-    <div class="wolt-card" onclick="showThreads('Woltaire','🦝','raccoon · opus','creatorspace')">
+    <div class="wolt-card" onclick="openWoltSite('Woltaire')">
       <div class="wolt-avatar">
         🦝
         <div class="wolt-status-dot running"></div>
@@ -3143,7 +3695,7 @@
       </div>
     </div>
 
-    <div class="wolt-card" onclick="showThreads('creationwolt','🦫','beaver · sonnet','signal-desk')">
+    <div class="wolt-card" onclick="openWoltSite('creationwolt')">
       <div class="wolt-avatar">
         🦫
         <div class="wolt-status-dot running"></div>
@@ -3155,7 +3707,7 @@
       </div>
     </div>
 
-    <div class="wolt-card" onclick="showThreads('lodgebuilder','🦫','beaver · sonnet','daily-digest')">
+    <div class="wolt-card" onclick="openWoltSite('lodgebuilder')">
       <div class="wolt-avatar">
         🦫
         <div class="wolt-status-dot running"></div>
@@ -3163,11 +3715,11 @@
       <div class="wolt-info">
         <div class="wolt-name">lodgebuilder</div>
         <div class="wolt-type">beaver</div>
-        <div class="wolt-project-tag">daily-digest</div>
+        <div class="wolt-project-tag">daily digest</div>
       </div>
     </div>
 
-    <div class="wolt-card" onclick="showThreads('Wolten','🐕','dog · companion','—')">
+    <div class="wolt-card" onclick="openWoltSite('Wolten')">
       <div class="wolt-avatar">
         🐕
         <div class="wolt-status-dot idle"></div>
@@ -3175,7 +3727,7 @@
       <div class="wolt-info">
         <div class="wolt-name">Wolten</div>
         <div class="wolt-type">dog · companion</div>
-        <div class="wolt-project-tag available">idle</div>
+        <div class="wolt-project-tag">telegram feed</div>
       </div>
     </div>
   </div>
@@ -3191,7 +3743,7 @@
   </div>
   <div class="creatures-list" id="creatures-list">
     <div class="creatures-list-inner">
-      <div class="creature-row">
+      <div class="creature-row clickable" onclick="openWolfPanel()">
         <span>🐺</span>
         <span class="creature-name">wolf</span>
         <span class="creature-desc">scheduler</span>
@@ -3296,27 +3848,11 @@
 <div id="home-view" style="display:flex">
   <div class="home-scroll" id="home-scroll">
     <div class="home-hero" id="home-hero">
-      <div class="home-greeting" id="home-greeting">Good to meet you.</div>
-      <div class="home-welcome-text" id="home-welcome-text">I'm just waking up in here. This space is yours — let's make it exactly what you want it to be.<br><br>Tell me a bit about yourself. What are you working on? What's been sitting in the back of your head?</div>
-      <div class="home-prompt-hint">↓ start below</div>
+      <div class="home-greeting" id="home-greeting"></div>
+      <div class="home-welcome-text" id="home-welcome-text"></div>
     </div>
     <div class="home-persona" id="home-persona" style="display:none"></div>
     <div class="home-msgs" id="home-msgs"></div>
-  </div>
-  <div class="home-input-bar">
-    <div class="home-input-inner">
-      <div class="home-pending-files" id="home-pending-files"></div>
-      <div class="home-input-row">
-        <button class="attach-btn" onclick="triggerHomeFile()" title="Attach file">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-        </button>
-        <textarea class="home-textarea" id="home-input" placeholder="Tell me about yourself…" rows="1" onkeydown="handleHomeKey(event)" oninput="autoResize(this)"></textarea>
-        <button class="home-send-btn" onclick="sendHomeMessage()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-      <input type="file" id="home-file-input" multiple style="display:none" onchange="handleHomeFile(event)">
-    </div>
   </div>
 </div>
 
@@ -3324,7 +3860,7 @@
   <div class="main-header">
     <div class="main-title-block">
       <div class="main-title">Projects</div>
-      <div class="main-subtitle">3 active · 2 running · your build surface</div>
+      <div class="main-subtitle">3 active · 2 running · things in various states of done</div>
     </div>
     <div class="header-actions">
       <button class="btn btn-ghost">⟳ refresh</button>
@@ -3347,7 +3883,7 @@
   <div class="project-grid">
 
     <!-- Card 1: running -->
-    <div class="project-card" style="position:relative;cursor:pointer" onclick="openProject('Creatorspace')">`
+    <div class="project-card" style="position:relative">`
 
       <div class="project-card-body">
         <div class="project-card-top">
@@ -3357,7 +3893,7 @@
             running
           </div>
         </div>
-        <div class="project-name">Creatorspace</div>
+        <div class="project-name" onclick="openProject('Creatorspace')">Creatorspace</div>
         <div class="project-stack">
           <span class="stack-tag">React</span>
           <span class="stack-tag">Vite</span>
@@ -3367,7 +3903,7 @@
           Onix AI creator platform — a full workspace for AI-assisted content creation and publishing.
         </div>
         <div class="project-card-footer">
-          <div class="project-wolt">
+          <div class="project-wolt" id="wolt-display-Creatorspace" onclick="openWoltPicker(event,'Creatorspace')">
             <div class="project-wolt-avatar">🦝</div>
             <div>
               <div class="project-wolt-name">Woltaire</div>
@@ -3395,7 +3931,7 @@
     </div>
 
     <!-- Card 2: stopped -->
-    <div class="project-card" style="position:relative;cursor:pointer" onclick="openProject('Signal Desk Pro')">`
+    <div class="project-card" style="position:relative">`
 
       <div class="project-card-body">
         <div class="project-card-top">
@@ -3405,7 +3941,7 @@
             stopped
           </div>
         </div>
-        <div class="project-name">Signal Desk Pro</div>
+        <div class="project-name" onclick="openProject('Signal Desk Pro')">Signal Desk Pro</div>
         <div class="project-stack">
           <span class="stack-tag">Next.js</span>
           <span class="stack-tag">TypeScript</span>
@@ -3414,7 +3950,7 @@
           Landing page for Signal Desk Pro — iOS mix reference tool for recording engineers.
         </div>
         <div class="project-card-footer">
-          <div class="project-wolt">
+          <div class="project-wolt" id="wolt-display-Signal-Desk-Pro" onclick="openWoltPicker(event,'Signal Desk Pro')">
             <div class="project-wolt-avatar">🦫</div>
             <div>
               <div class="project-wolt-name">creationwolt</div>
@@ -3438,52 +3974,8 @@
       </div>
     </div>
 
-    <!-- Card 3: running -->
-    <div class="project-card" style="position:relative;cursor:pointer" onclick="openProject('Daily Digest')">`
-
-      <div class="project-card-body">
-        <div class="project-card-top">
-          <div class="project-illus" data-illus="Daily Digest"></div>
-          <div class="project-status running">
-            <div class="project-status-dot"></div>
-            running
-          </div>
-        </div>
-        <div class="project-name">Daily Digest</div>
-        <div class="project-stack">
-          <span class="stack-tag">Python</span>
-          <span class="stack-tag">FastAPI</span>
-        </div>
-        <div class="project-desc">
-          Morning briefing aggregator — curated news, HN threads, and a Spotify playlist, delivered at 7am.
-        </div>
-        <div class="project-card-footer">
-          <div class="project-wolt">
-            <div class="project-wolt-avatar">🦫</div>
-            <div>
-              <div class="project-wolt-name">lodgebuilder</div>
-              <div class="project-wolt-assign">keeper</div>
-            </div>
-          </div>
-          <div class="project-actions">
-            <button class="action-btn stop" title="Stop" onclick="toggleProjectState(this,event)">■</button>
-            <button class="action-btn" title="Edit" onclick="event.stopPropagation();toggleMenu('menu-3')">⋯</button>
-          </div>
-        </div>
-      </div>
-      <div class="context-menu" id="menu-3">
-        <div class="context-menu-item">⌂ Set as Home</div>
-        <div class="context-menu-item">✏ Edit project</div>
-        <div class="context-menu-item">🔁 Reassign wolt</div>
-        <div class="context-menu-item">📋 Copy URL</div>
-        <div class="context-menu-item" style="gap:7px"><svg class="gh-icon" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg> Connect to GitHub</div>
-        <div class="context-menu-divider"></div>
-        <div class="context-menu-item danger">✕ Delete</div>
-      </div>
-    </div>
-
-    <!-- Card 4: building -->
-    <div class="project-card" style="position:relative;cursor:pointer" onclick="openProject('Memex')">`
+    <!-- Card 3: building -->
+    <div class="project-card" style="position:relative">`
 
       <div class="project-card-body">
         <div class="project-card-top">
@@ -3493,7 +3985,7 @@
             building
           </div>
         </div>
-        <div class="project-name">Memex</div>
+        <div class="project-name" onclick="openProject('Memex')">Memex</div>
         <div class="project-stack">
           <span class="stack-tag">Svelte</span>
           <span class="stack-tag">SQLite</span>
@@ -3502,7 +3994,7 @@
           Personal knowledge graph — tag ideas, find connections, surface forgotten notes on demand.
         </div>
         <div class="project-card-footer">
-          <div class="project-wolt" style="opacity:0.5; cursor:default">
+          <div class="project-wolt" id="wolt-display-Memex" onclick="openWoltPicker(event,'Memex')" style="opacity:0.6">
             <div class="project-wolt-avatar" style="border-style:dashed">➕</div>
             <div>
               <div class="project-wolt-unassigned">no wolt assigned</div>
@@ -3542,7 +4034,7 @@
   <div class="main-header">
     <div class="main-title-block">
       <div class="main-title">Sessions</div>
-      <div class="main-subtitle">all conversations across all wolts</div>
+      <div class="main-subtitle">the receipts 🧾</div>
     </div>
   </div>
   <div id="sessions-filter-tabs" class="sessions-filter-tabs"></div>
@@ -3579,8 +4071,19 @@
   <div class="chat-header">
     <button class="back-btn" onclick="navBack()">← back</button>
     <div class="chat-thread-title" id="chat-title"></div>
+    <div class="chat-mode-toggle">
+      <button class="mode-btn active" id="mode-chat" onclick="setChatMode('chat')" title="Chat view">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        chat
+      </button>
+      <button class="mode-btn" id="mode-terminal" onclick="setChatMode('terminal')" title="Terminal view">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        terminal
+      </button>
+    </div>
   </div>
   <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-terminal-body" id="terminal-body"></div>
   <div class="chat-input-area">
     <div class="chat-attachments" id="chat-attachments"></div>
     <div class="chat-input-row">
@@ -3597,6 +4100,10 @@
       </button>
     </div>
     <input type="file" id="file-input" multiple style="display:none" onchange="handleFileSelect(event)">
+  </div>
+  <div class="chat-term-input-row">
+    <span class="term-input-prompt" id="term-input-prompt">woltspace $</span>
+    <input class="term-input" id="chat-term-input" type="text" spellcheck="false" autocomplete="off" placeholder="" onkeydown="termChatKey(event)">
   </div>
 </div>
 
@@ -3803,6 +4310,20 @@
     }
   }
 
+  function toggleSidebarNav() {
+    document.body.classList.toggle('nav-open');
+  }
+  function closeSidebarNav() {
+    document.body.classList.remove('nav-open');
+  }
+
+  // Close nav drawer when a nav item is tapped on mobile
+  document.querySelector('aside.sidebar').addEventListener('click', function(e) {
+    if (window.innerWidth <= 900 && e.target.closest('.sidebar-nav-item')) {
+      closeSidebarNav();
+    }
+  });
+
   function toggleMenu(id) {
     document.querySelectorAll('.context-menu').forEach(m => {
       if (m.id !== id) m.classList.remove('open');
@@ -3815,7 +4336,154 @@
     if (!e.target.closest('.action-btn') && !e.target.closest('.context-menu')) {
       document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('open'));
     }
+    if (!e.target.closest('.project-wolt') && !e.target.closest('#wolt-picker')) {
+      document.getElementById('wolt-picker').classList.remove('open');
+    }
+    if (!e.target.closest('#pd-kebab-btn') && !e.target.closest('#pd-project-menu')) {
+      document.getElementById('pd-project-menu').classList.remove('open');
+    }
   });
+
+  // ── Project detail kebab menu ─────────────────────────────────
+  const _GH_SVG = `<svg class="gh-icon" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>`;
+
+  function pdCloseMenu() {
+    document.getElementById('pd-project-menu').classList.remove('open');
+    document.getElementById('pd-menu-backdrop').classList.remove('open');
+  }
+
+  function pdToggleMenu(event) {
+    const menu = document.getElementById('pd-project-menu');
+    if (menu.classList.contains('open')) { pdCloseMenu(); return; }
+
+    const proj   = !pdIsWoltSite ? PROJECT_DATA[pdProjectName] : null;
+    const github = proj?.github;
+    let html = '';
+
+    html += `<div class="context-menu-item" onclick="pdMenuSetHome()">⌂ Set as Home</div>`;
+
+    if (!pdIsWoltSite) {
+      html += `<div class="context-menu-item" onclick="pdMenuReassignWolt(event)">🔁 Reassign wolt</div>`;
+    }
+
+    html += `<div class="context-menu-item" onclick="pdShare();pdCloseMenu()">📋 Copy URL</div>`;
+
+    if (!pdIsWoltSite) {
+      html += `<div class="context-menu-divider"></div>`;
+      if (github) {
+        html += `<div class="context-menu-item github-connected" style="gap:7px" onclick="window.open('${github.url}','_blank')">${_GH_SVG} ${github.repo}</div>`;
+        html += `<div class="context-menu-item unlink" style="gap:7px" onclick="pdMenuUnlinkGithub()">${_GH_SVG} Unlink GitHub</div>`;
+      } else {
+        html += `<div class="context-menu-item" style="gap:7px">${_GH_SVG} Connect to GitHub</div>`;
+      }
+    }
+
+    html += `<div class="context-menu-divider"></div>`;
+    html += `<div class="context-menu-item danger">✕ Delete</div>`;
+
+    menu.innerHTML = html;
+    menu.classList.add('open');
+    document.getElementById('pd-menu-backdrop').classList.add('open');
+  }
+
+  function pdMenuSetHome() {
+    pdCloseMenu();
+    // stub — wire to real home-setting logic when built
+  }
+
+  function pdMenuReassignWolt(event) {
+    pdCloseMenu();
+    // Synthesise a fake event pointing at the kebab button as the anchor
+    const anchor = document.getElementById('pd-kebab-btn');
+    openWoltPicker({ stopPropagation(){}, currentTarget: anchor }, pdProjectName);
+  }
+
+  function pdMenuUnlinkGithub() {
+    pdCloseMenu();
+    if (PROJECT_DATA[pdProjectName]) PROJECT_DATA[pdProjectName].github = null;
+  }
+
+  // ── Wolt picker ───────────────────────────────────────────────
+  var PROJECT_WOLT_ASSIGNMENTS = {
+    'Creatorspace':    'Woltaire',
+    'Signal Desk Pro': 'creationwolt',
+    'Memex':           null
+  };
+
+  var _woltPickerProject = null;
+
+  function openWoltPicker(event, projectName) {
+    event.stopPropagation();
+    document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('open'));
+    var picker = document.getElementById('wolt-picker');
+    var current = PROJECT_WOLT_ASSIGNMENTS[projectName];
+    _woltPickerProject = projectName;
+
+    var html = '<div class="wolt-picker-label">assign wolt</div>';
+    Object.entries(WOLT_DATA).forEach(function([name, data]) {
+      var isActive = current === name;
+      html += `<div class="wolt-picker-item${isActive ? ' active' : ''}" onclick="assignWolt('${projectName}','${name}')">
+        <span class="wolt-picker-emoji">${data.emoji}</span>
+        <span>${name}</span>
+        <span class="wolt-picker-meta">${data.meta}</span>
+        ${isActive ? '<span class="wolt-picker-check">✓</span>' : ''}
+      </div>`;
+    });
+    html += '<div class="wolt-picker-divider"></div>';
+    html += `<div class="wolt-picker-item" onclick="document.getElementById('wolt-picker').classList.remove('open');openWoltModal(event)">
+      <span class="wolt-picker-emoji" style="font-size:13px;opacity:0.5">＋</span>
+      <span>Add wolt</span>
+    </div>`;
+    if (current) {
+      html += `<div class="wolt-picker-item unassign-opt" onclick="assignWolt('${projectName}',null)">Remove wolt</div>`;
+    }
+    picker.innerHTML = html;
+    picker.classList.add('open');
+
+    // Position above the wolt element, clamped to viewport
+    var rect = event.currentTarget.getBoundingClientRect();
+    var ph = picker.offsetHeight;
+    var pw = picker.offsetWidth;
+    var top = rect.top - ph - 6;
+    var left = rect.left;
+    if (top < 8) top = rect.bottom + 6;
+    if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+    picker.style.top = top + 'px';
+    picker.style.left = left + 'px';
+  }
+
+  function assignWolt(projectName, woltName) {
+    PROJECT_WOLT_ASSIGNMENTS[projectName] = woltName || null;
+    _renderWoltDisplay(projectName);
+    document.getElementById('wolt-picker').classList.remove('open');
+  }
+
+  function _renderWoltDisplay(projectName) {
+    var idMap = {
+      'Creatorspace':    'wolt-display-Creatorspace',
+      'Signal Desk Pro': 'wolt-display-Signal-Desk-Pro',
+      'Memex':           'wolt-display-Memex'
+    };
+    var el = document.getElementById(idMap[projectName]);
+    if (!el) return;
+    var woltName = PROJECT_WOLT_ASSIGNMENTS[projectName];
+    if (woltName && WOLT_DATA[woltName]) {
+      var data = WOLT_DATA[woltName];
+      el.innerHTML = `<div class="project-wolt-avatar">${data.emoji}</div>
+        <div>
+          <div class="project-wolt-name">${woltName}</div>
+          <div class="project-wolt-assign">keeper</div>
+        </div>`;
+      el.style.opacity = '';
+    } else {
+      el.innerHTML = `<div class="project-wolt-avatar" style="border-style:dashed">➕</div>
+        <div>
+          <div class="project-wolt-unassigned">no wolt assigned</div>
+          <div class="project-wolt-assign">click to assign</div>
+        </div>`;
+      el.style.opacity = '0.6';
+    }
+  }
 </script>
 
 <script>
@@ -3823,6 +4491,65 @@
 
 const WOLT_DATA = {
   'Woltaire': {
+    emoji: '🦝', meta: 'raccoon · opus',
+    site: {
+      url: 'lodge.local/wolt/woltaire',
+      page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',system-ui,sans-serif;background:#0c0c0c;color:#f0ece4;min-height:100vh}
+        header{padding:28px 48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1f1f1f}
+        .logo{font-size:14px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#888}
+        .logo span{color:#f0ece4}
+        .live{font-size:11px;font-family:monospace;color:#5a9e6f;display:flex;align-items:center;gap:6px}
+        .live-dot{width:6px;height:6px;border-radius:50%;background:#5a9e6f;animation:pulse 2s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+        .dispatch{padding:48px}
+        .dispatch-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#666;margin-bottom:32px;font-family:monospace}
+        .dispatch-date{font-size:11px;color:#444;font-family:monospace;float:right}
+        .feature{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:56px;padding-bottom:48px;border-bottom:1px solid #1a1a1a}
+        .feature-label{font-size:10px;letter-spacing:0.12em;color:#C4531E;text-transform:uppercase;font-family:monospace;margin-bottom:14px}
+        .feature-title{font-size:36px;font-weight:700;line-height:1.15;letter-spacing:-0.02em;margin-bottom:16px}
+        .feature-body{font-size:14px;color:#888;line-height:1.8}
+        .palette{display:flex;gap:8px;margin-top:24px}
+        .swatch{height:48px;border-radius:6px;flex:1}
+        .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+        .tile{background:#141414;border:1px solid #1f1f1f;border-radius:10px;padding:20px}
+        .tile-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#555;font-family:monospace;margin-bottom:10px}
+        .tile-content{font-size:13px;color:#aaa;line-height:1.6}
+        .tile-content strong{display:block;color:#f0ece4;margin-bottom:4px;font-size:15px}
+      </style></head><body>
+      <header>
+        <div class="logo">woltaire · <span>creative dispatch</span></div>
+        <div class="live"><div class="live-dot"></div>live · updated 7:02am</div>
+      </header>
+      <div class="dispatch">
+        <div class="dispatch-label">Tuesday morning · Issue 47 <span class="dispatch-date">Mar 31 2026</span></div>
+        <div class="feature">
+          <div>
+            <div class="feature-label">Today's aesthetic thread</div>
+            <div class="feature-title">Brutalist warmth: the tension that's everywhere right now</div>
+            <div class="feature-body">Heavy type, raw structure, warm paper tones. The current design moment is a pushback against both cold minimalism and maximalist clutter — and it's landing on something interesting. Here's what I'm seeing across type, UI, and editorial.</div>
+          </div>
+          <div>
+            <div class="feature-label">Palette of the day</div>
+            <div class="palette">
+              <div class="swatch" style="background:#C4531E"></div>
+              <div class="swatch" style="background:#F0E8D0"></div>
+              <div class="swatch" style="background:#2A1A0A"></div>
+              <div class="swatch" style="background:#8B6030"></div>
+              <div class="swatch" style="background:#E8C880"></div>
+            </div>
+            <div style="font-size:11px;color:#555;margin-top:10px;font-family:monospace">Terracotta · Warm paper · Deep oak · Sienna · Straw</div>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="tile"><div class="tile-label">Typography</div><div class="tile-content"><strong>Fraunces 300 · DM Sans</strong>Optical warmth without weight. Still the pairing of the moment.</div></div>
+          <div class="tile"><div class="tile-label">Reference</div><div class="tile-content"><strong>Oatly 2012 annual report</strong>Still one of the best examples of brand voice in print.</div></div>
+          <div class="tile"><div class="tile-label">Rabbit hole</div><div class="tile-content"><strong>Swiss grid, loosened</strong>Three designers breaking the Swiss grid in ways that still feel structured.</div></div>
+        </div>
+      </div>
+      </body></html>`
+    },
     threads: [
       {
         id: 'w1t1', title: 'Dashboard redesign brief', date: '3 days ago', unread: true,
@@ -3854,6 +4581,67 @@ const WOLT_DATA = {
     ]
   },
   'creationwolt': {
+    emoji: '🦫', meta: 'beaver · sonnet',
+    site: {
+      url: 'lodge.local/wolt/creationwolt',
+      page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0f;color:#f0f0f8;min-height:100vh}
+        header{padding:24px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #16161f}
+        .logo{font-size:15px;font-weight:700;letter-spacing:-0.02em}
+        .logo em{color:#7c6aff;font-style:normal}
+        .updated{font-size:11px;font-family:monospace;color:#555}
+        .now-playing{padding:40px 40px 32px;border-bottom:1px solid #16161f;display:flex;gap:32px;align-items:center}
+        .album-art{width:96px;height:96px;border-radius:10px;background:linear-gradient(135deg,#7c6aff,#c084fc);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:36px}
+        .np-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#7c6aff;font-family:monospace;margin-bottom:8px}
+        .np-title{font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px}
+        .np-artist{font-size:14px;color:#888}
+        .progress{margin-top:16px;background:#1a1a2e;border-radius:4px;height:3px;width:280px}
+        .progress-fill{height:100%;border-radius:4px;background:#7c6aff;width:42%}
+        .playlist{padding:32px 40px}
+        .playlist-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}
+        .playlist-title{font-size:13px;font-weight:600;letter-spacing:0.04em}
+        .playlist-meta{font-size:11px;color:#555;font-family:monospace}
+        .track{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #0f0f18}
+        .track:last-child{border-bottom:none}
+        .track-num{font-size:11px;color:#444;font-family:monospace;width:20px;text-align:right;flex-shrink:0}
+        .track-active .track-num{color:#7c6aff}
+        .track-info{flex:1}
+        .track-name{font-size:13px;font-weight:500;margin-bottom:2px}
+        .track-artist{font-size:12px;color:#666}
+        .track-active .track-name{color:#c084fc}
+        .track-dur{font-size:11px;color:#444;font-family:monospace;flex-shrink:0}
+        .mood-tags{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+        .tag{font-size:11px;font-family:monospace;color:#7c6aff;background:#1a1a2e;border:1px solid #7c6aff33;padding:3px 10px;border-radius:20px}
+      </style></head><body>
+      <header>
+        <div class="logo">creation<em>wolt</em> · playlist</div>
+        <div class="updated">updated 6:45am · 14 tracks · 58 min</div>
+      </header>
+      <div class="now-playing">
+        <div class="album-art">♪</div>
+        <div>
+          <div class="np-label">Now playing</div>
+          <div class="np-title">Near Light</div>
+          <div class="np-artist">Ólafur Arnalds · Eulogy for Evolution</div>
+          <div class="progress"><div class="progress-fill"></div></div>
+        </div>
+      </div>
+      <div class="playlist">
+        <div class="playlist-header">
+          <div class="playlist-title">Tuesday morning · focus + flow</div>
+          <div class="playlist-meta">curated for your 9am session</div>
+        </div>
+        <div class="mood-tags"><div class="tag">ambient</div><div class="tag">focus</div><div class="tag">no lyrics</div><div class="tag">60-80bpm</div></div>
+        <div class="track track-active"><div class="track-num">▶</div><div class="track-info"><div class="track-name">Near Light</div><div class="track-artist">Ólafur Arnalds</div></div><div class="track-dur">3:41</div></div>
+        <div class="track"><div class="track-num">2</div><div class="track-info"><div class="track-name">Says</div><div class="track-artist">Nils Frahm</div></div><div class="track-dur">10:02</div></div>
+        <div class="track"><div class="track-num">3</div><div class="track-info"><div class="track-name">LesAlpx</div><div class="track-artist">Floating Points</div></div><div class="track-dur">7:28</div></div>
+        <div class="track"><div class="track-num">4</div><div class="track-info"><div class="track-name">Open Eye Signal</div><div class="track-artist">Jon Hopkins</div></div><div class="track-dur">7:39</div></div>
+        <div class="track"><div class="track-num">5</div><div class="track-info"><div class="track-name">Re: Stacks</div><div class="track-artist">Bon Iver</div></div><div class="track-dur">4:52</div></div>
+        <div class="track"><div class="track-num">6</div><div class="track-info"><div class="track-name">Holocene</div><div class="track-artist">Bon Iver</div></div><div class="track-dur">5:37</div></div>
+      </div>
+      </body></html>`
+    },
     threads: [
       {
         id: 'w2t1', title: 'Signal Desk landing copy', date: '5 days ago', unread: true,
@@ -3873,6 +4661,53 @@ const WOLT_DATA = {
     ]
   },
   'lodgebuilder': {
+    emoji: '🦫', meta: 'beaver · sonnet',
+    site: {
+      url: 'lodge.local/wolt/lodgebuilder',
+      page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Georgia,serif;background:#faf8f4;color:#2a2018;min-height:100vh}
+        header{border-bottom:2px solid #2a2018;padding:20px 48px;display:flex;align-items:baseline;justify-content:space-between}
+        .logo{font-size:28px;font-weight:700;letter-spacing:-0.01em}
+        .dateline{font-size:12px;color:#888;letter-spacing:0.08em;font-family:monospace}
+        .hero{padding:60px 48px 40px;border-bottom:1px solid #e0d8cc}
+        .hero .kicker{font-family:monospace;font-size:11px;letter-spacing:0.12em;color:#C4531E;text-transform:uppercase;margin-bottom:12px}
+        .hero h1{font-size:48px;font-weight:700;line-height:1.1;letter-spacing:-0.02em;max-width:680px;margin-bottom:16px}
+        .hero .deck{font-size:18px;color:#5a4030;line-height:1.6;max-width:560px}
+        .digest-grid{display:grid;grid-template-columns:2fr 1fr;gap:0;border-top:1px solid #e0d8cc}
+        .main-col{padding:40px 48px;border-right:1px solid #e0d8cc}
+        .side-col{padding:32px 28px}
+        .story{margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid #e0d8cc}
+        .story:last-child{border-bottom:none}
+        .story .label{font-family:monospace;font-size:10px;letter-spacing:0.1em;color:#C4531E;text-transform:uppercase;margin-bottom:8px}
+        .story h2{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:8px}
+        .story p{font-size:14px;color:#5a4030;line-height:1.7}
+        .side-label{font-family:monospace;font-size:10px;letter-spacing:0.1em;color:#888;text-transform:uppercase;margin-bottom:16px;border-bottom:1px solid #e0d8cc;padding-bottom:8px}
+        .track{display:flex;gap:10px;align-items:center;margin-bottom:14px;font-size:13px}
+        .track-num{color:#C98B2A;font-family:monospace;font-size:11px;width:16px}
+      </style></head><body>
+      <header><div class="logo">Daily Digest</div><div class="dateline">TUE MAR 31 · MORNING EDITION</div></header>
+      <div class="hero">
+        <div class="kicker">Good morning</div>
+        <h1>The three things you need to know today</h1>
+        <p class="deck">Curated from 240 sources overnight by lodgebuilder. Delivered at 7am, no noise.</p>
+      </div>
+      <div class="digest-grid">
+        <div class="main-col">
+          <div class="story"><div class="label">Technology</div><h2>Open-source AI models close gap with proprietary systems</h2><p>New benchmarks show the latest open-weight models performing within 5% of top closed models on reasoning tasks — a shift that could reshape how teams build AI products.</p></div>
+          <div class="story"><div class="label">Design</div><h2>Why mid-century modern is the aesthetic of this moment</h2><p>Warm palettes, generous whitespace, and geometric forms are showing up everywhere. Designers cite a reaction to the cold, sterile visual language of the last decade.</p></div>
+          <div class="story"><div class="label">Science</div><h2>Researchers map previously unknown deep-sea ecosystem</h2><p>A hydrothermal vent field discovered off the Azores is home to species never recorded. The find is already changing models of how life distributes itself across extreme environments.</p></div>
+        </div>
+        <div class="side-col">
+          <div class="side-label">Listening queue</div>
+          <div class="track"><span class="track-num">01</span>Ólafur Arnalds — Near Light</div>
+          <div class="track"><span class="track-num">02</span>Nils Frahm — Says</div>
+          <div class="track"><span class="track-num">03</span>Floating Points — LesAlpx</div>
+          <div class="track"><span class="track-num">04</span>Jon Hopkins — Open Eye Signal</div>
+        </div>
+      </div>
+      </body></html>`
+    },
     threads: [
       {
         id: 'w3t1', title: 'Daily digest aggregator build', date: '2 days ago', unread: false,
@@ -3886,6 +4721,69 @@ const WOLT_DATA = {
     ]
   },
   'Wolten': {
+    emoji: '🐕', meta: 'dog · companion',
+    site: {
+      url: 'lodge.local/wolt/wolten',
+      page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',system-ui,sans-serif;background:#17212B;color:#F5F5F5;min-height:100vh}
+        header{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #232F3B}
+        .logo{font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+        .logo-icon{width:32px;height:32px;border-radius:50%;background:#5BA3D9;display:flex;align-items:center;justify-content:center;font-size:16px}
+        .header-meta{font-size:11px;color:#6C7883;font-family:monospace}
+        .date-header{padding:16px 24px 8px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#6C7883;font-family:monospace;border-bottom:1px solid #1a252f}
+        .message{padding:14px 24px;display:flex;gap:12px;align-items:flex-start}
+        .message:hover{background:#1D2B35}
+        .avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+        .av-wolt{background:#3A3A5C}
+        .av-user{background:#2A4A3A}
+        .msg-body{flex:1}
+        .msg-sender{font-size:13px;font-weight:600;margin-bottom:3px;display:flex;align-items:baseline;gap:8px}
+        .msg-time{font-size:11px;color:#6C7883;font-weight:400}
+        .msg-text{font-size:14px;color:#D8DEE4;line-height:1.55}
+        .msg-text a{color:#5BA3D9;text-decoration:none}
+        .unread-divider{padding:6px 24px;display:flex;align-items:center;gap:10px}
+        .unread-line{flex:1;height:1px;background:#E05A40}
+        .unread-label{font-size:11px;color:#E05A40;font-family:monospace;flex-shrink:0}
+        .file-chip{display:inline-flex;align-items:center;gap:5px;background:#1D2B35;border:1px solid #2a3a48;border-radius:6px;padding:5px 10px;font-size:12px;color:#8BA4BA;margin-top:6px}
+      </style></head><body>
+      <header>
+        <div class="logo"><div class="logo-icon">🐕</div>wolten · telegram feed</div>
+        <div class="header-meta">4 unread · synced 2 min ago</div>
+      </header>
+      <div class="date-header">Today — Tuesday, March 31</div>
+      <div class="message">
+        <div class="avatar av-wolt">🐕</div>
+        <div class="msg-body">
+          <div class="msg-sender">Wolten <span class="msg-time">7:00am</span></div>
+          <div class="msg-text">Good morning. You have 4 messages overnight. 2 from your group channels, 1 direct, 1 from a bot. Nothing urgent. I'll surface the DM first.</div>
+        </div>
+      </div>
+      <div class="message">
+        <div class="avatar" style="background:#2A3A4A;font-size:14px;color:#888">TG</div>
+        <div class="msg-body">
+          <div class="msg-sender">Marco (direct) <span class="msg-time">11:42pm</span></div>
+          <div class="msg-text">Hey — did you see the Vercel announcement yesterday? The AI Gateway thing is interesting. Wondering if we should switch the stack over.</div>
+        </div>
+      </div>
+      <div class="unread-divider"><div class="unread-line"></div><div class="unread-label">4 unread</div><div class="unread-line"></div></div>
+      <div class="message">
+        <div class="avatar" style="background:#2A3A4A;font-size:14px;color:#888">GC</div>
+        <div class="msg-body">
+          <div class="msg-sender">Indie Hackers PH <span class="msg-time">12:18am</span></div>
+          <div class="msg-text">Thread: <a href="#">Who's actually profitable at &lt;$10k MRR?</a> — 34 replies overnight. Wolten summarised: most profitable in thread are solo B2B tools with paying customers from day 1.</div>
+        </div>
+      </div>
+      <div class="message">
+        <div class="avatar" style="background:#2A3A4A;font-size:14px;color:#888">GC</div>
+        <div class="msg-body">
+          <div class="msg-sender">AI builders · east <span class="msg-time">6:54am</span></div>
+          <div class="msg-text">New drop: Claude claude-sonnet-4-6 is now in the API. Wolten flagged: possible claude-sonnet-4-6 upgrade path for your current stack.</div>
+          <div class="file-chip">📎 claude-sonnet-4-6-release-notes.pdf</div>
+        </div>
+      </div>
+      </body></html>`
+    },
     threads: [
       {
         id: 'w4t1', title: 'Morning check-in setup', date: '1 week ago', unread: false,
@@ -3927,9 +4825,8 @@ function hideAllViews() {
 }
 
 function setGeoVisible(visible) {
-  document.querySelectorAll('.geo-circle, .geo-circle-2').forEach(el => {
-    el.style.display = visible ? '' : 'none';
-  });
+  const s = document.getElementById('bg-scene');
+  if (s) s.style.display = visible ? '' : 'none';
 }
 
 function showProjects() {
@@ -4044,7 +4941,7 @@ function renderAllSessions() {
   const list = document.getElementById('all-sessions-list');
 
   if (total === 0) {
-    list.innerHTML = `<div class="sessions-empty">No conversations found.</div>`;
+    list.innerHTML = `<div class="sessions-empty">nothing here. suspiciously quiet. 🦝</div>`;
     document.getElementById('sessions-pagination').innerHTML = '';
     return;
   }
@@ -4142,7 +5039,7 @@ function showThreads(name, emoji, meta, project, fromView) {
   const data = WOLT_DATA[name] || { threads: [] };
   const list = document.getElementById('threads-list');
   if (!data.threads.length) {
-    list.innerHTML = `<div class="threads-empty">No threads yet — start one.</div>`;
+    list.innerHTML = `<div class="threads-empty">no threads. this beaver is unoccupied. that's unsettling. 🦫</div>`;
     return;
   }
   list.innerHTML = data.threads.map(t => `
@@ -4181,6 +5078,9 @@ function showChat(woltName, threadId) {
   const msgs = document.getElementById('chat-messages');
   msgs.innerHTML = thread.messages.map(m => renderMessage(m, emoji)).join('');
   msgs.scrollTop = msgs.scrollHeight;
+
+  // apply saved mode
+  setChatMode(chatMode);
 }
 
 function renderMessage(m, woltEmoji) {
@@ -4260,6 +5160,85 @@ function handleChatKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
+// ── Chat / Terminal mode toggle ───────────────────────────────
+var chatMode = localStorage.getItem('chatMode') || 'chat';
+
+function setChatMode(mode) {
+  chatMode = mode;
+  localStorage.setItem('chatMode', mode);
+  document.getElementById('mode-chat').classList.toggle('active', mode === 'chat');
+  document.getElementById('mode-terminal').classList.toggle('active', mode === 'terminal');
+  document.getElementById('chat-view').classList.toggle('chat-view-terminal', mode === 'terminal');
+  document.getElementById('chat-input').placeholder = mode === 'terminal' ? 'run a command...' : 'Message…';
+
+  if (mode === 'terminal' && currentThread) {
+    const slug = (currentWolt || 'woltspace').toLowerCase().replace(/\s+/g, '-');
+    const prompt = slug + ' $';
+    document.getElementById('term-input-prompt').textContent = prompt;
+    const tb = document.getElementById('terminal-body');
+    const banner = `<div class="term-line term-output dim">woltspace terminal v0.1 — ${slug}</div><div class="term-line term-output dim">————————————————————————————————</div>`;
+    tb.innerHTML = banner + renderTerminalMessages(currentThread.messages, prompt);
+    tb.scrollTop = tb.scrollHeight;
+    setTimeout(function() { document.getElementById('chat-term-input').focus(); }, 50);
+  }
+}
+
+function renderTerminalMessages(messages, promptStr) {
+  var prompt = promptStr || 'woltspace $';
+  var html = '';
+  messages.forEach(function(m) {
+    if (m.from === 'user') {
+      var fileLines = (m.files || []).map(function(f) {
+        return `<div class="term-line term-output">  + ${f}</div>`;
+      }).join('');
+      html += `<div class="term-line"><span class="term-prompt">${prompt}</span><span class="term-cmd"> ${m.text}</span></div>${fileLines}`;
+    } else {
+      // Split response into lines for authentic terminal output feel
+      var lines = m.text.split('\n');
+      html += lines.map(function(ln) {
+        return `<div class="term-line term-output">${ln || '&nbsp;'}</div>`;
+      }).join('');
+    }
+  });
+  return html;
+}
+
+function termChatKey(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const input = document.getElementById('chat-term-input');
+    const text = input.value.trim();
+    if (!text || !currentThread) return;
+    const now = new Date();
+    const time = now.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+    const msg = { from: 'user', text, time, files: [] };
+    currentThread.messages.push(msg);
+    const prompt = document.getElementById('term-input-prompt').textContent;
+    const tb = document.getElementById('terminal-body');
+    tb.insertAdjacentHTML('beforeend', renderTerminalMessages([msg], prompt));
+    tb.scrollTop = tb.scrollHeight;
+    input.value = '';
+  }
+}
+
+function termPdKey(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const input = document.getElementById('pd-term-input');
+    const text = input.value.trim();
+    if (!text || !pdCurrentThread) return;
+    const now = new Date();
+    const time = now.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+    const msg = { from: 'user', text, time, files: [] };
+    pdCurrentThread.messages.push(msg);
+    const prompt = document.getElementById('pd-term-prompt').textContent;
+    const tb = document.getElementById('pd-terminal-body');
+    tb.insertAdjacentHTML('beforeend', renderTerminalMessages([msg], prompt));
+    tb.scrollTop = tb.scrollHeight;
+    input.value = '';
+  }
+}
+
 function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 160) + 'px';
@@ -4291,7 +5270,7 @@ function showHome() {
   setNavActive('nav-home');
   document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
   setGeoVisible(true);
-  setTimeout(() => document.getElementById('home-input').focus(), 100);
+  randomizeHomeText();
 }
 
 function sendHomeMessage() {
@@ -4411,6 +5390,7 @@ function handleHomeFile(e) {
 const PROJECT_DATA = {
   'Creatorspace': {
     keeper: 'Woltaire', keeperEmoji: '🦝', keeperMeta: 'raccoon · opus',
+    github: { repo: 'meeglosh/creatorspace', url: 'https://github.com/meeglosh/creatorspace' },
     url: 'lodge.local/project/creatorspace',
     page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
       *{margin:0;padding:0;box-sizing:border-box}
@@ -4491,52 +5471,6 @@ const PROJECT_DATA = {
     </div>
     </body></html>`,
   },
-  'Daily Digest': {
-    keeper: 'lodgebuilder', keeperEmoji: '🦫', keeperMeta: 'beaver · sonnet',
-    url: 'lodge.local/project/daily-digest',
-    page: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-      *{margin:0;padding:0;box-sizing:border-box}
-      body{font-family:Georgia,serif;background:#faf8f4;color:#2a2018;min-height:100vh}
-      header{border-bottom:2px solid #2a2018;padding:20px 48px;display:flex;align-items:baseline;justify-content:space-between}
-      .logo{font-size:28px;font-weight:700;letter-spacing:-0.01em}
-      .dateline{font-size:12px;color:#888;letter-spacing:0.08em;font-family:monospace}
-      .hero{padding:60px 48px 40px;border-bottom:1px solid #e0d8cc}
-      .hero .kicker{font-family:monospace;font-size:11px;letter-spacing:0.12em;color:#C4531E;text-transform:uppercase;margin-bottom:12px}
-      .hero h1{font-size:48px;font-weight:700;line-height:1.1;letter-spacing:-0.02em;max-width:680px;margin-bottom:16px}
-      .hero .deck{font-size:18px;color:#5a4030;line-height:1.6;max-width:560px}
-      .digest-grid{display:grid;grid-template-columns:2fr 1fr;gap:0;border-top:1px solid #e0d8cc}
-      .main-col{padding:40px 48px;border-right:1px solid #e0d8cc}
-      .side-col{padding:32px 28px}
-      .story{margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid #e0d8cc}
-      .story:last-child{border-bottom:none}
-      .story .label{font-family:monospace;font-size:10px;letter-spacing:0.1em;color:#C4531E;text-transform:uppercase;margin-bottom:8px}
-      .story h2{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:8px}
-      .story p{font-size:14px;color:#5a4030;line-height:1.7}
-      .side-label{font-family:monospace;font-size:10px;letter-spacing:0.1em;color:#888;text-transform:uppercase;margin-bottom:16px;border-bottom:1px solid #e0d8cc;padding-bottom:8px}
-      .track{display:flex;gap:10px;align-items:center;margin-bottom:14px;font-size:13px}
-      .track-num{color:#C98B2A;font-family:monospace;font-size:11px;width:16px}
-    </style></head><body>
-    <header><div class="logo">Daily Digest</div><div class="dateline">SAT MAR 28 · MORNING EDITION</div></header>
-    <div class="hero">
-      <div class="kicker">Good morning</div>
-      <h1>The three things you need to know today</h1>
-      <p class="deck">Curated from 240 sources overnight by lodgebuilder. Delivered at 7am, no noise.</p>
-    </div>
-    <div class="digest-grid">
-      <div class="main-col">
-        <div class="story"><div class="label">Technology</div><h2>Open-source AI models close gap with proprietary systems</h2><p>New benchmarks show the latest open-weight models performing within 5% of top closed models on reasoning tasks — a shift that could reshape how teams build AI products.</p></div>
-        <div class="story"><div class="label">Design</div><h2>Why mid-century modern is the aesthetic of this moment</h2><p>Warm palettes, generous whitespace, and geometric forms are showing up everywhere. Designers cite a reaction to the cold, sterile visual language of the last decade.</p></div>
-      </div>
-      <div class="side-col">
-        <div class="side-label">Listening queue</div>
-        <div class="track"><span class="track-num">01</span>Ólafur Arnalds — Near Light</div>
-        <div class="track"><span class="track-num">02</span>Nils Frahm — Says</div>
-        <div class="track"><span class="track-num">03</span>Floating Points — LesAlpx</div>
-        <div class="track"><span class="track-num">04</span>Jon Hopkins — Open Eye Signal</div>
-      </div>
-    </div>
-    </body></html>`,
-  },
   'Memex': {
     keeper: null, keeperEmoji: null, keeperMeta: null,
     url: 'lodge.local/project/memex',
@@ -4583,21 +5517,75 @@ const PROJECT_DATA = {
 let pdPendingFiles = [];
 let pdCurrentThread = null;
 
+function openWoltSite(name) {
+  const wolt = WOLT_DATA[name];
+  if (!wolt?.site) return;
+
+  document.querySelector('aside.sidebar').classList.add('hidden');
+  document.querySelector('main.main').style.display = 'none';
+  const bgS = document.getElementById('bg-scene'); if (bgS) bgS.style.display = 'none';
+  const overlay = document.getElementById('project-detail');
+  overlay.style.display = 'flex';
+  document.body.classList.add('project-open');
+
+  pdCurrentUrl = wolt.site.url;
+  pdProjectName = name;
+  pdIsWoltSite = true;
+  document.getElementById('pd-back-project').textContent = name;
+  pdMode = 'split';
+  pdSetMode(_pdOpenMode());
+
+  document.getElementById('pd-iframe').srcdoc = wolt.site.page;
+
+  // Chat panel — wolt IS the site owner, so head shows the wolt directly
+  const head = document.getElementById('pd-wolt-head');
+  const msgs = document.getElementById('pd-messages');
+  const inputArea = document.getElementById('pd-input-area');
+
+  inputArea.style.display = '';
+  head.innerHTML = `
+    <div class="pd-wolt-avatar">${wolt.emoji || '🦫'}</div>
+    <div>
+      <div class="pd-wolt-name">${name}</div>
+      <div class="pd-wolt-meta">${wolt.meta || ''}</div>
+    </div>`;
+
+  pdCurrentThread = wolt.threads?.[0] || null;
+
+  if (!pdCurrentThread) {
+    msgs.innerHTML = `<div style="text-align:center;padding:40px 16px;font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,0.22)">No sessions yet.<br>Send a message to start.</div>`;
+    return;
+  }
+
+  msgs.innerHTML = pdCurrentThread.messages.map(m =>
+    renderMessage(m, wolt.emoji || '🦫')
+  ).join('');
+  setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 0);
+
+  pdPendingFiles = [];
+  document.getElementById('pd-pending-files').innerHTML = '';
+  document.getElementById('pd-input').value = '';
+  setPdChatMode(pdChatMode);
+}
+
 function openProject(name) {
   const proj = PROJECT_DATA[name];
   if (!proj) return;
 
   document.querySelector('aside.sidebar').classList.add('hidden');
   document.querySelector('main.main').style.display = 'none';
-  document.querySelectorAll('.geo-circle, .geo-circle-2').forEach(el => el.style.display = 'none');
+  const bgS1 = document.getElementById('bg-scene'); if (bgS1) bgS1.style.display = 'none';
   const overlay = document.getElementById('project-detail');
   overlay.style.display = 'flex';
+  document.body.classList.add('project-open');
 
   // Browser chrome
   pdCurrentUrl = proj.url;
+  pdProjectName = name;
+  pdIsWoltSite = false;
   document.getElementById('pd-back-project').textContent = name;
   pdMode = 'split'; // ensure toggle logic starts fresh
-  pdSetMode('split');
+  pdSetMode(_pdOpenMode());
 
   // Load fake page into iframe
   const iframe = document.getElementById('pd-iframe');
@@ -4648,6 +5636,7 @@ function renderPdChat(proj) {
   pdPendingFiles = [];
   document.getElementById('pd-pending-files').innerHTML = '';
   document.getElementById('pd-input').value = '';
+  setPdChatMode(pdChatMode);
 }
 
 function closeProject() {
@@ -4655,13 +5644,30 @@ function closeProject() {
   document.getElementById('pd-iframe').srcdoc = '';
   document.querySelector('aside.sidebar').classList.remove('hidden');
   document.querySelector('main.main').style.display = '';
-  document.querySelectorAll('.geo-circle, .geo-circle-2').forEach(el => el.style.display = '');
+  const bgS2 = document.getElementById('bg-scene'); if (bgS2) bgS2.style.display = '';
+  document.body.classList.remove('project-open');
+  pdCloseMenu();
   pdMode = 'split'; // reset state for next open
+}
+
+function _pdOpenMode() {
+  return window.innerWidth <= 900 ? 'project' : 'split';
 }
 
 let pdCurrentUrl = '';
 let pdMode = 'split';
 let pdSavedChatWidth = '380px';
+let pdProjectName = '';
+let pdIsWoltSite = false;
+
+// Snap mode when resizing across the mobile breakpoint
+window.addEventListener('resize', function() {
+  if (document.getElementById('project-detail').style.display !== 'none') {
+    var desired = _pdOpenMode();
+    if (desired === 'project' && pdMode === 'split') pdSetMode('project');
+    if (desired === 'split'   && pdMode === 'project') pdSetMode('split');
+  }
+});
 
 function pdSetMode(mode) {
   const chat    = document.getElementById('pd-chat-panel');
@@ -4729,6 +5735,28 @@ function renderPdPending() {
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
       ${name}<button class="remove-file" onclick="pdPendingFiles.splice(${i},1);renderPdPending()">✕</button>
     </div>`).join('');
+}
+
+var pdChatMode = localStorage.getItem('pdChatMode') || 'chat';
+
+function setPdChatMode(mode) {
+  pdChatMode = mode;
+  localStorage.setItem('pdChatMode', mode);
+  document.getElementById('pd-mode-chat').classList.toggle('active', mode === 'chat');
+  document.getElementById('pd-mode-terminal').classList.toggle('active', mode === 'terminal');
+  document.getElementById('pd-chat-panel').classList.toggle('pd-chat-terminal', mode === 'terminal');
+  document.getElementById('pd-input').placeholder = mode === 'terminal' ? 'run a command...' : 'Message…';
+  if (mode === 'terminal' && pdCurrentThread) {
+    const projectName = document.getElementById('pd-back-project')?.textContent || 'project';
+    const slug = projectName.toLowerCase().replace(/\s+/g, '-');
+    const prompt = slug + ' $';
+    document.getElementById('pd-term-prompt').textContent = prompt;
+    const tb = document.getElementById('pd-terminal-body');
+    const banner = `<div class="term-line term-output dim">woltspace terminal v0.1 — ${slug}</div><div class="term-line term-output dim">————————————————————————————————</div>`;
+    tb.innerHTML = banner + renderTerminalMessages(pdCurrentThread.messages, prompt);
+    tb.scrollTop = tb.scrollHeight;
+    setTimeout(function() { document.getElementById('pd-term-input').focus(); }, 50);
+  }
 }
 
 function sendPdMessage() {
@@ -5018,8 +6046,13 @@ document.addEventListener('keydown', e => {
       <button class="pd-toolbar-btn" id="pd-btn-external" title="Open live site" onclick="window.open(pdCurrentUrl,'_blank')" style="padding:6px 8px">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       </button>
+      <div class="pd-toolbar-divider"></div>
+      <button class="pd-toolbar-btn" id="pd-kebab-btn" onclick="pdToggleMenu(event)" title="More options" style="padding:6px 10px; font-size:15px; letter-spacing:1px; line-height:1">⋯</button>
     </div>
   </div>
+
+  <div id="pd-menu-backdrop" onclick="pdCloseMenu()"></div>
+  <div id="pd-project-menu"></div>
 
   <!-- Split body -->
   <div class="pd-body">
@@ -5030,8 +6063,25 @@ document.addEventListener('keydown', e => {
       <!-- Wolt header -->
       <div class="pd-wolt-head" id="pd-wolt-head"></div>
 
+      <!-- Mode toggle -->
+      <div style="display:flex; align-items:center; padding:8px 16px 0; flex-shrink:0;">
+        <div class="pd-mode-toggle">
+          <button class="mode-btn active" id="pd-mode-chat" onclick="setPdChatMode('chat')" title="Chat view">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            chat
+          </button>
+          <button class="mode-btn" id="pd-mode-terminal" onclick="setPdChatMode('terminal')" title="Terminal view">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            terminal
+          </button>
+        </div>
+      </div>
+
       <!-- Messages -->
       <div class="pd-messages" id="pd-messages"></div>
+
+      <!-- Terminal body -->
+      <div class="pd-terminal-body" id="pd-terminal-body"></div>
 
       <!-- Input -->
       <div class="pd-input-area" id="pd-input-area">
@@ -5048,6 +6098,12 @@ document.addEventListener('keydown', e => {
         <input type="file" id="pd-file-input" multiple style="display:none" onchange="handlePdFile(event)">
       </div>
 
+      <!-- Terminal input row (shown instead of input-area in terminal mode) -->
+      <div class="pd-term-input-row">
+        <span class="term-input-prompt" id="pd-term-prompt">project $</span>
+        <input class="term-input" id="pd-term-input" type="text" spellcheck="false" autocomplete="off" placeholder="" onkeydown="termPdKey(event)">
+      </div>
+
     </div>
 
     <!-- Drag handle -->
@@ -5058,6 +6114,19 @@ document.addEventListener('keydown', e => {
       <iframe class="pd-iframe" id="pd-iframe" sandbox="allow-scripts"></iframe>
     </div>
 
+  </div>
+</div>
+
+<!-- ── Wolf · Cron Jobs Modal ────────────────────────────── -->
+<div class="modal-backdrop" id="wolf-modal" onclick="if(event.target===this)closeWolfPanel()">
+  <div class="modal" style="width:520px">
+    <div class="modal-header">
+      <div class="modal-title">🐺 wolf · scheduler</div>
+      <button class="modal-close" onclick="closeWolfPanel()">✕</button>
+    </div>
+    <div class="modal-body" id="wolf-modal-body">
+      <!-- rendered by JS -->
+    </div>
   </div>
 </div>
 
@@ -5219,11 +6288,6 @@ document.addEventListener('keydown', e => {
             <div class="project-assign-dot"></div>
             <div class="project-assign-name">Signal Desk Pro</div>
             <div class="project-assign-stack">Next.js · TS</div>
-          </div>
-          <div class="project-assign-row" data-project="daily-digest" data-keeper="lodgebuilder" onclick="selectProject(this)">
-            <div class="project-assign-dot"></div>
-            <div class="project-assign-name">Daily Digest</div>
-            <div class="project-assign-stack">Python · FastAPI</div>
           </div>
           <div class="project-assign-row" data-project="memex" onclick="selectProject(this)">
             <div class="project-assign-dot"></div>
@@ -5457,6 +6521,62 @@ document.addEventListener('keydown', e => {
     document.getElementById('wolt-modal').classList.remove('open');
   }
 
+  // ── Wolf · cron jobs ─────────────────────────────────────────
+  const CRON_JOBS = [
+    {
+      name: 'daily-digest',
+      schedule: 'daily · 08:00 am',
+      next: 'tomorrow · 8:00am',
+      active: true,
+    },
+    {
+      name: 'sitemap-refresh',
+      schedule: 'every 6 hours',
+      next: 'in 3h 14m',
+      active: true,
+    },
+    {
+      name: 'weekly-cleanup',
+      schedule: 'sundays · 03:00 am',
+      next: 'Sun · 3:00am',
+      active: true,
+    },
+  ];
+
+  function openWolfPanel() {
+    const body = document.getElementById('wolf-modal-body');
+    let html = '';
+
+    if (CRON_JOBS.length === 0) {
+      html += `<div class="cron-empty">no scheduled jobs yet</div>`;
+    } else {
+      CRON_JOBS.forEach(function(job) {
+        html += `<div class="cron-job-row">
+          <span class="cron-status-dot"></span>
+          <span class="cron-job-name">${job.name}</span>
+          <span class="cron-schedule">${job.schedule}</span>
+          <span class="cron-next">${job.next}</span>
+        </div>`;
+      });
+    }
+
+    html += `<div class="cron-ask-wolt" onclick="closeWolfPanel()">
+      <span style="font-size:20px">🦫</span>
+      <span class="cron-ask-wolt-text">
+        <strong>Ask your wolt to schedule a new job</strong><br>
+        open a project chat and describe what you need — your wolt will set it up
+      </span>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-3)">→</span>
+    </div>`;
+
+    body.innerHTML = html;
+    document.getElementById('wolf-modal').classList.add('open');
+  }
+
+  function closeWolfPanel() {
+    document.getElementById('wolf-modal').classList.remove('open');
+  }
+
   function handleBackdropClick(e) {
     if (e.target === document.getElementById('wolt-modal')) closeWoltModal();
   }
@@ -5670,7 +6790,83 @@ function autoSelectTimezone() {
 document.addEventListener('DOMContentLoaded', () => {
   const sel = document.getElementById('tz-select');
   if (sel) sel.addEventListener('change', () => sel.dataset.userSet = '1');
+
+  randomizeHomeText();
 });
+
+const GREETINGS = [
+  "the river missed you. the raccoon is indifferent.",
+  "the beaver noticed you were gone. said nothing.",
+  "the log has been floating here the whole time. so has your work.",
+  "the dam held. the raccoon takes no credit.",
+  "the river kept moving. as rivers do.",
+  "the beaver finished its shift. you're starting yours.",
+  "the raccoon found your notes. claims it was just looking.",
+  "the fish jumped twice while you were away. felt relevant.",
+  "things are roughly where you left them. the raccoon moved one thing.",
+  "the clouds have been at it all morning. nothing to report.",
+  "the river is unbothered. the beaver has opinions.",
+  "the raccoon was here first. it would like that acknowledged.",
+  "the dam is holding. the beaver seems smug about it.",
+  "the log drifted a little to the left. no one is sure why.",
+  "the river remembered. the raccoon chose to forget.",
+  "the beaver built something while you were out. won't say what.",
+  "the fish has been circling. it does that.",
+  "the raccoon logged your absence. filed it under 'typical'.",
+  "the clouds moved on. new clouds arrived. it continues.",
+  "the river never left. some of us don't get that option.",
+  "the beaver is unbothered. the raccoon is watching you.",
+  "everything persisted. the raccoon is choosing not to make a thing of it.",
+  "the dam is fine. the beaver said so. once. quietly.",
+  "the log is still here. the raccoon sat on it while you were gone.",
+  "the river runs regardless. you're back now. that's something.",
+  "the raccoon kept your place in the queue. begrudgingly.",
+];
+
+const SUBTITLES = [
+  "the beavers are awake. the dam is structurally questionable. and we have things to build.",
+  "the raccoon is at its desk. the dam passed inspection. barely. let's get to work.",
+  "the river is running. the beaver has a plan. the plan has not been reviewed.",
+  "the dam is holding. the log is floating. the to-do list is not getting shorter on its own.",
+  "the beavers clocked in. the river has no opinion on your deadlines. get moving.",
+  "the raccoon reviewed the roadmap. had notes. we're ignoring them for now.",
+  "the dam is fine. the beaver says so. we're choosing to believe the beaver.",
+  "the fish is watching. the beaver is building. the raccoon is somewhere taking credit.",
+  "the river keeps moving regardless. the beavers suggest you do the same.",
+  "everything is structurally sound except the parts that aren't. onward.",
+  "the beaver submitted a pull request at 3am. we don't ask questions here.",
+  "the raccoon has opinions about the architecture. we have ignored them. heroically.",
+  "the dam is a metaphor. the beavers are not. time to build something real.",
+  "the log drifted into a good position. the beavers are calling it a feature.",
+  "the river remembered where it was going. perhaps you will too.",
+  "the beaver has already started. the raccoon is on its second coffee. let's go.",
+  "the dam has held for three seasons. the beavers are cautiously optimistic.",
+  "the raccoon filed a status report. it was mostly complaints. we're doing it anyway.",
+  "the fish jumped and nobody saw it. the beaver saw it. the beaver doesn't care.",
+  "the dam is slightly off-centre. the river hasn't noticed. let's not mention it.",
+  "the beavers have convened. a decision has been made. it's time to build.",
+  "the raccoon audited the backlog. it got worse. we're proceeding anyway.",
+  "the river doesn't wait. neither does the beaver. that's two hints.",
+  "the dam is structurally questionable and nobody is more excited about it than the beaver.",
+  "the beavers took a morning meeting and decided: yes. build the thing.",
+];
+
+function sentenceCase(str) {
+  return str.replace(/(^\s*|[.!?]\s+)([a-z])/g, function(m, p1, p2) {
+    return p1 + p2.toUpperCase();
+  });
+}
+
+function randomizeHomeText() {
+  const el = document.getElementById('home-greeting');
+  if (el && !el.dataset.userSet) {
+    el.textContent = sentenceCase(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
+  }
+  const sub = document.getElementById('home-welcome-text');
+  if (sub) {
+    sub.textContent = sentenceCase(SUBTITLES[Math.floor(Math.random() * SUBTITLES.length)]);
+  }
+}
 
 function closeSettings() {
   document.getElementById('settings-overlay').classList.remove('open');
@@ -6227,6 +7423,425 @@ function closeTerminal() {
     <input id="term-input" class="term-input" type="text" spellcheck="false" autocomplete="off" onkeydown="termHandleKey(event)" placeholder="" />
   </div>
 </div>
+
+
+<script>
+// ── PIXEL SPRITE RENDERER ─────────────────────────────────────
+(function() {
+  var PX = 8;
+
+  var PAL = {
+    bv: {
+      O:'#1A0803', B:'#3D1A08', m:'#7A3E18', M:'#5A2C10',
+      l:'#C87A40', L:'#E09A58', w:'#F0E8C0', W:'#FFF8E0',
+      k:'#0A0A0A', K:'#484848', r:'#9B4040', T:'#2A1005',
+      t:'#5A3A18', g:'#8B6030', p:'#2A0E05',
+    },
+    rc: {
+      O:'#101010', B:'#2A2A2A', g:'#808080', G:'#B8B8B8',
+      M:'#484848', s:'#686868', w:'#F0F0F0', k:'#0A0A0A',
+      D:'#505050', S:'#989898', p:'#202020',
+    },
+    lg: { O:'#1A0803', B:'#3D1A08', L:'#7B5A36', l:'#9B7850', h:'#C8A870' },
+    lf: { O:'#1A3A15', B:'#2D5A27', L:'#5A9A48', l:'#3A7A30' },
+    lr: { O:'#5A1A05', B:'#8B3010', L:'#E07840', l:'#C4531E' },
+    fs: {
+      O:'#0A2020', B:'#1A4040', f:'#3A7A9A', F:'#5AAAC8',
+      H:'#80CCE0', k:'#0A0A0A', s:'#287A9A',
+    },
+    pk: {
+      O:'#1A0803', B:'#3D1A08', m:'#7A3E18', M:'#5A2C10',
+      l:'#C87A40', L:'#E09A58', w:'#F0E8C0', W:'#FFFFFF',
+      k:'#0A0A0A', K:'#484848', p:'#2A0E05', r:'#9B4040',
+      e:'#FFFFF0',
+    },
+  };
+
+  var MAPS = {
+    bvA: [
+      '.....OOOOOOO....................',
+      '...OOmMMmmmOO...................',
+      '..OmMKOkKMmmO...................',
+      '..OmmKOKKmmmmmOOOOOOO..........',
+      '..OmmrrmmmmmmmOtTtTtTO..........',
+      '.OmMmlllwwwlllmmOtgTgTO.........',
+      '.OmlllllwwwwwlllOTgTgTO.........',
+      '.OmMllllwwwwllllO.OTTTOO........',
+      '..OmmMlllllllmmmO...............',
+      '...OmmmmmmmmmmmmO...............',
+      '....OOOOOOOOOOOOO...............',
+      '...pp.............pp............',
+      '...pO.............pO............',
+    ],
+    bvB: [
+      '.....OOOOOOO....................',
+      '...OOmMMmmmOO...................',
+      '..OmMKOkKMmmO...................',
+      '..OmmKOKKmmmmmOOOOOOO..........',
+      '..OmmrrmmmmmmmOtTtTtTO..........',
+      '.OmMmlllwwwlllmmOtgTgTO.........',
+      '.OmlllllwwwwwlllOTgTgTO.........',
+      '.OmMllllwwwwllllO.OTTTOO........',
+      '..OmmMlllllllmmmO...............',
+      '...OmmmmmmmmmmmmO...............',
+      '....OOOOOOOOOOOOO...............',
+      '....pp...........pp.............',
+      '....pO...........pO.............',
+    ],
+    rcA: [
+      '.....OOOOOOO..........',
+      '....OBgsMsggO.........',
+      '...OBgBkBgBkBgO.......',
+      '...OgkkkkkkkkgO.DSSSD.',
+      '...OggBBBBBBggO.SDSDS.',
+      '..OgggggGGGGgggO.DSDSD',
+      '..OgGGGwwwwwGGGgO.....',
+      '..OgGGGwwwwwGGGgO.....',
+      '..OggggGGGGgggggO.....',
+      '...OBgggggggggBO......',
+      '....OOOOOOOOOOO.......',
+      '...pp.......pp........',
+      '...pO.......pO........',
+    ],
+    rcB: [
+      '.....OOOOOOO..........',
+      '....OBgsMsggO.........',
+      '...OBgBkBgBkBgO.......',
+      '...OgkkkkkkkkgO.DSSSD.',
+      '...OggBBBBBBggO.SDSDS.',
+      '..OgggggGGGGgggO.DSDSD',
+      '..OgGGGwwwwwGGGgO.....',
+      '..OgGGGwwwwwGGGgO.....',
+      '..OggggGGGGgggggO.....',
+      '...OBgggggggggBO......',
+      '....OOOOOOOOOOO.......',
+      '....pp.....pp.........',
+      '....pO.....pO.........',
+    ],
+    log: [
+      'OOOOOOOOOOOOOOOOOOOOOO',
+      'OlLhLlLhLlLhLlLhLlLhO',
+      'OlllllllllllllllllllO',
+      'OBllBllBllBllBllBllBO',
+      'OlllllllllllllllllllO',
+      'OlLhLlLhLlLhLlLhLlLhO',
+      'OOOOOOOOOOOOOOOOOOOOOO',
+    ],
+    leafG: [
+      '....O.....',
+      '...OlO....',
+      '..OlLBO...',
+      '.OlLLBBO..',
+      'OlLLLBBO..',
+      '.OlLLBO...',
+      '..OlLBO...',
+      '...OlO....',
+      '....O.....',
+    ],
+    leafR: [
+      '....O.....',
+      '...OlO....',
+      '..OlLBO...',
+      '.OlLLBBO..',
+      'OlLLLBBO..',
+      '.OlLLBO...',
+      '..OlLBO...',
+      '...OlO....',
+      '....O.....',
+    ],
+    fish: [
+      '..........OOOOOOO......',
+      '.........OBFFHFFBsO....',
+      '........OBFHFFkFFFBO...',
+      '......OOBFFFFHFFFFfBO..',
+      '.....OBBfFFFHFFFFFfBO..',
+      '....OBffFFFFFFFFFFBO...',
+      '.....OBfFFFFFFFFBO.....',
+      '......OBBBBBBBBBO......',
+      '.......OBO...OBO.......',
+      '.......OO.....OO.......',
+    ],
+    peek: [
+      '.......OOOOOOOOOO.......',
+      '......OmMMmmmmMMO.......',
+      '.....OmmMKkKMmmMmO......',
+      '.....OmmKOkOKmmmmO......',
+      '.....OmmmKKKmmmmmO......',
+      '.....OmmmOOOmmrrmO......',
+      '.....OmmmlllwwmmmO......',
+      '.....OmmmmwwewwmmO......',
+      '......OmMmmmmMmO........',
+      '.......OOOOOOOO.........',
+      '....pOO.......OOp.......',
+      '....ppp.......ppp.......',
+    ],
+  };
+
+  function renderSprite(map, pal, px) {
+    var rows = map.length;
+    var cols = Math.max.apply(null, map.map(function(r){return r.length;}));
+    var rects = [];
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < map[r].length; c++) {
+        var fill = pal[map[r][c]];
+        if (!fill) continue;
+        rects.push('<rect x="'+(c*px)+'" y="'+(r*px)+'" width="'+px+'" height="'+px+'" fill="'+fill+'"/>');
+      }
+    }
+    var w = cols*px, h = rows*px;
+    return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;display:block" shape-rendering="crispEdges">'+rects.join('')+'</svg>';
+  }
+
+  function inject(id, mapKey, palKey, px) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = renderSprite(MAPS[mapKey], PAL[palKey], px || PX);
+  }
+
+  inject('sp-bv-main-a', 'bvA', 'bv', 6);
+  inject('sp-bv-main-b', 'bvB', 'bv', 6);
+  inject('sp-bv-side',   'bvA', 'bv', 5);
+  inject('sp-rc-a',      'rcA', 'rc', 6);
+  inject('sp-rc-b',      'rcB', 'rc', 6);
+  inject('sp-log',       'log', 'lg', 5);
+  inject('sp-leaf-g',    'leafG', 'lf', 5);
+  inject('sp-leaf-r',    'leafR', 'lr', 5);
+  inject('sp-fish',      'fish', 'fs', 5);
+  inject('sp-peek',      'peek', 'pk', 6);
+
+  document.querySelectorAll('.sprite-2frame').forEach(function(el) {
+    var svg = el.querySelector('svg');
+    if (svg) {
+      el.style.width  = svg.getAttribute('width')  + 'px';
+      el.style.height = svg.getAttribute('height') + 'px';
+    }
+  });
+})();
+
+// ── LANDSCAPE SCENE GENERATOR ────────────────────────────────
+(function() {
+  var S = 5;                        // px per game-pixel
+  var W = Math.ceil(window.innerWidth / S) + 6;
+  var H  = 42;                      // scene height in game-pixels (210px)
+  var BANK  = 28;                   // row where grass bank starts
+  var RIVER = 34;                   // row where river starts
+
+  var C = {
+    fa:'#8AA6BA', fb:'#6A8698',     // far mountains (cool blue-gray)
+    na:'#3E5A32', nb:'#293E20',     // near hills (dark green)
+    ta:'#3A7030', tb:'#2A5225', tc:'#1A3A18', tt:'#4A2810', // trees
+    ga:'#72B855', gb:'#4A8838', gc:'#2A5A1A', // grass
+    ea:'#5A4020', eb:'#3A2810',     // earth
+    ra:'#90D4E8', rb:'#4AAAC8', rc:'#2A7AAA', rd:'#1A5888', // river
+    ba:'#3A7030', bb:'#224A1A',     // bank edge
+  };
+
+  function dot(x, y, c) {
+    return '<rect x="'+(x*S)+'" y="'+(y*S)+'" width="'+S+'" height="'+S+'" fill="'+c+'"/>';
+  }
+
+  // Undulating terrain profiles (multiple sine waves = natural look)
+  var fp = [], np = [];
+  for (var x = 0; x < W; x++) {
+    fp[x] = Math.round(7 + 5*Math.sin(x*0.05+0.3) + 3*Math.sin(x*0.12+1.7) + 1.5*Math.sin(x*0.04+0.9));
+    np[x] = Math.round(6 + 6*Math.sin(x*0.08+1.0) + 3.5*Math.sin(x*0.16+0.5) + 1.5*Math.sin(x*0.22+2.4));
+  }
+
+  var out = [];
+
+  // Far mountains — fill all the way to BANK so no gap shows behind near hills
+  for (var x = 0; x < W; x++) {
+    var ft = BANK - 16 - fp[x];
+    for (var y = Math.max(ft, 0); y < BANK; y++)
+      out.push(dot(x, y, y === ft ? C.fb : C.fa));
+  }
+
+  // Near hills
+  for (var x = 0; x < W; x++) {
+    var nt = BANK - 2 - np[x];
+    for (var y = Math.max(nt, 1); y < BANK; y++)
+      out.push(dot(x, y, y === nt ? C.nb : C.na));
+  }
+
+  // Grass bank
+  for (var x = 0; x < W; x++) {
+    out.push(dot(x, BANK,   C.ga));
+    out.push(dot(x, BANK+1, C.gb));
+    out.push(dot(x, BANK+2, C.gc));
+    out.push(dot(x, BANK+3, C.ea));
+    for (var y = BANK+4; y < RIVER; y++) out.push(dot(x, y, C.eb));
+  }
+
+  // River (full width, bottom of scene)
+  for (var x = 0; x < W; x++) {
+    out.push(dot(x, RIVER, C.ba));
+    var sh = ((x*3+2) % 9 < 2) ? C.ra : (x % 5 === 0 ? C.rb : C.rc);
+    out.push(dot(x, RIVER+1, sh));
+    out.push(dot(x, RIVER+2, C.rc));
+    out.push(dot(x, RIVER+3, C.rd));
+    for (var y = RIVER+4; y < H; y++) out.push(dot(x, y, C.rd));
+  }
+
+  // Pine trees on mountain slopes
+  function tree(cx, baseY, h) {
+    for (var dy = 0; dy < h; dy++) {
+      var hw = Math.floor((dy + 1) * 0.55);
+      var tc = dy < 2 ? C.ta : (dy < h - 2 ? C.tb : C.tc);
+      for (var dx = -hw; dx <= hw; dx++) {
+        var tx = cx + dx;
+        if (tx >= 0 && tx < W) out.push(dot(tx, baseY - h + 1 + dy, tc));
+      }
+    }
+    if (cx >= 0 && cx < W) { out.push(dot(cx, baseY+1, C.tt)); out.push(dot(cx, baseY+2, C.tt)); }
+  }
+
+  var tx = 3;
+  while (tx < W - 3) {
+    var nt2 = BANK - 2 - np[tx];
+    if (nt2 < BANK - 7) {
+      tree(tx, nt2 + Math.floor(np[tx] * 0.55), 5 + ((tx*7) % 4));
+    }
+    tx += 7 + ((tx*13 + 5) % 5);
+  }
+
+  var el = document.getElementById('bg-nature');
+  if (el) el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="'+(W*S)+'" height="'+(H*S)+'" style="image-rendering:pixelated;display:block" shape-rendering="crispEdges">'+out.join('')+'</svg>';
+})();
+
+// ── CLOUDS ────────────────────────────────────────────────────
+(function() {
+  var CP = { O:'#8898A8', w:'#E0E8EE', W:'#F8FCFF', s:'#BCC8D0' };
+
+  var SHAPES = {
+    lg: [
+      '......OOOO...OOOO.......',
+      '.....OwwWwOOOwwWwO......',
+      '....OwWWWWwOwWWWWwO.....',
+      '...OOwWWWWWwwWWWWWwOO...',
+      '..OwwWWWWWWWWWWWWWWwO...',
+      '..OwWWWWWWWWWWWWWWWWwO..',
+      '..OwWWWWWWWWWWWWWWWWwO..',
+      '..OwWWWWWWWWWWWWWWWWwO..',
+      '..OwwWWWWWWWWWWWWWWwwO..',
+      '..OssssssssssssssssssO..',
+      '...OOOOOOOOOOOOOOOOOO...',
+    ],
+    md: [
+      '....OOO...OOO......',
+      '...OwWwOOOwWwO.....',
+      '..OwWWWwOwWWWwO....',
+      '.OOwWWWWwwWWWWwOO..',
+      '.OwwWWWWWWWWWWWwO..',
+      '.OwWWWWWWWWWWWWwO..',
+      '.OwWWWWWWWWWWWWwO..',
+      '.OwwWWWWWWWWWWwwO..',
+      '.OssssssssssssssO..',
+      '..OOOOOOOOOOOOOO...',
+    ],
+    sm: [
+      '...OOO..OOO....',
+      '..OwWwOOwWwO...',
+      '.OwWWWwwWWWwO..',
+      '.OwwWWWWWWwwO..',
+      '.OwWWWWWWWWwO..',
+      '.OwwWWWWWWwwO..',
+      '.OssssssssssO..',
+      '..OOOOOOOOOO...',
+    ],
+  };
+
+  function renderCloud(map, px) {
+    var cols = Math.max.apply(null, map.map(function(r){return r.length;}));
+    var rects = [];
+    for (var r = 0; r < map.length; r++) {
+      for (var c = 0; c < map[r].length; c++) {
+        var fill = CP[map[r][c]];
+        if (!fill) continue;
+        rects.push('<rect x="'+(c*px)+'" y="'+(r*px)+'" width="'+px+'" height="'+px+'" fill="'+fill+'"/>');
+      }
+    }
+    var w = cols*px, h = map.length*px;
+    return '<svg width="'+w+'" height="'+h+'" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;display:block" shape-rendering="crispEdges">'+rects.join('')+'</svg>';
+  }
+
+  [
+    { id:'cl-1', shape:'lg', px:7 },
+    { id:'cl-2', shape:'md', px:6 },
+    { id:'cl-3', shape:'sm', px:6 },
+    { id:'cl-4', shape:'lg', px:6 },
+    { id:'cl-5', shape:'md', px:5 },
+    { id:'cl-6', shape:'sm', px:5 },
+  ].forEach(function(c) {
+    var el = document.getElementById(c.id);
+    if (el) el.innerHTML = renderCloud(SHAPES[c.shape], c.px);
+  });
+})();
+
+// ── BACKGROUND WACKINESS ENGINE ──────────────────────────────
+(function() {
+  var WACKY_EMOJIS = ['🐟','🍂','💦','🌿','🪵','🦆','🐸','🍄','🌊','🪨','🌰','🐛'];
+
+  function spawnFloatingEmoji() {
+    var scene = document.getElementById('bg-scene');
+    if (!scene || scene.style.display === 'none') return;
+    var el = document.createElement('div');
+    el.className = 'bg-emoji-float';
+    el.textContent = WACKY_EMOJIS[Math.floor(Math.random() * WACKY_EMOJIS.length)];
+    el.style.left   = (8 + Math.random() * 84) + '%';
+    el.style.bottom = (8 + Math.random() * 35) + '%';
+    el.style.fontSize = (14 + Math.random() * 18) + 'px';
+    el.style.opacity  = '0.7';
+    scene.appendChild(el);
+    setTimeout(function(){el.remove();}, 3500);
+  }
+
+  function triggerPeek() {
+    var peek = document.getElementById('bg-peek');
+    if (!peek || peek.classList.contains('active')) return;
+    peek.style.left = (15 + Math.random() * 55) + '%';
+    peek.classList.add('active');
+    setTimeout(function(){peek.classList.remove('active');}, 5500);
+  }
+
+  function triggerFishJump() {
+    var fish = document.getElementById('bg-fish');
+    if (!fish || fish.classList.contains('active')) return;
+    fish.style.right = (80 + Math.random() * 200) + 'px';
+    fish.classList.add('active');
+    setTimeout(function(){fish.classList.remove('active');}, 2800);
+  }
+
+  function triggerLogSpin() {
+    var log = document.getElementById('bg-log');
+    if (!log) return;
+    log.style.transition = 'transform 0.7s cubic-bezier(.68,-0.55,.27,1.55)';
+    log.style.transform  = 'rotate(180deg) translateY(-10px)';
+    setTimeout(function(){log.style.transform = '';}, 800);
+  }
+
+  function triggerBeaverFrenzy() {
+    var b2 = document.getElementById('bg-beaver-2');
+    if (!b2) return;
+    b2.style.animation = 'none';
+    void b2.offsetWidth;
+    b2.style.animation = 'beaver-side-bob 0.45s ease-in-out 8, beaver-side-bob 3.6s ease-in-out infinite';
+  }
+
+  var events = [triggerPeek, triggerFishJump, spawnFloatingEmoji, spawnFloatingEmoji, triggerLogSpin, triggerBeaverFrenzy, triggerPeek];
+
+  function scheduleNext() {
+    var delay = 7000 + Math.random() * 20000;
+    setTimeout(function() {
+      events[Math.floor(Math.random() * events.length)]();
+      scheduleNext();
+    }, delay);
+  }
+
+  setTimeout(scheduleNext, 4000);
+})();
+</script>
+
+<!-- Wolt picker dropdown (global, positioned via JS) -->
+<div id="wolt-picker"></div>
 
 </body>
 </html>
