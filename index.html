@@ -1234,7 +1234,7 @@
     font-weight: 300;
     letter-spacing: -0.03em;
     color: var(--ink);
-    line-height: 1;
+    line-height: 1.1;
     margin-bottom: 24px;
     transition: font-size 0.4s ease;
   }
@@ -2206,10 +2206,7 @@
     padding: 12px 14px;
     border-radius: 7px;
     border: 1px dashed var(--border-2);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
   }
-  .cron-ask-wolt:hover { background: var(--bg); border-color: var(--border); }
   .cron-ask-wolt-text {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -2784,7 +2781,8 @@
     z-index: 1;
   }
   .main:has(#chat-view[style*="flex"]),
-  .main:has(#home-view[style*="flex"]) {
+  .main:has(#home-view[style*="flex"]),
+  .main:has(#lodge-view[style*="flex"]) {
     padding: 0;
     overflow: hidden;
     height: 100vh;
@@ -3445,6 +3443,35 @@
   }
   .context-menu-item.unlink:hover { background: rgba(196,83,30,0.15); }
 
+  /* ── LODGE VIEW ──────────────────────────────────────────────── */
+  #lodge-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    background: #C2D8E8;
+    position: relative;
+    overflow: hidden;
+  }
+  #lodge-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    min-height: 0;
+  }
+  .lodge-hud {
+    position: absolute;
+    top: 18px;
+    left: 28px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(24,16,10,0.4);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
   /* ── WOLT PICKER ───────────────────────────────────────────── */
   #woltspace-toast {
     position: fixed;
@@ -3702,9 +3729,18 @@
       <a href="#" onclick="openWoltModal(event)">+ add wolt</a>
     </div>
 
-    <div class="sidebar-nav-item" id="nav-all-sessions" onclick="showAllSessions()" style="margin-bottom:8px">
+    <div class="sidebar-nav-item" id="nav-all-sessions" onclick="showAllSessions()">
       <span class="sidebar-nav-icon">💬</span>
       <span class="sidebar-nav-label">All Sessions</span>
+    </div>
+    <div class="sidebar-nav-item" id="nav-lodge" onclick="showLodge()" style="margin-bottom:8px">
+      <span class="sidebar-nav-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 18L8 8L12 14L16 8L21 18"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </span>
+      <span class="sidebar-nav-label">Lodge</span>
     </div>
 
     <div class="wolt-card" onclick="openWoltSite('Woltaire')">
@@ -4063,16 +4099,20 @@
   </div>
   <div id="sessions-filter-tabs" class="sessions-filter-tabs"></div>
   <div class="sessions-toolbar">
-    <input id="sessions-search" class="sessions-search" type="text" placeholder="Search conversations…" oninput="asSearch()" />
+    <input id="sessions-search" class="sessions-search" type="text" placeholder="Search projects…" oninput="asSearch()" />
     <select id="sessions-sort" class="sessions-sort" onchange="asSort()">
-      <option value="recent">Most recent</option>
-      <option value="oldest">Oldest first</option>
+      <option value="recent">Default</option>
       <option value="wolt">By wolt</option>
-      <option value="unread">Unread first</option>
     </select>
   </div>
   <div id="all-sessions-list"></div>
   <div id="sessions-pagination" class="sessions-pagination"></div>
+</div>
+
+<!-- ── LODGE VIEW ────────────────────────────────────────────── -->
+<div id="lodge-view" style="display:none">
+  <canvas id="lodge-canvas"></canvas>
+  <div class="lodge-hud">woltspace lodge · live view</div>
 </div>
 
 <!-- ── THREADS VIEW ───────────────────────────────────────────── -->
@@ -4882,17 +4922,28 @@ function navBack() {
 let pendingFiles = [];
 
 function setNavActive(id) {
-  ['nav-home','nav-projects','nav-all-sessions'].forEach(n => {
+  ['nav-home','nav-projects','nav-all-sessions','nav-lodge'].forEach(n => {
     document.getElementById(n)?.classList.remove('active');
   });
   if (id) document.getElementById(id)?.classList.add('active');
 }
 
 function hideAllViews() {
-  ['projects-view','all-sessions-view','threads-view','chat-view','home-view'].forEach(id => {
+  ['projects-view','all-sessions-view','threads-view','chat-view','home-view','lodge-view'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
+  if (typeof stopLodge === 'function') stopLodge();
+}
+
+function showLodge() {
+  hideAllViews();
+  document.getElementById('lodge-view').style.display = 'flex';
+  document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
+  setNavActive('nav-lodge');
+  setGeoVisible(false);
+  currentWolt = null;
+  if (typeof startLodge === 'function') startLodge();
 }
 
 function setGeoVisible(visible) {
@@ -4984,74 +5035,68 @@ function asFlatThreads() {
 }
 
 function renderAllSessions() {
-  let items = asFlatThreads();
+  // Build inverse map: wolt name → [project names]
+  const woltProjects = {};
+  Object.entries(PROJECT_WOLT_ASSIGNMENTS).forEach(([proj, wolt]) => {
+    if (!wolt) return;
+    if (!woltProjects[wolt]) woltProjects[wolt] = [];
+    woltProjects[wolt].push(proj);
+  });
 
-  // filter
+  // Build groups filtered by selected wolt tab and search query
+  let groups = Object.keys(WOLT_DATA)
+    .filter(name => asCurrentWolt === 'all' || asCurrentWolt === name)
+    .map(name => {
+      const m = AS_WOLT_META[name] || { emoji: '🦫', meta: '' };
+      return { woltName: name, woltEmoji: m.emoji, woltMeta: m.meta, projects: woltProjects[name] || [] };
+    })
+    .filter(g => g.projects.length > 0);
+
   if (asCurrentQuery) {
-    items = items.filter(t =>
-      t.title.toLowerCase().includes(asCurrentQuery) ||
-      t.preview.toLowerCase().includes(asCurrentQuery) ||
-      t.woltName.toLowerCase().includes(asCurrentQuery)
-    );
+    groups = groups
+      .map(g => ({
+        ...g,
+        projects: g.projects.filter(p => p.toLowerCase().includes(asCurrentQuery))
+      }))
+      .filter(g => g.projects.length > 0 || g.woltName.toLowerCase().includes(asCurrentQuery));
   }
 
-  // sort
-  if (asCurrentSort === 'oldest') {
-    items = items.slice().reverse();
-  } else if (asCurrentSort === 'wolt') {
-    items.sort((a, b) => a.woltName.localeCompare(b.woltName));
-  } else if (asCurrentSort === 'unread') {
-    items.sort((a, b) => (b.unread ? 1 : 0) - (a.unread ? 1 : 0));
+  if (asCurrentSort === 'wolt') {
+    groups.sort((a, b) => a.woltName.localeCompare(b.woltName));
   }
-
-  const total = items.length;
-  const totalPages = Math.max(1, Math.ceil(total / AS_PAGE_SIZE));
-  if (asCurrentPage > totalPages) asCurrentPage = totalPages;
-  const pageItems = items.slice((asCurrentPage - 1) * AS_PAGE_SIZE, asCurrentPage * AS_PAGE_SIZE);
 
   const list = document.getElementById('all-sessions-list');
+  document.getElementById('sessions-pagination').innerHTML = '';
 
-  if (total === 0) {
+  if (groups.length === 0) {
     list.innerHTML = `<div class="sessions-empty">nothing here. suspiciously quiet. 🦝</div>`;
-    document.getElementById('sessions-pagination').innerHTML = '';
     return;
   }
 
-  // group page items by wolt (preserving order)
-  const groups = [];
-  pageItems.forEach(t => {
-    const last = groups[groups.length - 1];
-    if (last && last.woltName === t.woltName) {
-      last.threads.push(t);
-    } else {
-      groups.push({ woltName: t.woltName, woltEmoji: t.woltEmoji, woltMeta: t.woltMeta, woltProject: t.woltProject, threads: [t] });
-    }
-  });
+  const chevron = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
   list.innerHTML = groups.map(g => {
-    const threads = g.threads.map(t => `
-      <div class="thread-item" onclick="showThreads('${g.woltName}','${g.woltEmoji}','${g.woltMeta}','${g.woltProject}','all-sessions'); showChat('${g.woltName}','${t.id}')">
-        <div class="thread-dot${t.unread ? ' unread' : ''}"></div>
+    const projectRows = g.projects.map(projName => {
+      const pd = PROJECT_DATA[projName] || {};
+      return `<div class="thread-item" onclick="openProject('${projName}')">
         <div class="thread-body">
-          <div class="thread-title">${t.title}</div>
-          <div class="thread-preview">${t.preview}</div>
+          <div class="thread-title">${projName}</div>
+          ${pd.url ? `<div class="thread-preview">${pd.url}</div>` : ''}
         </div>
-        <div class="thread-date">${t.date}</div>
-      </div>`).join('');
+        <div class="thread-date">→</div>
+      </div>`;
+    }).join('');
     return `
       <div class="sessions-group">
         <div class="sessions-group-header" onclick="asToggleGroup(this)">
           <div class="sessions-group-avatar">${g.woltEmoji}</div>
           <div class="sessions-group-name">${g.woltName}</div>
           <div class="sessions-group-meta">${g.woltMeta}</div>
-          <div class="sessions-group-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="sessions-group-chevron">${chevron}</div>
         </div>
-        <div class="threads-list-wrap"><div class="threads-list">${threads}</div></div>
+        <div class="threads-list-wrap"><div class="threads-list">${projectRows}</div></div>
       </div>`;
   }).join('');
-
-  // pagination
-  renderAsPagination(totalPages);
 }
 
 function renderAsPagination(totalPages) {
@@ -6631,13 +6676,12 @@ document.addEventListener('keydown', e => {
       });
     }
 
-    html += `<div class="cron-ask-wolt" onclick="closeWolfPanel()">
+    html += `<div class="cron-ask-wolt">
       <span style="font-size:20px">🦫</span>
       <span class="cron-ask-wolt-text">
         <strong>Ask your wolt to schedule a new job</strong><br>
         open a project chat and describe what you need — your wolt will set it up
       </span>
-      <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-3)">→</span>
     </div>`;
 
     body.innerHTML = html;
@@ -7917,6 +7961,375 @@ function closeTerminal() {
   }
 
   setTimeout(scheduleNext, 4000);
+})();
+
+// ── LODGE WORLD ──────────────────────────────────────────────────
+(function() {
+  var TW = 64, TH = 32;
+  var CW, CH, OX, OY;
+  var raf = null, lastT = 0;
+  var ctx;
+
+  // ── Isometric projection ──────────────────────────────────────
+  function iso(tx, ty, tz) {
+    tz = tz || 0;
+    return {
+      x: OX + (tx - ty) * TW / 2,
+      y: OY + (tx + ty) * TH / 2 - tz * TH,
+    };
+  }
+
+  // ── Scene data ────────────────────────────────────────────────
+  var BUILDINGS = [
+    {
+      id:'lodge', label:'Woltspace Lodge',
+      tx:5, ty:4, tw:4, td:3, th:3,
+      col:{ top:'#E8784A', left:'#B85030', right:'#883018' },
+      cx:7, cy:5.5,
+    },
+    {
+      id:'creatorspace', label:'Creatorspace',
+      tx:9, ty:0, tw:3, td:2, th:3,
+      col:{ top:'#A09AFF', left:'#6C5FD8', right:'#4838A8' },
+      cx:10.5, cy:1,
+    },
+    {
+      id:'signal', label:'Signal Desk Pro',
+      tx:0, ty:1, tw:3, td:2, th:3,
+      col:{ top:'#5DD4A0', left:'#38A87C', right:'#1E7858' },
+      cx:1.5, cy:2,
+    },
+    {
+      id:'memex', label:'Memex',
+      tx:2, ty:8, tw:3, td:2, th:2,
+      col:{ top:'#F0C050', left:'#C08828', right:'#8A5818' },
+      cx:3.5, cy:9,
+    },
+  ];
+
+  var TREES = [
+    {tx:0,ty:5},{tx:0,ty:7},{tx:1,ty:6},
+    {tx:13,ty:2},{tx:13,ty:4},{tx:12,ty:6},
+    {tx:8,ty:10},{tx:10,ty:11},{tx:11,ty:9},
+    {tx:3,ty:11},{tx:5,ty:11},
+    {tx:13,ty:0},{tx:7,ty:0},
+  ];
+
+  // Ground: 0=grass-a, 1=grass-b, 2=path
+  var grid = [];
+  var GW = 14, GH = 12;
+  for (var ty = 0; ty < GH; ty++) {
+    grid[ty] = [];
+    for (var tx = 0; tx < GW; tx++) {
+      grid[ty][tx] = (tx + ty) % 2 === 0 ? 0 : 1;
+    }
+  }
+  [[8,3],[8,2],[9,2],[9,1],[8,1],         // to Creatorspace
+   [6,4],[5,4],[4,3],[3,2],[2,2],[2,1],   // to Signal Desk Pro
+   [6,5],[5,6],[4,7],[3,8],[3,7],         // to Memex
+   [6,4],[7,4],[7,5],[6,5],[6,4],         // lodge forecourt
+  ].forEach(function(p) {
+    if (grid[p[1]] && grid[p[1]][p[0]] !== undefined) grid[p[1]][p[0]] = 2;
+  });
+
+  // Wolt characters
+  var WOLTS = [
+    { name:'Woltaire',    emoji:'🦝', x:10.5, y:1,   tx:10.5, ty:1,   state:'idle', wait:1.5 },
+    { name:'creationwolt',emoji:'🦫', x:1.5,  y:2,   tx:1.5,  ty:2,   state:'idle', wait:3.0 },
+    { name:'lodgebuilder',emoji:'🦫', x:7,    y:5.5, tx:7,    ty:5.5, state:'idle', wait:0.8 },
+    { name:'Wolten',      emoji:'🐕', x:3.5,  y:9,   tx:3.5,  ty:9,   state:'idle', wait:2.5 },
+  ];
+  var SPEED = 0.55; // tiles per second
+
+  // ── Draw: ground diamond ──────────────────────────────────────
+  var GCOLS = ['#7CC454','#6AAE44','#BFAB6E'];
+  function drawTile(tx, ty, type) {
+    var a=iso(tx,ty), b=iso(tx+1,ty), c=iso(tx+1,ty+1), d=iso(tx,ty+1);
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+    ctx.lineTo(c.x,c.y); ctx.lineTo(d.x,d.y);
+    ctx.closePath();
+    ctx.fillStyle = GCOLS[type];
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+
+  // ── Draw: isometric building ──────────────────────────────────
+  function drawBox(b) {
+    var tx=b.tx, ty=b.ty, tw=b.tw, td=b.td, th=b.th, col=b.col;
+    var nw=iso(tx,    ty,    th), ne=iso(tx+tw, ty,    th);
+    var se=iso(tx+tw, ty+td, th), sw=iso(tx,    ty+td, th);
+    var ne0=iso(tx+tw, ty,    0), se0=iso(tx+tw, ty+td, 0), sw0=iso(tx, ty+td, 0);
+
+    // South face (left on screen)
+    ctx.beginPath();
+    ctx.moveTo(sw.x,sw.y); ctx.lineTo(se.x,se.y);
+    ctx.lineTo(se0.x,se0.y); ctx.lineTo(sw0.x,sw0.y);
+    ctx.closePath();
+    ctx.fillStyle = col.left; ctx.fill();
+
+    // East face (right on screen)
+    ctx.beginPath();
+    ctx.moveTo(ne.x,ne.y); ctx.lineTo(se.x,se.y);
+    ctx.lineTo(se0.x,se0.y); ctx.lineTo(ne0.x,ne0.y);
+    ctx.closePath();
+    ctx.fillStyle = col.right; ctx.fill();
+
+    // Top face
+    ctx.beginPath();
+    ctx.moveTo(nw.x,nw.y); ctx.lineTo(ne.x,ne.y);
+    ctx.lineTo(se.x,se.y); ctx.lineTo(sw.x,sw.y);
+    ctx.closePath();
+    ctx.fillStyle = col.top; ctx.fill();
+
+    // Pixel-art outline
+    ctx.strokeStyle = 'rgba(0,0,0,0.28)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(nw.x,nw.y); ctx.lineTo(ne.x,ne.y);
+    ctx.lineTo(se.x,se.y); ctx.lineTo(sw.x,sw.y); ctx.closePath(); ctx.stroke();
+    [[ne,ne0],[se,se0],[sw,sw0]].forEach(function(e) {
+      ctx.beginPath(); ctx.moveTo(e[0].x,e[0].y); ctx.lineTo(e[1].x,e[1].y); ctx.stroke();
+    });
+    ctx.beginPath();
+    ctx.moveTo(sw0.x,sw0.y); ctx.lineTo(se0.x,se0.y); ctx.lineTo(ne0.x,ne0.y); ctx.stroke();
+
+    // Windows on south face
+    for (var col2=0; col2<tw; col2++) {
+      for (var row=0; row < (th>=3?2:1); row++) {
+        var wx=tx+col2+0.18, wy=ty+td, wz=th-row-0.75, wh=0.42, ww=0.64;
+        var wtl=iso(wx,wy,wz+wh), wtr=iso(wx+ww,wy,wz+wh);
+        var wbr=iso(wx+ww,wy,wz), wbl=iso(wx,wy,wz);
+        ctx.beginPath();
+        ctx.moveTo(wtl.x,wtl.y); ctx.lineTo(wtr.x,wtr.y);
+        ctx.lineTo(wbr.x,wbr.y); ctx.lineTo(wbl.x,wbl.y);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.fill();
+        ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=0.8; ctx.stroke();
+      }
+    }
+    // Windows on east face
+    for (var col3=0; col3<td; col3++) {
+      for (var row2=0; row2 < (th>=3?2:1); row2++) {
+        var ex=tx+tw, ey=ty+col3+0.18, ez=th-row2-0.75, ewh=0.42, ewd=0.64;
+        var etl=iso(ex,ey,ez+ewh), etr=iso(ex,ey+ewd,ez+ewh);
+        var ebr=iso(ex,ey+ewd,ez), ebl=iso(ex,ey,ez);
+        ctx.beginPath();
+        ctx.moveTo(etl.x,etl.y); ctx.lineTo(etr.x,etr.y);
+        ctx.lineTo(ebr.x,ebr.y); ctx.lineTo(ebl.x,ebl.y);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.fill();
+        ctx.strokeStyle='rgba(0,0,0,0.10)'; ctx.lineWidth=0.8; ctx.stroke();
+      }
+    }
+  }
+
+  // ── Draw: building label ──────────────────────────────────────
+  function drawLabel(b) {
+    var p = iso(b.tx + b.tw*0.5, b.ty + b.td*0.5, b.th + 0.9);
+    ctx.font = 'bold 11px monospace';
+    ctx.textAlign = 'center';
+    var lw = ctx.measureText(b.label).width + 16;
+    ctx.fillStyle = 'rgba(24,16,10,0.82)';
+    rrect(p.x - lw/2, p.y - 12, lw, 18, 4);
+    ctx.fill();
+    ctx.fillStyle = '#EDE8DE';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.label, p.x, p.y - 3);
+  }
+
+  // ── Draw: pixel tree ─────────────────────────────────────────
+  function drawTree(tx, ty) {
+    var base = iso(tx+0.5, ty+0.5, 0);
+    var mid  = iso(tx+0.5, ty+0.5, 0.9);
+    var top  = iso(tx+0.5, ty+0.5, 2.1);
+
+    // Trunk
+    ctx.fillStyle = '#6A3A18';
+    ctx.fillRect(base.x-4, mid.y, 8, base.y-mid.y);
+
+    // Canopy — two triangle layers
+    ctx.fillStyle = '#4A7A30';
+    ctx.beginPath();
+    ctx.moveTo(mid.x, top.y+8);
+    ctx.lineTo(mid.x-22, base.y-6);
+    ctx.lineTo(mid.x+22, base.y-6);
+    ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = '#386428';
+    ctx.beginPath();
+    ctx.moveTo(top.x, top.y-2);
+    ctx.lineTo(top.x-15, top.y+20);
+    ctx.lineTo(top.x+15, top.y+20);
+    ctx.closePath(); ctx.fill();
+
+    // Snow cap (on-brand with the bg-nature scene)
+    ctx.fillStyle = '#EEF2F6';
+    ctx.beginPath();
+    ctx.moveTo(top.x, top.y-6);
+    ctx.lineTo(top.x-7, top.y+6);
+    ctx.lineTo(top.x+7, top.y+6);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // ── Draw: wolt sprite ────────────────────────────────────────
+  function drawWolt(w, t) {
+    var pos = iso(w.x, w.y, 0);
+    var walking = w.state === 'walking';
+    var freq = walking ? 0.009 : 0.0025;
+    var amp  = walking ? 3.5 : 1.8;
+    var bob = Math.sin(t * freq) * amp;
+
+    // Shadow
+    ctx.save();
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.ellipse(pos.x, pos.y, 13, 5, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+
+    // Emoji body
+    ctx.font = '24px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(w.emoji, pos.x, pos.y - 4 + bob);
+
+    // Name chip
+    ctx.font = 'bold 9px monospace';
+    ctx.textAlign = 'center';
+    var lw2 = ctx.measureText(w.name).width + 10;
+    var lx = pos.x - lw2/2, ly = pos.y - 44 + bob;
+    ctx.fillStyle = 'rgba(24,16,10,0.75)';
+    rrect(lx, ly, lw2, 14, 3); ctx.fill();
+    ctx.fillStyle = '#EDE8DE';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(w.name, pos.x, ly+7);
+  }
+
+  // Rounded rect helper (canvas roundRect not universally available)
+  function rrect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  // ── Update wolt movement ──────────────────────────────────────
+  function updateWolts(dt) {
+    WOLTS.forEach(function(w) {
+      if (w.state === 'walking') {
+        var dx = w.tx - w.x, dy = w.ty - w.y;
+        var dist = Math.sqrt(dx*dx + dy*dy);
+        var step = SPEED * dt;
+        if (dist <= step) {
+          w.x = w.tx; w.y = w.ty;
+          w.state = 'idle';
+          w.wait = 2 + Math.random() * 6;
+        } else {
+          w.x += (dx/dist) * step;
+          w.y += (dy/dist) * step;
+        }
+      } else {
+        w.wait -= dt;
+        if (w.wait <= 0) {
+          var target = BUILDINGS[Math.floor(Math.random() * BUILDINGS.length)];
+          w.tx = target.cx + (Math.random()-0.5) * 1.4;
+          w.ty = target.cy + (Math.random()-0.5) * 1.4;
+          w.state = 'walking';
+        }
+      }
+    });
+  }
+
+  // ── Main draw ────────────────────────────────────────────────
+  function draw(t) {
+    ctx.clearRect(0, 0, CW, CH);
+
+    // Sky gradient (pixel-art: 3 flat bands)
+    ctx.fillStyle = '#B0CAE0'; ctx.fillRect(0, 0, CW, CH*0.35);
+    ctx.fillStyle = '#C4D8EC'; ctx.fillRect(0, CH*0.35, CW, CH*0.25);
+    ctx.fillStyle = '#D4E4F0'; ctx.fillRect(0, CH*0.6, CW, CH*0.4);
+
+    // Pixel clouds
+    ctx.fillStyle = 'rgba(255,255,255,0.72)';
+    [[0.12,0.07,128,22],[0.38,0.04,180,18],[0.65,0.09,110,16],[0.85,0.05,140,20]].forEach(function(c) {
+      var cx = CW*c[0] + Math.sin(t*0.00008 + c[0]*6)*18;
+      var cy = CH*c[1];
+      ctx.fillRect(cx, cy, c[2], c[3]);
+      ctx.fillRect(cx+14, cy-9, c[2]-28, 12);
+      ctx.fillRect(cx+28, cy-16, c[2]-60, 10);
+    });
+
+    // Ground tiles
+    for (var gy = 0; gy < GH; gy++) {
+      for (var gx = 0; gx < GW; gx++) {
+        drawTile(gx, gy, grid[gy][gx]);
+      }
+    }
+
+    // Collect drawables and sort by iso depth (painter's algorithm)
+    var objects = [];
+    TREES.forEach(function(t2) {
+      var d = iso(t2.tx+0.5, t2.ty+1, 0).y;
+      objects.push({ depth:d, fn: (function(t3){ return function(){ drawTree(t3.tx, t3.ty); }; })(t2) });
+    });
+    BUILDINGS.forEach(function(b) {
+      var d = iso(b.tx+b.tw, b.ty+b.td, 0).y;
+      objects.push({ depth:d, fn: (function(b2){ return function(){ drawBox(b2); drawLabel(b2); }; })(b) });
+    });
+    WOLTS.forEach(function(w) {
+      var d = iso(w.x, w.y+0.5, 0).y;
+      objects.push({ depth:d, fn: (function(w2){ return function(){ drawWolt(w2, t); }; })(w) });
+    });
+
+    objects.sort(function(a,b){ return a.depth - b.depth; });
+    objects.forEach(function(o){ o.fn(); });
+  }
+
+  // ── Animation loop ────────────────────────────────────────────
+  function loop(t) {
+    var dt = Math.min((t - lastT) / 1000, 0.05);
+    lastT = t;
+    updateWolts(dt);
+    draw(t);
+    raf = requestAnimationFrame(loop);
+  }
+
+  function resize() {
+    var el = document.getElementById('lodge-view');
+    var canvas = document.getElementById('lodge-canvas');
+    if (!el || !canvas) return;
+    CW = canvas.width  = el.clientWidth  || window.innerWidth;
+    CH = canvas.height = el.clientHeight || 600;
+    OX = CW * 0.5;
+    OY = CH * 0.22;
+  }
+
+  window.startLodge = function() {
+    var canvas = document.getElementById('lodge-canvas');
+    if (!canvas) return;
+    ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    resize();
+    if (!raf) {
+      lastT = performance.now();
+      raf = requestAnimationFrame(loop);
+    }
+  };
+
+  window.stopLodge = function() {
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+  };
+
+  window.addEventListener('resize', function() {
+    if (raf) resize();
+  });
 })();
 </script>
 
