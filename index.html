@@ -8233,6 +8233,7 @@ function closeTerminal() {
     ctx.globalAlpha = 1;
     ctx.fillStyle = 'rgba(0,0,0,0.18)';
     ctx.beginPath(); ctx.ellipse(x, y+8, 12, 4, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#000000'; // must be opaque before emoji fillText or browsers apply fillStyle alpha to the emoji
     ctx.font='28px serif'; ctx.textAlign='center'; ctx.textBaseline='bottom';
     ctx.fillText(w.emoji, x, y-2+bob);
     ctx.font='bold 9px monospace';
