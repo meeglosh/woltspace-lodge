@@ -7965,505 +7965,363 @@ function closeTerminal() {
 
 // ── LODGE WORLD ──────────────────────────────────────────────────
 (function() {
-  var TW = 64, TH = 32;
-  var CW, CH, OX, OY;
+  // Stardew Valley-style top-down world
+  var T = 48; // tile size in pixels
+  var MW = 20, MH = 15; // map dimensions in tiles
+  var CW, CH, OX, OY, ctx;
   var raf = null, lastT = 0;
-  var ctx;
 
-  function iso(tx, ty, tz) {
-    tz = tz || 0;
-    return { x: OX + (tx-ty)*TW/2, y: OY + (tx+ty)*TH/2 - tz*TH };
-  }
-
-  // ── Palette ──────────────────────────────────────────────────
-  var P = {
-    logA:'#A87848', logB:'#7A5028', logC:'#C49A60', logD:'#5A3818',
-    thatchA:'#C89840', thatchB:'#A07828', thatchC:'#7A5A18',
-    stoneA:'#9A8C7A', stoneB:'#7A6C5A', stoneC:'#605848',
-    plankA:'#C4924E', plankB:'#9A6830', plankC:'#784E20',
-    flagRed:'#C83428', flagPurple:'#7C60D0', flagTeal:'#2AAA7A', flagAmber:'#E0A020',
-    grass1:'#7CC454', grass2:'#6AAE44', pathC:'#BFAB6E',
+  // ── Palette ─────────────────────────────────────────────────
+  var C = {
+    g1:'#76c442', g2:'#5aad30', g3:'#88d454', gd:'#4a9426',
+    d1:'#c8a464', d2:'#b08848', d3:'#dab87a',
+    w1:'#3c8cd8', w2:'#2e78c4', wl:'#68aee8', wf:'#acd4f4',
+    tD:'#2a4a1a', tM:'#3e6e2e', tL:'#5a9040', tT:'#8c5e30',
+    fA:'#e898c0', fB:'#f4d458', fC:'#b858e0',
+    wdA:'#c49250', wdB:'#9a6c30', wdC:'#ddb870',
+    stA:'#9e8c7a', stB:'#7c6a58',
+    rRt:'#cc4030', rRd:'#a02820',
+    rBt:'#3e60b8', rBd:'#2846a0',
+    rGt:'#489040', rGd:'#2e6428',
+    rAt:'#d4a018', rAd:'#a87810',
+    sky1:'#6cc0e0', sky2:'#a8d8f0',
   };
 
-  // ── Ground grid ───────────────────────────────────────────────
-  var GW=14, GH=12, grid=[];
-  for(var gy=0;gy<GH;gy++){grid[gy]=[];for(var gx=0;gx<GW;gx++)grid[gy][gx]=(gx+gy)%2===0?0:1;}
-  [[8,3],[8,2],[9,2],[9,1],[8,1],[6,4],[5,4],[4,3],[3,2],[2,2],[2,1],
-   [6,5],[5,6],[4,7],[3,8],[3,7],[7,4],[7,5],[6,5],[6,4]
-  ].forEach(function(p){if(grid[p[1]])grid[p[1]][p[0]]=2;});
-
-  // ── Building centres for wolt navigation ─────────────────────
-  var BUILDINGS = [
-    {cx:7,  cy:5.5},{cx:10.5,cy:1},{cx:1.5,cy:2},{cx:3.5,cy:9}
+  // ── Map  (0=grass 1=path 2=water 3=flower 4=dark-grass) ────
+  var MAP = [
+  //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19
+   [4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4],//0
+   [4, 4, 4, 4, 4, 4, 0, 0, 2, 2, 2, 0, 0, 0, 4, 4, 4, 4, 4, 4],//1
+   [4, 4, 4, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4],//2
+   [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4],//3
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//4
+   [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0],//5
+   [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],//6
+   [3, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 3],//7
+   [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],//8
+   [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, 0],//9
+   [0, 0, 0, 1, 0, 3, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],//10
+   [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//11
+   [0, 3, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],//12
+   [4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4],//13
+   [4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4],//14
   ];
 
-  var TREES=[
-    {tx:0,ty:5},{tx:0,ty:7},{tx:1,ty:6},
-    {tx:13,ty:2},{tx:13,ty:4},{tx:12,ty:6},
-    {tx:8,ty:10},{tx:10,ty:11},{tx:11,ty:9},
-    {tx:3,ty:11},{tx:5,ty:11},{tx:13,ty:0},{tx:7,ty:0},
+  // ── Buildings ───────────────────────────────────────────────
+  var BLDS = [
+    {tx:7, ty:4, w:4, h:3, name:'Woltspace Lodge',   roof:'red',   cx:9,    cy:5.5 },
+    {tx:14,ty:1, w:3, h:2, name:'Creatorspace',      roof:'blue',  cx:15.5, cy:2.0 },
+    {tx:0, ty:8, w:3, h:3, name:'Signal Desk Pro',   roof:'green', cx:1.5,  cy:9.5 },
+    {tx:16,ty:8, w:3, h:3, name:'Memex',             roof:'amber', cx:17.5, cy:9.5 },
   ];
 
-  var WOLTS=[
-    {name:'Woltaire',    emoji:'🦝',x:10.5,y:1,  tx:10.5,ty:1,  state:'idle',wait:1.5},
-    {name:'creationwolt',emoji:'🦫',x:1.5, y:2,  tx:1.5, ty:2,  state:'idle',wait:3.0},
-    {name:'lodgebuilder',emoji:'🦫',x:7,   y:5.5,tx:7,   ty:5.5,state:'idle',wait:0.8},
-    {name:'Wolten',      emoji:'🐕',x:3.5, y:9,  tx:3.5, ty:9,  state:'idle',wait:2.5},
+  // ── Trees (tile coords; skip building footprints) ───────────
+  var TREES = [
+    {tx:0,ty:0},{tx:1,ty:0},{tx:2,ty:0},{tx:5,ty:0},{tx:11,ty:0},{tx:12,ty:0},
+    {tx:16,ty:0},{tx:17,ty:0},{tx:18,ty:0},{tx:19,ty:0},
+    {tx:0,ty:1},{tx:19,ty:1},
+    {tx:0,ty:2},{tx:19,ty:2},
+    {tx:0,ty:13},{tx:0,ty:14},{tx:1,ty:14},{tx:2,ty:14},
+    {tx:17,ty:13},{tx:18,ty:14},{tx:19,ty:13},{tx:19,ty:14},
+    {tx:10,ty:2},{tx:11,ty:3},{tx:12,ty:2},
+    {tx:4,ty:12},{tx:5,ty:13},{tx:10,ty:12},
   ];
-  var SPEED = 0.55;
 
-  // ── Face primitives ───────────────────────────────────────────
-  // South face: at constant ty, varying tx (tx1→tx2) and tz (tz1→tz2)
-  function sf(tx1,tyC,tz1,tx2,tz2,col){
-    var a=iso(tx1,tyC,tz1),b=iso(tx2,tyC,tz1),c=iso(tx2,tyC,tz2),d=iso(tx1,tyC,tz2);
-    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();
-    ctx.fillStyle=col;ctx.fill();
-  }
-  // East face: at constant tx, varying ty (ty1→ty2) and tz (tz1→tz2)
-  function ef(txC,ty1,tz1,ty2,tz2,col){
-    var a=iso(txC,ty1,tz2),b=iso(txC,ty2,tz2),c=iso(txC,ty2,tz1),d=iso(txC,ty1,tz1);
-    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();
-    ctx.fillStyle=col;ctx.fill();
-  }
-  // Top face: at constant tz, quadrilateral
-  function tf(tx1,ty1,tx2,ty2,tzC,col){
-    var a=iso(tx1,ty1,tzC),b=iso(tx2,ty1,tzC),c=iso(tx2,ty2,tzC),d=iso(tx1,ty2,tzC);
-    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();
-    ctx.fillStyle=col;ctx.fill();
-  }
-  // Triangle helper
-  function tri(ax,ay,bx,by,cx2,cy2,col){
-    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.lineTo(cx2,cy2);ctx.closePath();
-    ctx.fillStyle=col;ctx.fill();
-  }
-  // Outline a poly (array of {x,y})
-  function outline(pts,col,lw){
-    ctx.strokeStyle=col||'rgba(0,0,0,0.28)';ctx.lineWidth=lw||1.2;
-    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
-    for(var i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);
-    ctx.closePath();ctx.stroke();
-  }
-  // Single line
-  function ln(ax,ay,bx,by,col,lw){
-    ctx.strokeStyle=col;ctx.lineWidth=lw||1.5;
-    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.stroke();
-  }
-  // Rounded rect helper
-  function rrect(x,y,w,h,r){
-    ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
-    ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+  // ── Wolts ────────────────────────────────────────────────────
+  var WOLTS = [
+    {name:'Woltaire',     emoji:'🦝', x:9,    y:5.5,  tx:9,    ty:5.5,  state:'idle', wait:2.0},
+    {name:'creationwolt', emoji:'🦫', x:15.5, y:2.0,  tx:15.5, ty:2.0,  state:'idle', wait:3.5},
+    {name:'lodgebuilder', emoji:'🦦', x:1.5,  y:9.5,  tx:1.5,  ty:9.5,  state:'idle', wait:1.2},
+    {name:'Wolten',       emoji:'🐕', x:17.5, y:9.5,  tx:17.5, ty:9.5,  state:'idle', wait:4.0},
+  ];
+  var SPEED = 2.8;
+
+  // ── Pre-generated tile noise ─────────────────────────────────
+  var NOISE = [];
+  for (var i = 0; i < MW*MH; i++) NOISE.push(Math.random());
+
+  function sx(tx) { return OX + tx * T; }
+  function sy(ty) { return OY + ty * T; }
+
+  // ── Rounded rect ─────────────────────────────────────────────
+  function rr(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
   }
 
-  // ── Log-stripe wall helper ────────────────────────────────────
-  function logWall(tx1,tyC,tx2,tz0,tz1,colA,colB,isEast){
-    // Fill
-    if(isEast) ef(tx1,tyC,tz0,tx2,tz1,colA); else sf(tx1,tyC,tz0,tx2,tz1,colA);
-    // Log stripes
-    var lp=0.38;
-    for(var z=tz0;z<tz1;z+=lp*2){
-      var zs=z+lp*0.2,zt=z+lp;
-      if(isEast){
-        sf(tx1,tyC,zs,tx2,zt,colB); // reuse sf but with east semantics — actually ef
-        // east stripe: ef(txC, ty1, zs, ty2, zt, colB)
-        var a2=iso(tx1,tyC,zt),b2=iso(tx1,tx2,zt),c2=iso(tx1,tx2,zs),d2=iso(tx1,tyC,zs);
-        ctx.beginPath();ctx.moveTo(a2.x,a2.y);ctx.lineTo(b2.x,b2.y);ctx.lineTo(c2.x,c2.y);ctx.lineTo(d2.x,d2.y);ctx.closePath();
-        ctx.fillStyle=colB;ctx.fill();
-      } else {
-        sf(tx1,tyC,zs,tx2,zt,colB);
-      }
+  // ── Tile renderers ───────────────────────────────────────────
+  function drawGrass(tx, ty, n) {
+    var x = sx(tx), y = sy(ty);
+    ctx.fillStyle = n < 0.18 ? C.g2 : n > 0.82 ? C.g3 : C.g1;
+    ctx.fillRect(x, y, T, T);
+    if (n > 0.75) {
+      ctx.fillStyle = 'rgba(255,255,255,0.07)';
+      ctx.fillRect(x+7, y+9, 3, 2); ctx.fillRect(x+21, y+27, 2, 3);
     }
   }
-
-  // ── Pitched roof ─────────────────────────────────────────────
-  function pitchedRoof(tx,ty,tw,td,baseZ,ridgeH,cols){
-    var ridgeY=ty+td/2;
-    var rL=iso(tx,ridgeY,baseZ+ridgeH), rR=iso(tx+tw,ridgeY,baseZ+ridgeH);
-    var swB=iso(tx,ty+td,baseZ), seB=iso(tx+tw,ty+td,baseZ);
-    var nwB=iso(tx,ty,baseZ),    neB=iso(tx+tw,ty,baseZ);
-    // North slope (back, darker — draw first)
-    ctx.beginPath();ctx.moveTo(nwB.x,nwB.y);ctx.lineTo(neB.x,neB.y);ctx.lineTo(rR.x,rR.y);ctx.lineTo(rL.x,rL.y);ctx.closePath();
-    ctx.fillStyle=cols.north;ctx.fill();
-    // East gable
-    tri(neB.x,neB.y,seB.x,seB.y,rR.x,rR.y,cols.east);
-    // South slope (front, lit)
-    ctx.beginPath();ctx.moveTo(swB.x,swB.y);ctx.lineTo(seB.x,seB.y);ctx.lineTo(rR.x,rR.y);ctx.lineTo(rL.x,rL.y);ctx.closePath();
-    ctx.fillStyle=cols.south;ctx.fill();
-    // Outline
-    outline([rL,rR],'rgba(0,0,0,0.22)',1.2);
-    ctx.beginPath();ctx.moveTo(rL.x,rL.y);ctx.lineTo(swB.x,swB.y);ctx.moveTo(rR.x,rR.y);ctx.lineTo(seB.x,seB.y);
-    ctx.moveTo(rR.x,rR.y);ctx.lineTo(neB.x,neB.y);ctx.strokeStyle='rgba(0,0,0,0.2)';ctx.lineWidth=1;ctx.stroke();
+  function drawDarkGrass(tx, ty) {
+    ctx.fillStyle = C.gd; ctx.fillRect(sx(tx), sy(ty), T, T);
+  }
+  function drawPath(tx, ty) {
+    var x = sx(tx), y = sy(ty);
+    ctx.fillStyle = C.d1; ctx.fillRect(x, y, T, T);
+    ctx.fillStyle = C.d2;
+    ctx.fillRect(x+2, y+2, 3, 2); ctx.fillRect(x+T-9, y+T-7, 4, 2);
+    ctx.fillStyle = C.d3; ctx.fillRect(x+11, y+5, 2, 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.07)';
+    ctx.fillRect(x, y, T, 2); ctx.fillRect(x, y, 2, T);
+  }
+  function drawWater(tx, ty, t2) {
+    var x = sx(tx), y = sy(ty);
+    ctx.fillStyle = C.w1; ctx.fillRect(x, y, T, T);
+    var ph = (tx * 1.9 + ty * 2.7 + t2 * 0.0009) % (Math.PI*2);
+    var ry = Math.sin(ph) * 3.5;
+    ctx.fillStyle = C.wl; ctx.fillRect(x+5, y+9+ry, 16, 3); ctx.fillRect(x+24, y+25+ry*0.6, 12, 2);
+    ctx.fillStyle = C.wf; ctx.fillRect(x+7, y+9+ry, 4, 1);
+    ctx.fillStyle = 'rgba(0,0,80,0.12)'; ctx.fillRect(x, y, T, 2);
+  }
+  function drawFlower(tx, ty, n) {
+    drawGrass(tx, ty, n);
+    var x = sx(tx), y = sy(ty);
+    var fc = n < 0.4 ? C.fA : n < 0.7 ? C.fB : C.fC;
+    ctx.fillStyle = fc;
+    ctx.fillRect(x+7, y+11, 5, 5); ctx.fillRect(x+22, y+19, 4, 4); ctx.fillRect(x+31, y+7, 5, 5);
+    ctx.fillStyle = '#f8f4a0';
+    ctx.fillRect(x+9, y+13, 2, 2); ctx.fillRect(x+24, y+21, 2, 2); ctx.fillRect(x+33, y+9, 2, 2);
+    ctx.fillStyle = '#5a9a3c';
+    ctx.fillRect(x+10, y+16, 2, 5); ctx.fillRect(x+25, y+25, 2, 4);
   }
 
-  // ── Flag pole + flying flag ───────────────────────────────────
-  function flagPole(poleTx,poleTy,baseZ,poleH,flagCol,flagLenTx,flagHtz){
-    var bot=iso(poleTx,poleTy,baseZ), top=iso(poleTx,poleTy,baseZ+poleH);
-    ln(bot.x,bot.y,top.x,top.y,'#704828',2.5);
-    var fTL=iso(poleTx,poleTy,baseZ+poleH);
-    var fTR=iso(poleTx+flagLenTx,poleTy,baseZ+poleH);
-    var fBR=iso(poleTx+flagLenTx,poleTy,baseZ+poleH-flagHtz);
-    var fBL=iso(poleTx,poleTy,baseZ+poleH-flagHtz);
-    ctx.beginPath();ctx.moveTo(fTL.x,fTL.y);ctx.lineTo(fTR.x,fTR.y);ctx.lineTo(fBR.x,fBR.y);ctx.lineTo(fBL.x,fBL.y);ctx.closePath();
-    ctx.fillStyle=flagCol;ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,0.18)';ctx.lineWidth=0.8;ctx.stroke();
+  function drawTile(tx, ty, t2) {
+    var type = (MAP[ty] && MAP[ty][tx] != null) ? MAP[ty][tx] : 0;
+    var n = NOISE[ty*MW+tx] || 0.5;
+    if      (type===0) drawGrass(tx,ty,n);
+    else if (type===1) drawPath(tx,ty);
+    else if (type===2) drawWater(tx,ty,t2);
+    else if (type===3) drawFlower(tx,ty,n);
+    else if (type===4) drawDarkGrass(tx,ty);
   }
 
-  // ── Floating landmark label ───────────────────────────────────
-  function drawLabel(text,p){
-    ctx.font='bold 11px monospace';ctx.textAlign='center';
-    var lw=ctx.measureText(text).width+16;
-    ctx.fillStyle='rgba(24,16,10,0.82)';
-    rrect(p.x-lw/2,p.y-12,lw,18,4);ctx.fill();
-    ctx.fillStyle='#EDE8DE';ctx.textBaseline='middle';ctx.fillText(text,p.x,p.y-3);
-  }
+  // ── Building (SDV front-facing farm style) ───────────────────
+  function drawBuilding(b) {
+    var bx = sx(b.tx), by = sy(b.ty);
+    var bw = b.w * T, bh = b.h * T;
+    var roofH = Math.round(bh * 0.45);
+    var wallH = bh - roofH;
+    var wallY = by + roofH;
+    var roofCol = {red:[C.rRt,C.rRd], blue:[C.rBt,C.rBd], green:[C.rGt,C.rGd], amber:[C.rAt,C.rAd]}[b.roof];
+    var midX = bx + bw/2;
 
-  // ── Landmark 1: Woltspace Lodge — log cabin ───────────────────
-  function drawLodge(){
-    var tx=5,ty=4,tw=4,td=3;
+    // Ground shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.fillRect(bx+4, wallY+wallH-2, bw+2, 8);
 
-    // Stone foundation
-    sf(tx,ty+td,0,tx+tw,0.35,P.stoneB);
-    ef(tx+tw,ty,0,ty+td,0.35,P.stoneC);
-    tf(tx,ty,tx+tw,ty+td,0.35,P.stoneA);
-    outline([iso(tx,ty+td,0.35),iso(tx+tw,ty+td,0.35),iso(tx+tw,ty+td,0),iso(tx,ty+td,0)],'rgba(0,0,0,0.2)',1);
+    // --- Front wall ---
+    ctx.fillStyle = C.wdA; ctx.fillRect(bx, wallY, bw, wallH);
+    // Plank lines
+    ctx.fillStyle = 'rgba(0,0,0,0.09)';
+    for (var py = wallY+10; py < wallY+wallH-4; py+=10) ctx.fillRect(bx+3, py, bw-6, 2);
+    // Left/bottom shadow
+    ctx.fillStyle = C.wdB;
+    ctx.fillRect(bx, wallY, 5, wallH);
+    ctx.fillRect(bx, wallY+wallH-5, bw, 5);
 
-    // Log walls (0.35 → 2.5)
-    var wt=2.5;
-    sf(tx,ty+td,0.35,tx+tw,wt,P.logA);
-    ef(tx+tw,ty,0.35,ty+td,wt,P.logB);
-    tf(tx,ty,tx+tw,ty+td,wt,P.logC);
-    var lp=0.38;
-    // Log stripes south
-    for(var z=0.35;z<wt;z+=lp*2){sf(tx,ty+td,z+lp*0.15,tx+tw,z+lp,P.logB);}
-    // Log stripes east
-    for(var z2=0.35;z2<wt;z2+=lp*2){
-      var a=iso(tx+tw,ty,z2+lp),b=iso(tx+tw,ty+td,z2+lp);
-      var c=iso(tx+tw,ty+td,z2+lp*0.15),d=iso(tx+tw,ty,z2+lp*0.15);
-      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();
-      ctx.fillStyle=P.logD;ctx.fill();
+    // --- Roof (SDV gable style) ---
+    // Eave strip at wall top
+    ctx.fillStyle = roofCol[1];
+    ctx.fillRect(bx-4, wallY-2, bw+8, 10);
+    // Main roof slope (trapezoid narrowing to ridge)
+    ctx.fillStyle = roofCol[0];
+    ctx.beginPath();
+    ctx.moveTo(bx-4, wallY+8);
+    ctx.lineTo(bx+bw+4, wallY+8);
+    ctx.lineTo(bx+bw+4, by+roofH*0.45);
+    ctx.lineTo(midX, by+4);
+    ctx.lineTo(bx-4, by+roofH*0.45);
+    ctx.closePath(); ctx.fill();
+    // Dark upper ridge section
+    ctx.fillStyle = roofCol[1];
+    ctx.beginPath();
+    ctx.moveTo(bx-4, by+roofH*0.45);
+    ctx.lineTo(midX, by+4);
+    ctx.lineTo(bx+bw+4, by+roofH*0.45);
+    ctx.lineTo(bx+bw, by+roofH*0.38);
+    ctx.lineTo(midX, by+8);
+    ctx.lineTo(bx, by+roofH*0.38);
+    ctx.closePath(); ctx.fill();
+    // Roof tile lines
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1;
+    for (var rl = by+roofH*0.3; rl < wallY+10; rl+=8) {
+      ctx.beginPath(); ctx.moveTo(bx-4, rl+6); ctx.lineTo(bx+bw+4, rl+6); ctx.stroke();
     }
-    outline([iso(tx,ty+td,wt),iso(tx+tw,ty+td,wt),iso(tx+tw,ty+td,0.35),iso(tx,ty+td,0.35)],'rgba(0,0,0,0.25)',1.2);
-    outline([iso(tx+tw,ty,wt),iso(tx+tw,ty+td,wt),iso(tx+tw,ty+td,0.35),iso(tx+tw,ty,0.35)],'rgba(0,0,0,0.25)',1.2);
+    // Roof outline
+    ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(bx-4, wallY+8); ctx.lineTo(bx-4, by+roofH*0.45);
+    ctx.lineTo(midX, by+4); ctx.lineTo(bx+bw+4, by+roofH*0.45);
+    ctx.lineTo(bx+bw+4, wallY+8);
+    ctx.stroke();
 
-    // Roof overhang trim
-    sf(tx-0.12,ty+td+0.1,wt-0.05,tx+tw+0.12,wt+0.2,P.plankC);
-    ef(tx+tw+0.1,ty-0.1,wt-0.05,ty+td+0.1,wt+0.2,P.plankC);
-
-    // Pitched roof (overhang extended by 0.1 each side)
-    pitchedRoof(tx-0.12,ty-0.1,tw+0.24,td+0.2,wt+0.2,1.7,{south:P.thatchA,north:P.thatchC,east:P.thatchB});
-
-    // Chimney (back-left on north slope)
-    var cTx=tx+0.8,cTy=ty+0.6,cH=4.3;
-    sf(cTx,cTy+0.5,wt,cTx+0.5,cH,P.stoneB);
-    ef(cTx+0.5,cTy,wt,cTy+0.5,cH,P.stoneC);
-    tf(cTx,cTy,cTx+0.5,cTy+0.5,cH,P.stoneA);
-    // Chimney cap
-    sf(cTx-0.05,cTy+0.55,cH,cTx+0.55,cH+0.15,'#505048');
-    ef(cTx+0.55,cTy-0.05,cH,cTy+0.55,cH+0.15,'#404038');
-    tf(cTx-0.05,cTy-0.05,cTx+0.55,cTy+0.55,cH+0.15,'#686860');
-
-    // Porch step (south face extension)
-    sf(tx+0.8,ty+td,0,tx+3.2,0.22,P.stoneA);
-    tf(tx+0.8,ty+td,tx+3.2,ty+td+0.4,0.22,P.stoneB);
-
-    // Main flag pole at east corner
-    flagPole(tx+tw-0.15,ty+0.15,0,5.6,P.flagRed,1.1,0.65);
-
-    // Door (screen-space detail on south face)
-    var doorB=iso(tx+1.6,ty+td,0.35),doorT=iso(tx+2.4,ty+td,1.5);
-    ctx.fillStyle='#4A2808';
-    ctx.fillRect(Math.min(doorB.x,doorT.x),doorT.y,Math.abs(doorT.x-doorB.x)+8,(doorB.y-doorT.y)+4);
-
-    drawLabel('Woltspace Lodge',iso(tx+tw/2,ty+td/2,6.8));
-  }
-
-  // ── Landmark 2: Creatorspace — pennant market stall ──────────
-  function drawCreatorspace(){
-    var tx=9,ty=0,tw=3,td=2;
-
-    // Wooden base platform
-    sf(tx,ty+td,0,tx+tw,0.4,P.plankB);
-    ef(tx+tw,ty,0,ty+td,0.4,P.plankC);
-    tf(tx,ty,tx+tw,ty+td,0.4,P.plankA);
-    // Platform planks
-    for(var pp=tx;pp<tx+tw;pp+=0.5){
-      var pl1=iso(pp+0.45,ty,0.4),pl2=iso(pp+0.45,ty+td,0.4);
-      ln(pl1.x,pl1.y,pl2.x,pl2.y,'rgba(0,0,0,0.1)',0.8);
-    }
-
-    // Two tall log posts
-    var postH=3.6,pw=0.22;
-    var lx=tx+0.3,ly=ty+0.3,rx=tx+tw-0.5,ry=ty+0.3;
-    // Left post
-    sf(lx,ly+pw,0.4,lx+pw,0.4+postH,P.logB);
-    ef(lx+pw,ly,0.4,ly+pw,0.4+postH,P.logD);
-    tf(lx,ly,lx+pw,ly+pw,0.4+postH,P.logA);
-    // Right post
-    sf(rx,ry+pw,0.4,rx+pw,0.4+postH,P.logB);
-    ef(rx+pw,ry,0.4,ry+pw,0.4+postH,P.logD);
-    tf(rx,ry,rx+pw,ry+pw,0.4+postH,P.logA);
-
-    // Cross-beam (screen space rope between post tops)
-    var ltop=iso(lx+pw*0.5,ly+pw*0.5,0.4+postH);
-    var rtop=iso(rx+pw*0.5,ry+pw*0.5,0.4+postH);
-    ln(ltop.x,ltop.y,rtop.x,rtop.y,P.logB,5);
-    ln(ltop.x,ltop.y,rtop.x,rtop.y,'rgba(0,0,0,0.22)',1);
-
-    // Hanging pennant flags
-    var pcols=[P.flagPurple,'#E84848',P.flagTeal,P.flagAmber,'#D040A0','#40A0D0'];
-    for(var pi=0;pi<6;pi++){
-      var pt=pi/5;
-      var px2=ltop.x+(rtop.x-ltop.x)*pt, py2=ltop.y+(rtop.y-ltop.y)*pt;
-      var ph2=16+Math.sin(pi*1.7)*4, pw2=10;
-      ctx.fillStyle=pcols[pi];
-      ctx.beginPath();ctx.moveTo(px2-pw2/2,py2);ctx.lineTo(px2+pw2/2,py2);ctx.lineTo(px2,py2+ph2);ctx.closePath();ctx.fill();
-      ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=0.6;ctx.stroke();
+    // --- Windows ---
+    var numWin = b.w >= 4 ? 2 : 1;
+    var wW=16, wH=18, wY=wallY+10;
+    for (var wi=0; wi<numWin; wi++) {
+      var wX = bx + (bw/(numWin+1))*(wi+1) - wW/2;
+      ctx.fillStyle = C.wdB; ctx.fillRect(wX-2, wY-2, wW+4, wH+4);
+      ctx.fillStyle = '#b4d8f2'; ctx.fillRect(wX, wY, wW, wH);
+      ctx.fillStyle = C.wdB;
+      ctx.fillRect(wX, wY+wH/2-1, wW, 2);
+      ctx.fillRect(wX+wW/2-1, wY, 2, wH);
+      ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.fillRect(wX+2, wY+2, 5, 4);
     }
 
-    // Small cross-brace on front face (between posts, screen space)
-    var lBot=iso(lx+pw*0.5,ly+pw*0.5,0.4);
-    var rBot=iso(rx+pw*0.5,ry+pw*0.5,0.4);
-    ln(lBot.x,lBot.y,rtop.x,rtop.y,P.plankC,1.5);
-    ln(rBot.x,rBot.y,ltop.x,ltop.y,P.plankC,1.5);
+    // --- Door ---
+    var dW=20, dH=Math.round(wallH*0.7), dX=bx+bw/2-dW/2, dY=wallY+wallH-dH;
+    ctx.fillStyle = '#3e1c08'; ctx.fillRect(dX, dY, dW, dH);
+    ctx.fillStyle = '#6a3c18'; ctx.fillRect(dX+2, dY+2, dW-4, dH-4);
+    ctx.fillStyle = '#c88838'; ctx.fillRect(dX+dW-7, dY+dH/2-2, 4, 4);
 
-    // Flag on left post top
-    flagPole(lx+pw*0.5,ly+pw*0.5,0.4+postH,0.9,P.flagPurple,0.8,0.5);
+    // --- Chimney ---
+    var chX = bx + bw*0.75 - 5;
+    ctx.fillStyle = C.stB; ctx.fillRect(chX, by+4, 10, roofH*0.5);
+    ctx.fillStyle = C.stA; ctx.fillRect(chX+2, by+4, 6, roofH*0.5);
+    ctx.fillStyle = '#444'; ctx.fillRect(chX-2, by+2, 14, 5);
 
-    // Small crate/counter on platform
-    sf(tx+0.9,ty+td-0.3,0.4,tx+2.2,1.1,P.plankA);
-    ef(tx+2.2,ty+0.5,0.4,ty+td-0.3,1.1,P.plankB);
-    tf(tx+0.9,ty+0.5,tx+2.2,ty+td-0.3,1.1,P.logC);
-
-    drawLabel('Creatorspace',iso(tx+tw/2,ty+td/2,6.0));
+    // --- Floating name label ---
+    ctx.font = 'bold 11px monospace'; ctx.textAlign = 'center';
+    var lw = ctx.measureText(b.name).width + 16;
+    var lx = bx + bw/2, lby = by - 14;
+    ctx.fillStyle = 'rgba(20,12,6,0.88)';
+    rr(lx-lw/2, lby-10, lw, 18, 4); ctx.fill();
+    ctx.fillStyle = '#EDE8DE'; ctx.textBaseline = 'middle';
+    ctx.fillText(b.name, lx, lby-1);
   }
 
-  // ── Landmark 3: Signal Desk Pro — stilted watchtower ─────────
-  function drawSignalDesk(){
-    var tx=0,ty=1,tw=3,td=2;
-
-    // Four corner stilt posts
-    var sh=2.0,sw2=0.2;
-    [[tx+0.1,ty+0.1],[tx+tw-0.3,ty+0.1],
-     [tx+0.1,ty+td-0.3],[tx+tw-0.3,ty+td-0.3]].forEach(function(c){
-      sf(c[0],c[1]+sw2,0,c[0]+sw2,sh,P.logB);
-      ef(c[0]+sw2,c[1],0,c[1]+sw2,sh,P.logD);
-      tf(c[0],c[1],c[0]+sw2,c[1]+sw2,sh,P.logC);
-    });
-
-    // Diagonal X-braces on south face (screen space)
-    var sLB=iso(tx+0.2,ty+td-0.1,0), sRB=iso(tx+tw-0.1,ty+0.2,0);
-    var sLT=iso(tx+0.2,ty+td-0.1,sh),sRT=iso(tx+tw-0.1,ty+0.2,sh);
-    ln(sLB.x,sLB.y,sRT.x,sRT.y,P.logB,2);
-    ln(sRB.x,sRB.y,sLT.x,sLT.y,P.logB,2);
-
-    // Platform deck at sh
-    sf(tx-0.1,ty+td+0.1,sh,tx+tw+0.1,sh+0.25,P.plankB);
-    ef(tx+tw+0.1,ty-0.1,sh,ty+td+0.1,sh+0.25,P.plankC);
-    tf(tx-0.1,ty-0.1,tx+tw+0.1,ty+td+0.1,sh+0.25,P.plankA);
-    // Deck plank lines
-    for(var dp=ty-0.1;dp<ty+td+0.1;dp+=0.35){
-      var dL=iso(tx-0.1,dp,sh+0.25),dR=iso(tx+tw+0.1,dp,sh+0.25);
-      ln(dL.x,dL.y,dR.x,dR.y,'rgba(0,0,0,0.09)',0.7);
-    }
-
-    // Railing posts + rail
-    var rh=0.5,cb=sh+0.25;
-    [[tx-0.1,ty-0.1],[tx+tw+0.1,ty-0.1],[tx-0.1,ty+td+0.1],[tx+tw+0.1,ty+td+0.1]].forEach(function(c){
-      var rb=iso(c[0],c[1],cb),rt=iso(c[0],c[1],cb+rh);
-      ln(rb.x,rb.y,rt.x,rt.y,P.plankC,2);
-    });
-    var rFLt=iso(tx-0.1,ty+td+0.1,cb+rh), rFRt=iso(tx+tw+0.1,ty-0.1,cb+rh);
-    ln(rFLt.x,rFLt.y,rFRt.x,rFRt.y,P.plankB,2.5);
-
-    // Cabin body on platform
-    var cbz=cb+0.25, cabH=1.1;
-    sf(tx+0.4,ty+td*0.35+0.5,cbz,tx+tw-0.4,cbz+cabH,P.logA);
-    ef(tx+tw-0.4,ty+0.4,cbz,ty+td-0.4,cbz+cabH,P.logB);
-    tf(tx+0.4,ty+0.4,tx+tw-0.4,ty+td-0.4,cbz+cabH,P.logC);
-    // Cabin roof (tiny shed)
-    pitchedRoof(tx+0.3,ty+0.3,tw-0.6,td-0.6,cbz+cabH,0.6,{south:P.thatchA,north:P.thatchC,east:P.thatchB});
-
-    // Tall flag pole
-    flagPole(tx+tw*0.5-0.1,ty+td*0.5-0.1,cbz+cabH+0.6,3.2,P.flagTeal,1.3,0.75);
-
-    drawLabel('Signal Desk Pro',iso(tx+tw/2,ty+td/2,7.0));
+  // ── Tree (SDV-style round canopy) ────────────────────────────
+  function drawTree(tx, ty) {
+    var x = sx(tx)+T/2, y = sy(ty)+T/2;
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.beginPath(); ctx.ellipse(x, y+14, 13, 5, 0, 0, Math.PI*2); ctx.fill();
+    // Trunk
+    ctx.fillStyle = C.tT; ctx.fillRect(x-5, y+2, 10, 20);
+    ctx.fillStyle = '#6a3820'; ctx.fillRect(x-5, y+2, 3, 20);
+    // Canopy layers
+    ctx.fillStyle = C.tD; ctx.beginPath(); ctx.arc(x, y-4, 21, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = C.tM; ctx.beginPath(); ctx.arc(x-2, y-8, 17, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = C.tL; ctx.beginPath(); ctx.arc(x-4, y-12, 12, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.arc(x-6, y-17, 6, 0, Math.PI*2); ctx.fill();
   }
 
-  // ── Landmark 4: Memex — archive cabin with books ─────────────
-  function drawMemex(){
-    var tx=2,ty=8,tw=3,td=2;
-
-    // Stone foundation
-    sf(tx,ty+td,0,tx+tw,0.3,P.stoneB);
-    ef(tx+tw,ty,0,ty+td,0.3,P.stoneC);
-    tf(tx,ty,tx+tw,ty+td,0.3,P.stoneA);
-
-    // Plank body
-    var bh=1.7;
-    sf(tx,ty+td,0.3,tx+tw,bh,P.plankA);
-    ef(tx+tw,ty,0.3,ty+td,bh,P.plankB);
-    tf(tx,ty,tx+tw,ty+td,bh,P.logC);
-    // Plank grain lines south
-    for(var pp2=0.3;pp2<bh;pp2+=0.28){sf(tx,ty+td,pp2+0.22,tx+tw,pp2+0.27,P.plankC);}
-    // Plank grain lines east
-    for(var pp3=0.3;pp3<bh;pp3+=0.28){
-      var a3=iso(tx+tw,ty,pp3+0.22),b3=iso(tx+tw,ty+td,pp3+0.22);
-      var c3=iso(tx+tw,ty+td,pp3+0.27),d3=iso(tx+tw,ty,pp3+0.27);
-      ctx.beginPath();ctx.moveTo(a3.x,a3.y);ctx.lineTo(b3.x,b3.y);ctx.lineTo(c3.x,c3.y);ctx.lineTo(d3.x,d3.y);ctx.closePath();
-      ctx.fillStyle=P.plankC;ctx.fill();
-    }
-
-    // Bookshelf on south face (colored book spines)
-    var bkcols=['#C83028','#3868C8','#389848','#D49028','#9030C0','#C02890','#40A8B8'];
-    var bkW=tw/bkcols.length;
-    bkcols.forEach(function(bc,i){
-      var bx=tx+i*bkW, bz0=0.35, bz1=bh-0.15;
-      var tl=iso(bx,ty+td,bz1),tr=iso(bx+bkW*0.88,ty+td,bz1);
-      var br=iso(bx+bkW*0.88,ty+td,bz0),bl=iso(bx,ty+td,bz0);
-      ctx.beginPath();ctx.moveTo(tl.x,tl.y);ctx.lineTo(tr.x,tr.y);ctx.lineTo(br.x,br.y);ctx.lineTo(bl.x,bl.y);ctx.closePath();
-      ctx.fillStyle=bc;ctx.fill();
-      // Thin gap between books
-      ln(tr.x,tr.y,br.x,br.y,'rgba(0,0,0,0.15)',0.7);
-    });
-
-    // Shed roof with overhang
-    sf(tx-0.1,ty+td+0.1,bh-0.05,tx+tw+0.1,bh+0.18,P.thatchB);
-    ef(tx+tw+0.1,ty-0.1,bh-0.05,ty+td+0.1,bh+0.18,P.thatchC);
-    tf(tx-0.15,ty-0.1,tx+tw+0.15,ty+td+0.15,bh+0.18,P.thatchA);
-
-    // Lantern post (front right corner)
-    var lpx=tx+tw-0.05,lpy=ty+td-0.05;
-    var lBot2=iso(lpx,lpy,0),lTop2=iso(lpx,lpy,2.4);
-    ln(lBot2.x,lBot2.y,lTop2.x,lTop2.y,'#504030',2.5);
-    // Lantern box glow
-    var lgrd=ctx.createRadialGradient(lTop2.x,lTop2.y,2,lTop2.x,lTop2.y,30);
-    lgrd.addColorStop(0,'rgba(255,200,80,0.35)');lgrd.addColorStop(1,'rgba(255,200,80,0)');
-    ctx.fillStyle=lgrd;ctx.fillRect(lTop2.x-32,lTop2.y-32,64,64);
-    ctx.fillStyle='#F0C040';ctx.fillRect(lTop2.x-5,lTop2.y-5,10,10);
-    ctx.strokeStyle='#806020';ctx.lineWidth=1;ctx.strokeRect(lTop2.x-5,lTop2.y-5,10,10);
-
-    // Flag on back left
-    flagPole(tx+0.15,ty+0.15,bh+0.18,1.6,P.flagAmber,0.75,0.45);
-
-    drawLabel('Memex',iso(tx+tw/2,ty+td/2,4.8));
+  // ── Fence post (decorative, placed around Lodge) ─────────────
+  function drawFenceH(tx, ty) {
+    var x = sx(tx), y = sy(ty);
+    ctx.fillStyle = C.wdB; ctx.fillRect(x, y+T/2-3, T, 6);
+    ctx.fillStyle = C.wdC; ctx.fillRect(x, y+T/2-3, T, 2);
+    ctx.fillStyle = C.wdB; ctx.fillRect(x, y+T/2-4, 4, 10); ctx.fillRect(x+T-4, y+T/2-4, 4, 10);
   }
 
-  // ── Pixel tree ───────────────────────────────────────────────
-  function drawTree(tx,ty){
-    var base=iso(tx+0.5,ty+0.5,0),mid=iso(tx+0.5,ty+0.5,0.9),top=iso(tx+0.5,ty+0.5,2.1);
-    ln(base.x,base.y,mid.x,mid.y,'#6A3A18',7);
-    ctx.fillStyle='#4A7A30';ctx.beginPath();ctx.moveTo(mid.x,top.y+10);ctx.lineTo(mid.x-22,base.y-6);ctx.lineTo(mid.x+22,base.y-6);ctx.closePath();ctx.fill();
-    ctx.fillStyle='#386428';ctx.beginPath();ctx.moveTo(top.x,top.y-2);ctx.lineTo(top.x-15,top.y+20);ctx.lineTo(top.x+15,top.y+20);ctx.closePath();ctx.fill();
-    ctx.fillStyle='#EEF2F6';ctx.beginPath();ctx.moveTo(top.x,top.y-7);ctx.lineTo(top.x-7,top.y+5);ctx.lineTo(top.x+7,top.y+5);ctx.closePath();ctx.fill();
-  }
-
-  // ── Wolt sprite ──────────────────────────────────────────────
-  function drawWolt(w,t){
-    var pos=iso(w.x,w.y,0);
-    var bob=Math.sin(t*(w.state==='walking'?0.009:0.0025))*(w.state==='walking'?3.5:1.8);
-    ctx.save();ctx.globalAlpha=0.2;ctx.fillStyle='#000';
-    ctx.beginPath();ctx.ellipse(pos.x,pos.y,13,5,0,0,Math.PI*2);ctx.fill();ctx.restore();
-    ctx.font='24px serif';ctx.textAlign='center';ctx.textBaseline='bottom';
-    ctx.fillText(w.emoji,pos.x,pos.y-4+bob);
-    ctx.font='bold 9px monospace';ctx.textAlign='center';
-    var lw2=ctx.measureText(w.name).width+10, lx=pos.x-lw2/2, ly=pos.y-44+bob;
-    ctx.fillStyle='rgba(24,16,10,0.75)';rrect(lx,ly,lw2,14,3);ctx.fill();
-    ctx.fillStyle='#EDE8DE';ctx.textBaseline='middle';ctx.fillText(w.name,pos.x,ly+7);
-  }
-
-  // ── Ground tile ──────────────────────────────────────────────
-  var GCOLS=['#7CC454','#6AAE44','#BFAB6E'];
-  function drawTile(gx,gy,type){
-    var a=iso(gx,gy),b=iso(gx+1,gy),c=iso(gx+1,gy+1),d=iso(gx,gy+1);
-    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();
-    ctx.fillStyle=GCOLS[type];ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,0.06)';ctx.lineWidth=0.5;ctx.stroke();
+  // ── Wolt character ───────────────────────────────────────────
+  function drawWolt(w, t2) {
+    var x = OX + w.x*T, y = OY + w.y*T;
+    var bob = Math.sin(t2 * (w.state==='walking'?0.013:0.003)) * (w.state==='walking'?3:1.5);
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.beginPath(); ctx.ellipse(x, y+8, 12, 4, 0, 0, Math.PI*2); ctx.fill();
+    ctx.font='28px serif'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(w.emoji, x, y-2+bob);
+    ctx.font='bold 9px monospace';
+    var nl = ctx.measureText(w.name).width+10, lx=x-nl/2, ly=y-50+bob;
+    ctx.fillStyle='rgba(20,12,6,0.8)'; rr(lx,ly,nl,14,3); ctx.fill();
+    ctx.fillStyle='#EDE8DE'; ctx.textBaseline='middle'; ctx.fillText(w.name,x,ly+7);
   }
 
   // ── Update wolts ─────────────────────────────────────────────
-  function updateWolts(dt){
-    WOLTS.forEach(function(w){
-      if(w.state==='walking'){
-        var dx=w.tx-w.x,dy=w.ty-w.y,dist=Math.sqrt(dx*dx+dy*dy),step=SPEED*dt;
-        if(dist<=step){w.x=w.tx;w.y=w.ty;w.state='idle';w.wait=2+Math.random()*6;}
-        else{w.x+=dx/dist*step;w.y+=dy/dist*step;}
+  function updateWolts(dt) {
+    WOLTS.forEach(function(w) {
+      if (w.state==='walking') {
+        var dx=w.tx-w.x, dy=w.ty-w.y, d=Math.sqrt(dx*dx+dy*dy), s=SPEED*dt;
+        if (d<=s) { w.x=w.tx; w.y=w.ty; w.state='idle'; w.wait=2+Math.random()*6; }
+        else { w.x+=dx/d*s; w.y+=dy/d*s; }
       } else {
         w.wait-=dt;
-        if(w.wait<=0){var t=BUILDINGS[Math.floor(Math.random()*BUILDINGS.length)];w.tx=t.cx+(Math.random()-0.5)*1.4;w.ty=t.cy+(Math.random()-0.5)*1.4;w.state='walking';}
+        if (w.wait<=0) {
+          var b=BLDS[Math.floor(Math.random()*BLDS.length)];
+          w.tx=b.cx+(Math.random()-0.5)*2.5; w.ty=b.cy+(Math.random()-0.5)*2.5;
+          w.state='walking';
+        }
       }
     });
   }
 
-  // ── Main draw ────────────────────────────────────────────────
-  function draw(t){
+  // ── Draw ─────────────────────────────────────────────────────
+  function draw(t2) {
     ctx.clearRect(0,0,CW,CH);
-    // Sky bands (pixel-art flat)
-    ctx.fillStyle='#A8C4DC';ctx.fillRect(0,0,CW,CH*0.3);
-    ctx.fillStyle='#C0D4E8';ctx.fillRect(0,CH*0.3,CW,CH*0.2);
-    ctx.fillStyle='#D0E0EE';ctx.fillRect(0,CH*0.5,CW,CH*0.5);
-    // Block clouds
-    ctx.fillStyle='rgba(255,255,255,0.68)';
-    [[0.1,0.06,140,22],[0.37,0.03,190,18],[0.63,0.08,120,16],[0.84,0.05,150,20]].forEach(function(c){
-      var cx=CW*c[0]+Math.sin(t*0.00008+c[0]*6)*18,cy=CH*c[1];
-      ctx.fillRect(cx,cy,c[2],c[3]);ctx.fillRect(cx+14,cy-9,c[2]-28,12);ctx.fillRect(cx+28,cy-16,c[2]-58,8);
-    });
-    // Ground
-    for(var gy=0;gy<GH;gy++)for(var gx=0;gx<GW;gx++)drawTile(gx,gy,grid[gy][gx]);
 
-    // Collect drawable objects for painter's sort
+    // Sky
+    var sg = ctx.createLinearGradient(0,0,0,OY+20);
+    sg.addColorStop(0, C.sky1); sg.addColorStop(1, C.sky2);
+    ctx.fillStyle = sg; ctx.fillRect(0,0,CW,OY+30);
+
+    // Below-map fill
+    ctx.fillStyle = C.gd; ctx.fillRect(0, OY+MH*T, CW, CH);
+    ctx.fillStyle = C.g2; ctx.fillRect(OX, OY+MH*T, MW*T, 12);
+
+    // Tiles
+    for (var gy=0; gy<MH; gy++) for (var gx=0; gx<MW; gx++) drawTile(gx,gy,t2);
+
+    // Painter-sorted objects
     var objs=[];
-    TREES.forEach(function(t2){
-      var d=iso(t2.tx+0.5,t2.ty+1,0).y;
-      objs.push({depth:d,fn:(function(t3){return function(){drawTree(t3.tx,t3.ty);};})(t2)});
+    TREES.forEach(function(tr) {
+      objs.push({d: tr.ty+1, fn:(function(t3){return function(){drawTree(t3.tx,t3.ty);};})(tr)});
     });
-    // Landmarks with their approximate front-corner depth
-    [{fn:drawLodge,      dx:9, dy:7},
-     {fn:drawCreatorspace,dx:12,dy:2},
-     {fn:drawSignalDesk, dx:3, dy:3},
-     {fn:drawMemex,      dx:5, dy:10},
-    ].forEach(function(b){
-      var d=iso(b.dx,b.dy,0).y;
-      objs.push({depth:d,fn:b.fn});
+    BLDS.forEach(function(b) {
+      objs.push({d: b.ty+b.h, fn:(function(b2){return function(){drawBuilding(b2);};})(b)});
     });
-    WOLTS.forEach(function(w){
-      var d=iso(w.x,w.y+0.5,0).y;
-      objs.push({depth:d,fn:(function(w2){return function(){drawWolt(w2,t);};})(w)});
+    WOLTS.forEach(function(w) {
+      objs.push({d: w.y+0.5, fn:(function(w2){return function(){drawWolt(w2,t2);};})(w)});
     });
-    objs.sort(function(a,b){return a.depth-b.depth;});
+    objs.sort(function(a,b){return a.d-b.d;});
     objs.forEach(function(o){o.fn();});
   }
 
   // ── Loop ─────────────────────────────────────────────────────
-  function loop(t){
-    var dt=Math.min((t-lastT)/1000,0.05);lastT=t;
-    updateWolts(dt);draw(t);
+  function loop(t2) {
+    var dt=Math.min((t2-lastT)/1000,0.05); lastT=t2;
+    updateWolts(dt); draw(t2);
     raf=requestAnimationFrame(loop);
   }
 
-  function resize(){
+  function resize() {
     var el=document.getElementById('lodge-view');
     var canvas=document.getElementById('lodge-canvas');
-    if(!el||!canvas)return;
+    if (!el||!canvas) return;
     CW=canvas.width=el.clientWidth||window.innerWidth;
     CH=canvas.height=el.clientHeight||600;
-    OX=CW*0.5; OY=CH*0.22;
+    OX=Math.round((CW-MW*T)/2);
+    OY=Math.max(50, Math.round((CH-MH*T)/2) - 20);
   }
 
   window.startLodge=function(){
     var canvas=document.getElementById('lodge-canvas');
-    if(!canvas)return;
+    if (!canvas) return;
     ctx=canvas.getContext('2d');
     ctx.imageSmoothingEnabled=false;
-    resize();
-    if(!raf){lastT=performance.now();raf=requestAnimationFrame(loop);}
+    setTimeout(function(){
+      resize();
+      if (!raf){lastT=performance.now();raf=requestAnimationFrame(loop);}
+    },0);
   };
-
   window.stopLodge=function(){
-    if(raf){cancelAnimationFrame(raf);raf=null;}
+    if (raf){cancelAnimationFrame(raf);raf=null;}
   };
-
   window.addEventListener('resize',function(){if(raf)resize();});
 })();
-
+</script>
 <!-- Wolt picker dropdown (global, positioned via JS) -->
 <div id="wolt-picker"></div>
 
