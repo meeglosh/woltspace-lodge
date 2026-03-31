@@ -8009,10 +8009,10 @@ function closeTerminal() {
 
   // ── Buildings ───────────────────────────────────────────────
   var BLDS = [
-    {tx:7, ty:4, w:4, h:3, name:'Woltspace Lodge',   roof:'red',   cx:9,    cy:5.5 },
-    {tx:14,ty:1, w:3, h:2, name:'Creatorspace',      roof:'blue',  cx:15.5, cy:2.0 },
-    {tx:0, ty:8, w:3, h:3, name:'Signal Desk Pro',   roof:'green', cx:1.5,  cy:9.5 },
-    {tx:16,ty:8, w:3, h:3, name:'Memex',             roof:'amber', cx:17.5, cy:9.5 },
+    {tx:7, ty:4, w:4, h:3, name:'Woltspace Lodge',   roof:'red',   cx:9,    cy:7.6 },
+    {tx:14,ty:1, w:3, h:2, name:'Creatorspace',      roof:'blue',  cx:15.5, cy:3.6 },
+    {tx:0, ty:8, w:3, h:3, name:'Signal Desk Pro',   roof:'green', cx:1.5,  cy:11.6},
+    {tx:16,ty:8, w:3, h:3, name:'Memex',             roof:'amber', cx:17.5, cy:11.6},
   ];
 
   // ── Trees (tile coords; skip building footprints) ───────────
@@ -8029,10 +8029,10 @@ function closeTerminal() {
 
   // ── Wolts ────────────────────────────────────────────────────
   var WOLTS = [
-    {name:'Woltaire',     emoji:'🦝', x:9,    y:5.5,  tx:9,    ty:5.5,  state:'idle', wait:2.0},
-    {name:'creationwolt', emoji:'🦫', x:15.5, y:2.0,  tx:15.5, ty:2.0,  state:'idle', wait:3.5},
-    {name:'lodgebuilder', emoji:'🦦', x:1.5,  y:9.5,  tx:1.5,  ty:9.5,  state:'idle', wait:1.2},
-    {name:'Wolten',       emoji:'🐕', x:17.5, y:9.5,  tx:17.5, ty:9.5,  state:'idle', wait:4.0},
+    {name:'Woltaire',     emoji:'🦝', x:9,    y:7.6,  tx:9,    ty:7.6,  state:'idle', wait:2.0},
+    {name:'creationwolt', emoji:'🦫', x:15.5, y:3.6,  tx:15.5, ty:3.6,  state:'idle', wait:3.5},
+    {name:'lodgebuilder', emoji:'🦦', x:1.5,  y:11.6, tx:1.5,  ty:11.6, state:'idle', wait:1.2},
+    {name:'Wolten',       emoji:'🐕', x:17.5, y:11.6, tx:17.5, ty:11.6, state:'idle', wait:4.0},
   ];
   var SPEED = 2.8;
 
@@ -8252,7 +8252,7 @@ function closeTerminal() {
         w.wait-=dt;
         if (w.wait<=0) {
           var b=BLDS[Math.floor(Math.random()*BLDS.length)];
-          w.tx=b.cx+(Math.random()-0.5)*2.5; w.ty=b.cy+(Math.random()-0.5)*2.5;
+          w.tx=b.cx+(Math.random()-0.5)*1.4; w.ty=b.cy+(Math.random()*1.2);
           w.state='walking';
         }
       }
