@@ -7966,7 +7966,7 @@ function closeTerminal() {
 // ── LODGE WORLD ──────────────────────────────────────────────────
 (function() {
   // Stardew Valley-style top-down world
-  var T = 48; // tile size in pixels
+  var T; // tile size in pixels — calculated dynamically in resize()
   var MW = 20, MH = 15; // map dimensions in tiles
   var CW, CH, OX, OY, ctx;
   var raf = null, lastT = 0;
@@ -8304,8 +8304,9 @@ function closeTerminal() {
     if (!el||!canvas) return;
     CW=canvas.width=el.clientWidth||window.innerWidth;
     CH=canvas.height=el.clientHeight||600;
+    T=Math.ceil(Math.max(CW/MW, CH/MH));
     OX=Math.round((CW-MW*T)/2);
-    OY=Math.max(50, Math.round((CH-MH*T)/2) - 20);
+    OY=Math.round((CH-MH*T)/2);
   }
 
   window.startLodge=function(){
