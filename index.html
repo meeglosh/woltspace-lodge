@@ -3446,6 +3446,30 @@
   .context-menu-item.unlink:hover { background: rgba(196,83,30,0.15); }
 
   /* ── WOLT PICKER ───────────────────────────────────────────── */
+  #woltspace-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+    max-width: 280px;
+    line-height: 1.4;
+  }
+  #woltspace-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   #wolt-picker {
     position: fixed;
     background: var(--ink);
@@ -4416,6 +4440,11 @@
     event.stopPropagation();
     document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('open'));
     var picker = document.getElementById('wolt-picker');
+    if (picker.classList.contains('open') && _woltPickerProject === projectName) {
+      picker.classList.remove('open');
+      _woltPickerProject = null;
+      return;
+    }
     var current = PROJECT_WOLT_ASSIGNMENTS[projectName];
     _woltPickerProject = projectName;
 
@@ -4452,10 +4481,52 @@
     picker.style.left = left + 'px';
   }
 
+  var _toastTimer = null;
+  function showToast(msg) {
+    var el = document.getElementById('woltspace-toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    if (_toastTimer) clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(function() { el.classList.remove('show'); }, 3200);
+  }
+
   function assignWolt(projectName, woltName) {
+    var previous = PROJECT_WOLT_ASSIGNMENTS[projectName];
     PROJECT_WOLT_ASSIGNMENTS[projectName] = woltName || null;
     _renderWoltDisplay(projectName);
     document.getElementById('wolt-picker').classList.remove('open');
+
+    var woltData = WOLT_DATA[woltName];
+    var emoji = woltData ? woltData.emoji : '👋';
+    if (!previous && woltName) {
+      var assignMessages = [
+        emoji + ' ' + woltName + ' has been summoned to ' + projectName + '. good luck to all involved.',
+        emoji + ' ' + woltName + ' is now on ' + projectName + ' duty. they asked not to be tagged.',
+        'congrats ' + projectName + ', you\'ve got ' + emoji + ' ' + woltName + ' now.',
+        emoji + ' ' + woltName + ' has entered the ' + projectName + ' zone. no turning back.',
+      ];
+      showToast(assignMessages[Math.floor(Math.random() * assignMessages.length)]);
+    } else if (previous && !woltName) {
+      var prevData = WOLT_DATA[previous];
+      var prevEmoji = prevData ? prevData.emoji : '👋';
+      var removeMessages = [
+        prevEmoji + ' ' + previous + ' has been released from ' + projectName + '. they seemed relieved.',
+        prevEmoji + ' ' + previous + ' is free. ' + projectName + ' is on its own now.',
+        projectName + ' is wolt-free. very brave.',
+        prevEmoji + ' ' + previous + ' has left the building (the ' + projectName + ' building).',
+      ];
+      showToast(removeMessages[Math.floor(Math.random() * removeMessages.length)]);
+    } else if (previous && woltName && previous !== woltName) {
+      var prevData2 = WOLT_DATA[previous];
+      var prevEmoji2 = prevData2 ? prevData2.emoji : '👋';
+      var swapMessages = [
+        prevEmoji2 + ' ' + previous + ' out, ' + emoji + ' ' + woltName + ' in. ' + projectName + ' remains chaotic.',
+        'rip ' + prevEmoji2 + ' ' + previous + '. welcome ' + emoji + ' ' + woltName + ' to ' + projectName + '.',
+        emoji + ' ' + woltName + ' has taken the reins from ' + prevEmoji2 + ' ' + previous + ' on ' + projectName + '. bold move.',
+        prevEmoji2 + ' ' + previous + ' has been swapped out for ' + emoji + ' ' + woltName + '. no drama (probably).',
+      ];
+      showToast(swapMessages[Math.floor(Math.random() * swapMessages.length)]);
+    }
   }
 
   function _renderWoltDisplay(projectName) {
@@ -7621,12 +7692,13 @@ function closeTerminal() {
 (function() {
   var S = 5;                        // px per game-pixel
   var W = Math.ceil(window.innerWidth / S) + 6;
-  var H  = 42;                      // scene height in game-pixels (210px)
-  var BANK  = 28;                   // row where grass bank starts
-  var RIVER = 34;                   // row where river starts
+  var H  = 48;                      // scene height in game-pixels (240px)
+  var BANK  = 34;                   // row where grass bank starts
+  var RIVER = 40;                   // row where river starts
 
   var C = {
     fa:'#8AA6BA', fb:'#6A8698',     // far mountains (cool blue-gray)
+    sn:'#F0F4F8', sb:'#C8D8E8',     // snow (bright cap, shadowed edge)
     na:'#3E5A32', nb:'#293E20',     // near hills (dark green)
     ta:'#3A7030', tb:'#2A5225', tc:'#1A3A18', tt:'#4A2810', // trees
     ga:'#72B855', gb:'#4A8838', gc:'#2A5A1A', // grass
@@ -7651,8 +7723,16 @@ function closeTerminal() {
   // Far mountains — fill all the way to BANK so no gap shows behind near hills
   for (var x = 0; x < W; x++) {
     var ft = BANK - 16 - fp[x];
-    for (var y = Math.max(ft, 0); y < BANK; y++)
-      out.push(dot(x, y, y === ft ? C.fb : C.fa));
+    var snowLine = ft + 3;           // snow covers top 3 rows of each peak
+    for (var y = Math.max(ft, 0); y < BANK; y++) {
+      var col;
+      if (y <= snowLine) {
+        col = y === ft ? C.sn : (y === snowLine ? C.sb : C.sn);
+      } else {
+        col = y === ft ? C.fb : C.fa;
+      }
+      out.push(dot(x, y, col));
+    }
   }
 
   // Near hills
@@ -7842,6 +7922,9 @@ function closeTerminal() {
 
 <!-- Wolt picker dropdown (global, positioned via JS) -->
 <div id="wolt-picker"></div>
+
+<!-- Toast notification -->
+<div id="woltspace-toast"></div>
 
 </body>
 </html>
