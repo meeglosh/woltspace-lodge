@@ -5096,6 +5096,16 @@ function hideAllViews() {
 
 function showWakingView(name, emoji) {
   hideAllViews();
+  // Always open in split layout — reset any leftover display state from previous sessions
+  document.getElementById('wk-preview-panel').style.display = '';
+  document.getElementById('wk-drag-handle').style.display = '';
+  const wkChat = document.getElementById('wk-chat-panel');
+  wkChat.style.display = '';
+  wkChat.classList.remove('fullscreen');
+  wkChat.style.width = wkSavedChatWidth || '380px';
+  document.getElementById('wk-btn-chat').classList.remove('active');
+  document.getElementById('wk-btn-project').classList.remove('active');
+  wkLayoutState = 'split';
   document.querySelector('aside.sidebar').classList.add('hidden');
   document.querySelector('main.main').style.display = 'none';
   const bgS = document.getElementById('bg-scene'); if (bgS) bgS.style.display = 'none';
