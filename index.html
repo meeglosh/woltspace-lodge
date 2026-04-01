@@ -5099,7 +5099,7 @@ function showWakingView(name, emoji) {
   // Always open in split layout — reset any leftover display state from previous sessions
   const wkPreview = document.getElementById('wk-preview-panel');
   const wkIframe  = document.getElementById('wk-iframe');
-  wkPreview.style.display = '';
+  wkPreview.style.display = 'none'; // force layout context reset; restored via rAF after srcdoc is set
   wkIframe.style.display  = '';
   wkIframe.style.pointerEvents = '';
   document.getElementById('wk-drag-handle').style.display = '';
@@ -5161,6 +5161,12 @@ function showWakingView(name, emoji) {
   <h1>just waking up<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></h1>
   <p>Tell me more about yourself so we can begin building your first site together.</p>
 </div></body></html>`;
+
+  // Restore preview panel visibility after srcdoc is set — the none→'' cycle forces the browser
+  // to create a fresh layout context for the iframe, preventing a blank render on re-open.
+  requestAnimationFrame(function() {
+    wkPreview.style.display = '';
+  });
 }
 
 function sendWakingMessage() {
