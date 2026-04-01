@@ -5097,7 +5097,11 @@ function hideAllViews() {
 function showWakingView(name, emoji) {
   hideAllViews();
   // Always open in split layout — reset any leftover display state from previous sessions
-  document.getElementById('wk-preview-panel').style.display = '';
+  const wkPreview = document.getElementById('wk-preview-panel');
+  const wkIframe  = document.getElementById('wk-iframe');
+  wkPreview.style.display = '';
+  wkIframe.style.display  = '';
+  wkIframe.style.pointerEvents = '';
   document.getElementById('wk-drag-handle').style.display = '';
   const wkChat = document.getElementById('wk-chat-panel');
   wkChat.style.display = '';
@@ -9557,6 +9561,9 @@ function closeTerminal() {
     canvas.addEventListener('click',_onClick);
     canvas.addEventListener('mousemove',_onMove);
     setTimeout(function(){
+      // Abort if stopLodge was called before this timeout fired
+      var lv=document.getElementById('lodge-view');
+      if(!lv||lv.style.display==='none') return;
       resize();
       if(!raf){lastT=performance.now();raf=requestAnimationFrame(loop);}
     },0);
