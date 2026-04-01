@@ -910,15 +910,15 @@
     position: relative;
   }
 
-  #pd-menu-backdrop {
+  #pd-menu-backdrop, #wk-menu-backdrop {
     display: none;
     position: fixed;
     inset: 0;
     z-index: 299;
   }
-  #pd-menu-backdrop.open { display: block; }
+  #pd-menu-backdrop.open, #wk-menu-backdrop.open { display: block; }
 
-  #pd-project-menu {
+  #pd-project-menu, #wk-project-menu {
     position: absolute;
     right: 8px; top: 46px;
     background: var(--ink);
@@ -931,7 +931,7 @@
     min-width: 210px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   }
-  #pd-project-menu.open { display: flex; }
+  #pd-project-menu.open, #wk-project-menu.open { display: flex; }
 
   .pd-body {
     display: flex;
@@ -944,7 +944,7 @@
   .pd-chat-panel {
     width: 380px;
     min-width: 240px;
-    max-width: 680px;
+    max-width: 50%;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -3634,6 +3634,7 @@
     #pd-share-btn { display: none; }
     .pd-toolbar-divider { display: none; }
   }
+
 </style>
 </head>
 <body>
@@ -3703,38 +3704,23 @@
 
   <div class="sidebar-nav">
     <div class="sidebar-nav-item active" id="nav-home" onclick="showHome()">
-      <span class="sidebar-nav-icon">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="8" cy="8" r="5.5"/>
-          <circle cx="8" cy="8" r="2" fill="currentColor" stroke="none"/>
-        </svg>
-      </span>
+      <span class="sidebar-nav-icon">🏠</span>
       <span class="sidebar-nav-label">Home</span>
     </div>
     <div class="sidebar-nav-item" id="nav-projects" onclick="showProjects()">
-      <span class="sidebar-nav-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-        </svg>
-      </span>
+      <span class="sidebar-nav-icon">🪓</span>
       <span class="sidebar-nav-label">Projects</span>
     </div>
     <div class="sidebar-nav-item" id="nav-lodge" onclick="showLodge()">
-      <span class="sidebar-nav-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 18L8 8L12 14L16 8L21 18"/>
-          <line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-      </span>
+      <span class="sidebar-nav-icon">🪵</span>
       <span class="sidebar-nav-label">Lodge</span>
     </div>
   </div>
 
   <div class="sidebar-scroll">
-  <div class="sidebar-section">
+  <div class="sidebar-section" id="sidebar-team-section">
     <div class="sidebar-section-label">
-      Team <span style="color:rgba(255,255,255,0.4)">4</span>
+      Team <span id="sidebar-team-count" style="color:rgba(255,255,255,0.4)">4</span>
       <a href="#" onclick="openWoltModal(event)">+ add wolt</a>
     </div>
 
@@ -4173,6 +4159,93 @@
 
 </main>
 
+<!-- ── WAKING VIEW ────────────────────────────────────────────── -->
+<div id="waking-view" style="display:none; position:fixed; inset:0; z-index:200; flex-direction:column; background:var(--bg);">
+
+  <!-- Full-width toolbar -->
+  <div class="pd-back-bar">
+    <button class="pd-back-btn" onclick="closeWakingView()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Lodge
+    </button>
+    <div class="pd-back-project" id="wk-back-project"></div>
+    <div class="pd-toolbar-right">
+      <button class="pd-toolbar-btn share-btn" id="wk-share-btn" onclick="wkShare()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Share
+      </button>
+      <div class="pd-toolbar-divider"></div>
+      <button class="pd-toolbar-btn" id="wk-btn-chat" onclick="wkSetLayoutMode('chat')">Chat</button>
+      <button class="pd-toolbar-btn" id="wk-btn-project" onclick="wkSetLayoutMode('project')">Project</button>
+      <button class="pd-toolbar-btn" id="wk-btn-external" title="Open live site" onclick="window.open('','_blank')" style="padding:6px 8px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </button>
+      <div class="pd-toolbar-divider"></div>
+      <button class="pd-toolbar-btn" id="wk-kebab-btn" onclick="wkToggleMenu(event)" title="More options" style="padding:6px 10px; font-size:15px; letter-spacing:1px; line-height:1">⋯</button>
+    </div>
+  </div>
+
+  <div id="wk-menu-backdrop" onclick="wkCloseMenu()"></div>
+  <div id="wk-project-menu"></div>
+
+  <!-- Split body -->
+  <div class="pd-body">
+
+    <!-- LEFT: Chat panel -->
+    <div class="pd-chat-panel" id="wk-chat-panel">
+
+      <!-- Wolt header -->
+      <div class="pd-wolt-head" id="wk-wolt-head"></div>
+
+      <!-- Mode toggle -->
+      <div style="display:flex; align-items:center; padding:8px 16px 0; flex-shrink:0;">
+        <div class="pd-mode-toggle">
+          <button class="mode-btn active" id="wk-mode-chat" onclick="wkSetChatPanelMode('chat')" title="Chat view">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            chat
+          </button>
+          <button class="mode-btn" id="wk-mode-terminal" onclick="wkSetChatPanelMode('terminal')" title="Terminal view">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            terminal
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="pd-messages" id="wk-messages"></div>
+
+      <!-- Terminal body -->
+      <div class="pd-terminal-body" id="wk-terminal-body"></div>
+
+      <!-- Input -->
+      <div class="pd-input-area" id="wk-input-area">
+        <div class="pd-input-row">
+          <textarea class="chat-textarea" id="wk-input" placeholder="Tell me about yourself…" rows="1" oninput="autoResize(this)" onkeydown="handleWakingKey(event)"></textarea>
+          <button class="send-btn" onclick="sendWakingMessage()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Terminal input row -->
+      <div class="pd-term-input-row">
+        <span class="term-input-prompt">woltspace $</span>
+        <input class="term-input" id="wk-term-input" type="text" spellcheck="false" autocomplete="off" placeholder="" onkeydown="termWkKey(event)">
+      </div>
+
+    </div>
+
+    <!-- Drag handle -->
+    <div class="pd-drag-handle" id="wk-drag-handle"></div>
+
+    <!-- RIGHT: Live preview -->
+    <div class="pd-preview-panel" id="wk-preview-panel">
+      <iframe class="pd-iframe" id="wk-iframe" sandbox="allow-scripts"></iframe>
+    </div>
+
+  </div>
+</div>
+
 <script>
   // Filter chips
   document.querySelectorAll('.filter-chip').forEach(chip => {
@@ -4405,6 +4478,10 @@
     }
     if (!e.target.closest('#pd-kebab-btn') && !e.target.closest('#pd-project-menu')) {
       document.getElementById('pd-project-menu').classList.remove('open');
+    }
+    if (!e.target.closest('#wk-kebab-btn') && !e.target.closest('#wk-project-menu')) {
+      const wkMenu = document.getElementById('wk-project-menu');
+      if (wkMenu) wkMenu.classList.remove('open');
     }
   });
 
@@ -4929,11 +5006,240 @@ function setNavActive(id) {
 }
 
 function hideAllViews() {
-  ['projects-view','all-sessions-view','threads-view','chat-view','home-view','lodge-view'].forEach(id => {
+  ['projects-view','all-sessions-view','threads-view','chat-view','home-view','lodge-view','waking-view'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
   if (typeof stopLodge === 'function') stopLodge();
+}
+
+function showWakingView(name, emoji) {
+  hideAllViews();
+  document.querySelector('aside.sidebar').classList.add('hidden');
+  document.querySelector('main.main').style.display = 'none';
+  const bgS = document.getElementById('bg-scene'); if (bgS) bgS.style.display = 'none';
+  const view = document.getElementById('waking-view');
+  view.style.display = 'flex';
+  document.body.classList.add('project-open');
+  document.getElementById('wk-back-project').textContent = name;
+  wkName = name;
+  wkMessages = [];
+  setGeoVisible(false);
+
+  // Populate wolt header
+  const head = document.getElementById('wk-wolt-head');
+  head.innerHTML = `
+    <div class="pd-wolt-avatar">${emoji}</div>
+    <div class="pd-wolt-info">
+      <div class="pd-wolt-name">${name}</div>
+      <div class="pd-wolt-sub">just waking up</div>
+    </div>`;
+
+  // Inject initial wolt message
+  const msgs = document.getElementById('wk-messages');
+  msgs.innerHTML = '';
+  wkMessages.push({ from: 'wolt', text: `*yawns* Hey, I'm ${name}. I'm just waking up. Tell me a bit about yourself — what are you working on, and what kind of site do you want to build together?`, time: '', files: [] });
+  const row = document.createElement('div');
+  row.className = 'msg-row';
+  row.innerHTML = `
+    <div class="msg-avatar">${emoji}</div>
+    <div class="msg-bubble-wrap">
+      <div class="msg-meta">${name}</div>
+      <div class="msg-bubble">*yawns* Hey, I'm ${name}. I'm just waking up. Tell me a bit about yourself — what are you working on, and what kind of site do you want to build together?</div>
+    </div>`;
+  msgs.appendChild(row);
+
+  // Populate iframe with waking-up page
+  document.getElementById('wk-iframe').srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>
+  body { margin:0; display:flex; align-items:center; justify-content:center; height:100vh;
+    background:#faf9f7; font-family:system-ui,sans-serif; color:#444; text-align:center; }
+  .wrap { max-width:400px; padding:40px; }
+  .avatar { font-size:64px; margin-bottom:16px; }
+  h1 { font-size:22px; font-weight:600; margin:0 0 10px; color:#222; }
+  p { font-size:14px; line-height:1.6; color:#666; margin:0; }
+  .dot { display:inline-block; animation:blink 1.4s infinite both; }
+  .dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:0}40%{opacity:1}}
+</style></head><body><div class="wrap">
+  <div class="avatar">${emoji}</div>
+  <h1>just waking up<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></h1>
+  <p>Tell me more about yourself so we can begin building your first site together.</p>
+</div></body></html>`;
+}
+
+function sendWakingMessage() {
+  const input = document.getElementById('wk-input');
+  const text = input.value.trim();
+  if (!text) return;
+  wkMessages.push({ from: 'user', text, time: '', files: [] });
+  const msgs = document.getElementById('wk-messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row user';
+  row.innerHTML = `<div class="msg-bubble-wrap"><div class="msg-bubble">${text}</div></div>`;
+  msgs.appendChild(row);
+  input.value = '';
+  input.style.height = '';
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function handleWakingKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendWakingMessage(); }
+}
+
+let wkMessages = [];
+let wkName = '';
+
+function wkSetChatPanelMode(mode) {
+  const chat = document.getElementById('wk-chat-panel');
+  const chatBtn = document.getElementById('wk-mode-chat');
+  const termBtn = document.getElementById('wk-mode-terminal');
+  if (mode === 'terminal') {
+    chat.classList.add('pd-chat-terminal');
+    chatBtn.classList.remove('active'); termBtn.classList.add('active');
+    const slug = wkName.toLowerCase().replace(/\s+/g, '-') || 'woltspace';
+    const prompt = slug + ' $';
+    document.querySelector('#waking-view .term-input-prompt').textContent = prompt;
+    const tb = document.getElementById('wk-terminal-body');
+    const banner = `<div class="term-line term-output dim">woltspace terminal v0.1 — ${slug}</div><div class="term-line term-output dim">————————————————————————————————</div>`;
+    tb.innerHTML = banner + renderTerminalMessages(wkMessages, prompt);
+    tb.scrollTop = tb.scrollHeight;
+    setTimeout(function() { document.getElementById('wk-term-input').focus(); }, 50);
+  } else {
+    chat.classList.remove('pd-chat-terminal');
+    chatBtn.classList.add('active'); termBtn.classList.remove('active');
+  }
+}
+
+let wkLayoutState = 'split';
+let wkSavedChatWidth = '380px';
+
+function wkSetLayoutMode(mode) {
+  const chat    = document.getElementById('wk-chat-panel');
+  const preview = document.getElementById('wk-preview-panel');
+  const handle  = document.getElementById('wk-drag-handle');
+  const btnChat = document.getElementById('wk-btn-chat');
+  const btnProj = document.getElementById('wk-btn-project');
+
+  if (mode === wkLayoutState) mode = 'split';
+  if (wkLayoutState === 'split' && mode !== 'split') wkSavedChatWidth = chat.style.width || '380px';
+
+  if (mode === 'chat') {
+    chat.style.display = ''; chat.classList.add('fullscreen');
+    preview.style.display = 'none'; handle.style.display = 'none';
+    btnChat.classList.add('active'); btnProj.classList.remove('active');
+  } else if (mode === 'project') {
+    chat.style.display = 'none'; chat.classList.remove('fullscreen');
+    preview.style.display = ''; handle.style.display = 'none';
+    btnChat.classList.remove('active'); btnProj.classList.add('active');
+  } else {
+    chat.style.display = ''; chat.classList.remove('fullscreen');
+    chat.style.width = wkSavedChatWidth;
+    preview.style.display = ''; handle.style.display = '';
+    btnChat.classList.remove('active'); btnProj.classList.remove('active');
+  }
+  wkLayoutState = mode;
+}
+
+function wkShare() {
+  const btn = document.getElementById('wk-share-btn');
+  const orig = btn.innerHTML;
+  btn.textContent = 'Copied!';
+  btn.style.color = 'var(--green)';
+  setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 1800);
+}
+
+function wkCloseMenu() {
+  document.getElementById('wk-project-menu').classList.remove('open');
+  document.getElementById('wk-menu-backdrop').classList.remove('open');
+}
+
+function wkToggleMenu(event) {
+  const menu = document.getElementById('wk-project-menu');
+  if (menu.classList.contains('open')) { wkCloseMenu(); return; }
+
+  let html = '';
+  html += `<div class="context-menu-item" onclick="wkCloseMenu()">⌂ Set as Home</div>`;
+  html += `<div class="context-menu-item" onclick="wkShare();wkCloseMenu()">📋 Copy URL</div>`;
+  html += `<div class="context-menu-divider"></div>`;
+  html += `<div class="context-menu-item danger">✕ Delete</div>`;
+
+  menu.innerHTML = html;
+  menu.classList.add('open');
+  document.getElementById('wk-menu-backdrop').classList.add('open');
+}
+
+function termWkKey(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const input = document.getElementById('wk-term-input');
+    const text = input.value.trim();
+    if (!text) return;
+    const msg = { from: 'user', text, time: '', files: [] };
+    wkMessages.push(msg);
+    // also append as chat bubble
+    const msgs = document.getElementById('wk-messages');
+    const row = document.createElement('div');
+    row.className = 'msg-row user';
+    row.innerHTML = `<div class="msg-bubble-wrap"><div class="msg-bubble">${text}</div></div>`;
+    msgs.appendChild(row);
+    const prompt = document.querySelector('#waking-view .term-input-prompt').textContent;
+    const tb = document.getElementById('wk-terminal-body');
+    tb.insertAdjacentHTML('beforeend', renderTerminalMessages([msg], prompt));
+    tb.scrollTop = tb.scrollHeight;
+    input.value = '';
+  }
+}
+
+function closeWakingView() {
+  document.getElementById('waking-view').style.display = 'none';
+  document.getElementById('wk-iframe').srcdoc = '';
+  document.querySelector('aside.sidebar').classList.remove('hidden');
+  document.querySelector('main.main').style.display = '';
+  const bgS = document.getElementById('bg-scene'); if (bgS) bgS.style.display = '';
+  document.body.classList.remove('project-open');
+  showHome();
+}
+
+let wakingWolt = null;
+const WAKING_PROJECT_KEY = '__waking__';
+
+function addWakingWolt(name, emoji, type) {
+  wakingWolt = { name, emoji, type };
+
+  // Register in data stores
+  WOLT_DATA[name] = { emoji, meta: type + ' · new', waking: true, site: null, threads: [] };
+  AS_WOLT_META[name] = { emoji, meta: type + ' · new', project: 'just waking up' };
+  PROJECT_DATA[WAKING_PROJECT_KEY + name] = { url: '', page: '', waking: true, woltName: name };
+  PROJECT_WOLT_ASSIGNMENTS[WAKING_PROJECT_KEY + name] = name;
+
+  // Add sidebar card
+  const card = document.createElement('div');
+  card.className = 'wolt-card';
+  card.id = 'wolt-card-waking';
+  card.setAttribute('onclick', 'reopenWakingView()');
+  card.innerHTML = `
+    <div class="wolt-avatar">${emoji}<div class="wolt-status-dot idle"></div></div>
+    <div class="wolt-info">
+      <div class="wolt-name">${name}</div>
+      <div class="wolt-type">${type}</div>
+      <div class="wolt-project-tag">just waking up</div>
+    </div>`;
+  document.getElementById('nav-all-sessions').insertAdjacentElement('afterend', card);
+
+  // Update team count
+  const countEl = document.getElementById('sidebar-team-count');
+  if (countEl) countEl.textContent = String((parseInt(countEl.textContent) || 4) + 1);
+}
+
+function reopenWakingView() {
+  if (!wakingWolt) return;
+  showWakingView(wakingWolt.name, wakingWolt.emoji);
+}
+
+function resetApp() {
+  if (!confirm('Reset the app to its default state? This will remove your new wolt.')) return;
+  location.reload();
 }
 
 function showLodge() {
@@ -5078,6 +5384,15 @@ function renderAllSessions() {
   list.innerHTML = groups.map(g => {
     const projectRows = g.projects.map(projName => {
       const pd = PROJECT_DATA[projName] || {};
+      if (pd.waking) {
+        return `<div class="thread-item" onclick="reopenWakingView()">
+          <div class="thread-body">
+            <div class="thread-title">just waking up</div>
+            <div class="thread-preview">first site · getting started</div>
+          </div>
+          <div class="thread-date">→</div>
+        </div>`;
+      }
       return `<div class="thread-item" onclick="openProject('${projName}')">
         <div class="thread-body">
           <div class="thread-title">${projName}</div>
@@ -5910,10 +6225,20 @@ document.addEventListener('keydown', e => {
 // ── Drag to resize chat panel ──────────────────────────────────
 (function () {
   let dragging = false;
+  let activeHandle = null;
+  let activePanel  = null;
+  let activeIframe = null;
+  let activeOverlay = null;
 
   document.addEventListener('mousedown', e => {
-    const handle = document.getElementById('pd-drag-handle');
-    if (!handle || !handle.contains(e.target) && e.target !== handle) return;
+    const handle = e.target.closest('.pd-drag-handle');
+    if (!handle) return;
+    const overlay = handle.closest('#project-detail, #waking-view');
+    if (!overlay) return;
+    activeHandle  = handle;
+    activeOverlay = overlay;
+    activePanel   = overlay.querySelector('.pd-chat-panel');
+    activeIframe  = overlay.querySelector('.pd-iframe');
     dragging = true;
     handle.classList.add('dragging');
     document.body.style.cursor = 'col-resize';
@@ -5922,26 +6247,21 @@ document.addEventListener('keydown', e => {
   });
 
   document.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    const panel = document.querySelector('.pd-chat-panel');
-    const overlay = document.getElementById('project-detail');
-    const iframe = document.getElementById('pd-iframe');
-    if (!panel || !overlay) return;
-    if (iframe) iframe.style.pointerEvents = 'none';
-    const rect = overlay.getBoundingClientRect();
-    const newW = Math.max(240, Math.min(680, e.clientX - rect.left));
-    panel.style.width = newW + 'px';
+    if (!dragging || !activePanel || !activeOverlay) return;
+    if (activeIframe) activeIframe.style.pointerEvents = 'none';
+    const rect = activeOverlay.getBoundingClientRect();
+    const newW = Math.max(240, Math.min((rect.width - 5) / 2, e.clientX - rect.left));
+    activePanel.style.width = newW + 'px';
   });
 
   document.addEventListener('mouseup', () => {
     if (!dragging) return;
     dragging = false;
-    const handle = document.getElementById('pd-drag-handle');
-    const iframe = document.getElementById('pd-iframe');
-    if (handle) handle.classList.remove('dragging');
-    if (iframe) iframe.style.pointerEvents = '';
+    if (activeHandle) activeHandle.classList.remove('dragging');
+    if (activeIframe) activeIframe.style.pointerEvents = '';
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
+    activeHandle = activePanel = activeIframe = activeOverlay = null;
   });
 })();
 </script>
@@ -6855,14 +7175,14 @@ function completeOnboarding() {
   const name   = document.getElementById('ob-name').value.trim();
   const type   = document.querySelector('#onboarding .type-card.selected')?.dataset.type;
   const skills = [...document.querySelectorAll('#ob-skill-chips .skill-chip.selected')].map(c => c.textContent);
-  console.log('First wolt created:', { name, type, skills });
+  const emojiMap = { otter: '🦦', beaver: '🦫', raccoon: '🦝' };
+  const emoji = emojiMap[type] || '🦫';
 
+  addWakingWolt(name, emoji, type || 'beaver');
+  showWakingView(name, emoji);
   const ob = document.getElementById('onboarding');
   ob.classList.add('fading');
-  setTimeout(() => {
-    ob.style.display = 'none';
-    showHome();
-  }, 500);
+  setTimeout(() => { ob.style.display = 'none'; }, 500);
 }
 
 /* ── Settings ── */
@@ -7099,7 +7419,7 @@ function closeTerminal() {
 <!-- ── SETTINGS OVERLAY ── -->
 <div id="settings-overlay">
   <div class="settings-toolbar">
-    <button class="settings-back" onclick="closeSettings()">← Lodge</button>
+    <button class="settings-back" onclick="closeSettings(); showHome()">← Lodge</button>
     <div class="settings-toolbar-title">Settings</div>
   </div>
   <div class="settings-body">
@@ -7454,6 +7774,13 @@ function closeTerminal() {
       <div class="settings-about-logo">🌿</div>
       <div class="settings-about-name">Woltspace</div>
       <div class="settings-about-ver">v0.3.0 · session 3 · build 2026.03</div>
+      <div class="settings-group" style="margin-top:24px">
+        <div class="settings-group-label">Developer</div>
+        <div class="settings-row" style="align-items:center">
+          <div class="settings-row-label">Reset app state</div>
+          <button onclick="resetApp()" style="padding:5px 12px;border-radius:6px;border:1px solid rgba(200,80,60,0.4);background:rgba(200,80,60,0.08);color:rgba(220,100,80,0.9);font-size:12px;cursor:pointer;font-family:var(--font-body)">Reset to defaults</button>
+        </div>
+      </div>
       <div class="settings-group">
         <div class="settings-group-label">Stack</div>
         <div class="settings-row">
@@ -7995,18 +8322,36 @@ function closeTerminal() {
     bwM:'#8c6030', bwD:'#6a4018', bwL:'#b07848',
     // Building details
     bCh:'#888070', bChD:'#5e5848', bGl:'#90c0e0',
+    // Grass sub-tile detail
+    g4:'#90d848', g5:'#3a8818', gSh:'#1e5008', gH:'#b0e858',
+    // Path sub-tile detail
+    d4:'#a88840', d5:'#e8cc88',
+    // Shrub colors
+    shD:'#0a3e06', shM:'#156010', shL:'#288028', shH:'#3aaa30',
+    // Fence wood
+    fnD:'#6a3810', fnM:'#8a5028', fnL:'#b07848',
+    // Building high-fidelity siding (dark timber)
+    bsD:'#3a2010', bsM:'#5a3018', bsL:'#7a4828',
+    // Building roof tiles (terracotta shingles)
+    btD:'#8e2010', btM:'#b83020', btL:'#d85040', btH:'#e87060',
+    // Building ivy/plants
+    biv:'#1a4808', biv2:'#2a6810',
+    // Building shutters
+    bshw:'#5a3010',
+    // Building stone steps/base
+    bst2:'#a09880', bst3:'#786858',
   };
 
   // ── Map (0=grass 1=path 2=water 3=flower 4=sky-border) ──
   var MAP = [
   //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19
-   [4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4],//0
-   [4, 4, 4, 4, 4, 4, 0, 0, 2, 2, 2, 0, 0, 0, 4, 4, 4, 4, 4, 4],//1
-   [4, 4, 4, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4],//2
+   [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],//0
+   [4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 0, 4, 4, 4, 4, 4, 4],//1
+   [4, 4, 4, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 4, 4, 4, 4],//2
    [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4],//3
    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//4
-   [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0],//5
-   [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],//6
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],//5
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//6
    [3, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 3],//7
    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],//8
    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, 0],//9
@@ -8018,19 +8363,17 @@ function closeTerminal() {
   ];
 
   var BLDS = [
-    {tx:7, ty:4, w:4, h:3, name:'Woltspace Lodge',   roof:'red',   cx:9,    cy:7.6,  project:null},
-    {tx:14,ty:1, w:3, h:2, name:'Creatorspace',      roof:'blue',  cx:15.5, cy:3.6,  project:'Creatorspace'},
-    {tx:0, ty:8, w:3, h:3, name:'Signal Desk Pro',   roof:'green', cx:1.5,  cy:11.6, project:'Signal Desk Pro'},
-    {tx:16,ty:8, w:3, h:3, name:'Memex',             roof:'amber', cx:17.5, cy:11.6, project:'Memex'},
+    {tx:7, ty:4, w:4, h:3, name:'Woltspace Lodge',   style:'ski_lodge',  cx:9,    cy:7.6,  project:null},
+    {tx:14,ty:1, w:3, h:2, name:'Creatorspace',      style:'teepee',     cx:15.5, cy:3.6,  project:'Creatorspace'},
+    {tx:0, ty:8, w:3, h:3, name:'Signal Desk Pro',   style:'fort',       cx:1.5,  cy:11.6, project:'Signal Desk Pro'},
+    {tx:16,ty:8, w:3, h:3, name:'Memex',             style:'lighthouse', cx:17.5, cy:11.6, project:'Memex'},
   ];
 
   var TREES = [
-    {tx:0,ty:0},{tx:1,ty:0},{tx:2,ty:0},{tx:5,ty:0},{tx:11,ty:0},{tx:12,ty:0},
     {tx:16,ty:0},{tx:17,ty:0},{tx:18,ty:0},{tx:19,ty:0},
-    {tx:0,ty:1},{tx:19,ty:1},{tx:0,ty:2},{tx:19,ty:2},
+    {tx:19,ty:1},{tx:19,ty:2},
     {tx:0,ty:13},{tx:0,ty:14},{tx:1,ty:14},{tx:2,ty:14},
     {tx:17,ty:13},{tx:18,ty:14},{tx:19,ty:13},{tx:19,ty:14},
-    {tx:10,ty:2},{tx:11,ty:3},{tx:12,ty:2},
     {tx:4,ty:12},{tx:5,ty:13},{tx:10,ty:12},
   ];
 
@@ -8041,6 +8384,31 @@ function closeTerminal() {
     {name:'Wolten',       emoji:'\uD83D\uDC15', x:17.5, y:11.6, tx:17.5, ty:11.6, state:'idle', wait:4.0},
   ];
   var SPEED = 2.8;
+
+  var SHRUBS = [
+    // Flanking the main lodge entrance
+    {tx:6.6,ty:6.2},{tx:11.3,ty:6.2},
+    // Along main horizontal path edges
+    {tx:3.5,ty:6.5},{tx:12.5,ty:6.5},
+    // Near Signal Desk Pro (fort)
+    {tx:3.2,ty:9.8},{tx:3.2,ty:11.5},
+    // Near Memex (lighthouse)
+    {tx:15.4,ty:9.8},{tx:15.4,ty:11.5},
+    // Near Creatorspace (teepee)
+    {tx:13.2,ty:2.8},{tx:17.2,ty:3.2},
+    // Scattered field bushes
+    {tx:6.0,ty:10.5},{tx:12.8,ty:10.8},{tx:8.8,ty:12.4},{tx:11.2,ty:11.5},
+    {tx:5.5,ty:8.5},{tx:14.5,ty:8.5},
+  ];
+
+  var FENCES = [
+    // Top of main horizontal path (ty=7) — fence row at ty=6, gap under lodge (tx=7–10)
+    {tx:3,ty:6},{tx:4,ty:6},{tx:5,ty:6},{tx:6,ty:6},
+    {tx:11,ty:6},{tx:12,ty:6},{tx:13,ty:6},{tx:14,ty:6},{tx:15,ty:6},
+    // Top of inner horizontal path (ty=10) — fence row at ty=9
+    {tx:8,ty:9},{tx:9,ty:9},{tx:10,ty:9},{tx:11,ty:9},
+    {tx:12,ty:9},{tx:13,ty:9},{tx:14,ty:9},
+  ];
 
   var NOISE = (function(){var a=[];for(var i=0;i<MW*MH;i++)a.push(Math.random());return a;})();
 
@@ -8059,6 +8427,9 @@ function closeTerminal() {
     ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
     ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
   }
+
+  // Deterministic per-tile sub-pixel hash (stable across frames)
+  function hash(a,b,c){var v=((a*2473+b*3571+c*1009)%10007+10007)%10007;return v/10007;}
 
   // Visible sky height = top N tile-rows that are transparent (type-4)
   function skyH(){return Math.max(OY+3*T, 80);}
@@ -8138,20 +8509,20 @@ function closeTerminal() {
   // ── Tile renderers ────────────────────────────────────────
   function drawGrass(tx,ty,n){
     var x=sx(tx),y=sy(ty);
-    ctx.fillStyle=n<0.18?C.g2:n>0.82?C.g3:C.g1;
-    ctx.fillRect(x,y,T,T);
-    if(n>0.72){ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(x+7,y+9,3,2);ctx.fillRect(x+21,y+26,2,3);}
+    ctx.fillStyle=n<0.20?C.g2:n>0.80?C.g3:C.g1; ctx.fillRect(x,y,T,T);
   }
   function drawDarkGrass(tx,ty){
-    if(ty<=2) return; // top border: let sky/mountain bg show through
-    ctx.fillStyle=C.gd; ctx.fillRect(sx(tx),sy(ty),T,T);
+    if(ty<=2) return;
+    var x=sx(tx),y=sy(ty);
+    ctx.fillStyle=C.gd; ctx.fillRect(x,y,T,T);
+    ctx.fillStyle=C.g5;
+    for(var i=0;i<5;i++) ctx.fillRect(x+Math.round(hash(tx,ty,i)*(T-2)),y+Math.round(hash(tx,ty,i+5)*(T-2)),Math.max(2,Math.round(hash(tx,ty,i+10)*T*0.12+T*0.03)),Math.max(1,Math.round(T*0.05+1)));
+    ctx.fillStyle=C.gSh;
+    for(var j=0;j<4;j++) ctx.fillRect(x+Math.round(hash(tx,ty,j+20)*(T-2)),y+Math.round(hash(tx,ty,j+24)*(T-2)),Math.max(1,Math.round(T*0.08)),Math.max(1,Math.round(T*0.04)));
   }
   function drawPath(tx,ty){
     var x=sx(tx),y=sy(ty);
-    ctx.fillStyle=C.d1;ctx.fillRect(x,y,T,T);
-    ctx.fillStyle=C.d2;ctx.fillRect(x+2,y+2,3,2);ctx.fillRect(x+T-9,y+T-7,4,2);
-    ctx.fillStyle=C.d3;ctx.fillRect(x+11,y+5,2,2);
-    ctx.fillStyle='rgba(0,0,0,0.06)';ctx.fillRect(x,y,T,2);ctx.fillRect(x,y,2,T);
+    ctx.fillStyle=C.d1; ctx.fillRect(x,y,T,T);
   }
   function drawWater(tx,ty,t2){
     var x=sx(tx),y=sy(ty);
@@ -8182,95 +8553,15 @@ function closeTerminal() {
     else if(type===4)drawDarkGrass(tx,ty);
   }
 
-  // ── Building: SDV brick farmhouse ────────────────────────
-  function drawBuilding(b){
-    var bx=sx(b.tx),by=sy(b.ty);
-    var bw=b.w*T, bh=b.h*T;
-    var roofH=Math.round(bh*0.45), wallH=bh-roofH, wallY=by+roofH;
-    var midX=bx+bw/2;
-    var rCols={
-      red:  [C.bfR,C.bfD,C.bfL,C.bfM],
-      blue: ['#3858b8','#2040a0','#5878d8','#2e50b0'],
-      green:['#3a8828','#286018','#58aa40','#307020'],
-      amber:['#c89020','#a07010','#e0b030','#b07818'],
-    }[b.roof]||[C.bfR,C.bfD,C.bfL,C.bfM];
-
-    // Drop shadow
-    ctx.fillStyle='rgba(0,0,0,0.25)';
-    ctx.fillRect(bx+6,wallY+wallH-2,bw+4,10);
-
-    // Wall (wood plank)
-    ctx.fillStyle=C.bwM; ctx.fillRect(bx,wallY,bw,wallH);
-    ctx.fillStyle=C.bwD;
-    for(var py=wallY+8;py<wallY+wallH-2;py+=8) ctx.fillRect(bx+2,py,bw-4,2);
-    ctx.fillRect(bx,wallY,4,wallH);        // left shadow
-    ctx.fillRect(bx,wallY+wallH-4,bw,4);  // bottom shadow
-    ctx.fillStyle=C.bwL; ctx.fillRect(bx+4,wallY,3,wallH-4); // plank highlight
-
-    // Roof eave
-    ctx.fillStyle=rCols[1]; ctx.fillRect(bx-5,wallY-3,bw+10,10);
-    // Roof main face
-    ctx.fillStyle=rCols[0];
-    ctx.beginPath();
-    ctx.moveTo(bx-5,wallY+7);ctx.lineTo(bx+bw+5,wallY+7);
-    ctx.lineTo(bx+bw+5,by+roofH*0.42);ctx.lineTo(midX,by+4);
-    ctx.lineTo(bx-5,by+roofH*0.42);ctx.closePath();ctx.fill();
-    // Roof upper dark ridge
-    ctx.fillStyle=rCols[1];
-    ctx.beginPath();
-    ctx.moveTo(bx-5,by+roofH*0.42);ctx.lineTo(midX,by+4);ctx.lineTo(bx+bw+5,by+roofH*0.42);
-    ctx.lineTo(bx+bw+2,by+roofH*0.34);ctx.lineTo(midX,by+9);ctx.lineTo(bx-2,by+roofH*0.34);
-    ctx.closePath();ctx.fill();
-    // Shingle lines
-    ctx.strokeStyle='rgba(0,0,0,0.18)';ctx.lineWidth=1.5;
-    for(var rl=by+roofH*0.26;rl<wallY+8;rl+=6){
-      ctx.beginPath();ctx.moveTo(bx-5,rl+5);ctx.lineTo(bx+bw+5,rl+5);ctx.stroke();
-    }
-    // Roof outline
-    ctx.strokeStyle='rgba(0,0,0,0.40)';ctx.lineWidth=1.5;
-    ctx.beginPath();
-    ctx.moveTo(bx-5,wallY+7);ctx.lineTo(bx-5,by+roofH*0.42);
-    ctx.lineTo(midX,by+4);ctx.lineTo(bx+bw+5,by+roofH*0.42);
-    ctx.lineTo(bx+bw+5,wallY+7);ctx.stroke();
-
-    // Chimney
-    var chW=10, chH=Math.round(roofH*0.62), chX=Math.round(bx+bw*0.72-chW/2);
-    ctx.fillStyle=rCols[3]; ctx.fillRect(chX,by+2,chW,chH);
-    ctx.fillStyle=rCols[1]; ctx.fillRect(chX,by+2,3,chH);
-    ctx.strokeStyle='rgba(0,0,0,0.14)';ctx.lineWidth=1;
-    for(var cy2=by+4;cy2<by+2+chH-2;cy2+=4){
-      ctx.beginPath();ctx.moveTo(chX,cy2);ctx.lineTo(chX+chW,cy2);ctx.stroke();
-    }
-    ctx.fillStyle=C.bChD; ctx.fillRect(chX-2,by+1,chW+4,4);
-    // Smoke puffs
-    ctx.fillStyle='rgba(200,192,184,0.72)';
-    ctx.beginPath();ctx.arc(chX+chW/2,by-5,5,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(chX+chW/2+5,by-12,4,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(chX+chW/2+3,by-19,3,0,Math.PI*2);ctx.fill();
-
-    // Windows
-    var numWin=b.w>=4?2:1;
-    var wW=Math.round(T*0.36),wH=Math.round(T*0.40),wY=wallY+10;
-    for(var wi=0;wi<numWin;wi++){
-      var wX=Math.round(bx+(bw/(numWin+1))*(wi+1)-wW/2);
-      ctx.fillStyle=C.bwD;ctx.fillRect(wX-3,wY-3,wW+6,wH+6);
-      ctx.fillStyle=C.bGl;ctx.fillRect(wX,wY,wW,wH);
-      ctx.fillStyle=C.bwD;
-      ctx.fillRect(wX,wY+Math.round(wH/2)-1,wW,2);
-      ctx.fillRect(wX+Math.round(wW/2)-1,wY,2,wH);
-      ctx.fillStyle='rgba(255,255,255,0.45)';ctx.fillRect(wX+2,wY+2,Math.round(wW*0.4),Math.round(wH*0.3));
-    }
-
-    // Door
-    var dW=Math.round(bw*0.22),dH=Math.round(wallH*0.68);
-    var dX=Math.round(bx+bw/2-dW/2),dY=wallY+wallH-dH;
-    ctx.fillStyle='#3a1c08';ctx.fillRect(dX,dY,dW,dH);
-    ctx.fillStyle='#6a4020';ctx.fillRect(dX+2,dY+2,dW-4,dH-4);
-    ctx.fillStyle='#4a2810';
-    ctx.beginPath();ctx.arc(dX+dW/2,dY+2,dW/2,Math.PI,0);ctx.fill();
-    ctx.fillStyle='#c89030';ctx.fillRect(dX+dW-7,dY+Math.round(dH*0.5),4,4);
-
-    // Name label
+  // ── Building dispatcher (75% size, bottom-aligned) ────────
+  function drawBuilding(b,t2){
+    var bx=sx(b.tx),by=sy(b.ty),bw=b.w*T,bh=b.h*T;
+    var dw=Math.round(bw*0.75),dh=Math.round(bh*0.75);
+    var dx=bx+Math.round(bw*0.125),dy=by+bh-dh;
+    if(b.style==='teepee')      drawTeepee(dx,dy,dw,dh);
+    else if(b.style==='fort')   drawFort(dx,dy,dw,dh);
+    else if(b.style==='lighthouse') drawLighthouse(dx,dy,dw,dh);
+    else                        drawSkiLodge(dx,dy,dw,dh,t2);
     ctx.font='bold 11px monospace';ctx.textAlign='center';
     var lw=ctx.measureText(b.name).width+16,lx=bx+bw/2,lby=by-14;
     ctx.fillStyle='rgba(20,12,6,0.88)';
@@ -8279,37 +8570,460 @@ function closeTerminal() {
     ctx.fillText(b.name,lx,lby-1);
   }
 
-  // ── Trees: round (left) or pine (right) ──────────────────
+  // ── Ski Lodge (Woltspace Lodge) ───────────────────────────
+  function drawSkiLodge(dx,dy,dw,dh,t2){
+    var cx=Math.round(dx+dw/2),bot=dy+dh;
+    ctx.fillStyle='rgba(0,0,0,0.30)';ctx.fillRect(dx+4,bot-2,dw+8,9);
+    // Stone base (bottom 18%)
+    var bH=Math.round(dh*0.18),bY=bot-bH;
+    ctx.fillStyle=C.bst2;ctx.fillRect(dx,bY,dw,bH);
+    // Stone base block pattern
+    ctx.save();ctx.beginPath();ctx.rect(dx,bY,dw,bH);ctx.clip();
+    for(var sbi=0,sby=bY+Math.round(bH*0.3);sby<bot;sby+=Math.round(bH*0.35),sbi++){
+      var soff=sbi%2===0?0:Math.round(dw*0.12);
+      ctx.fillStyle='rgba(0,0,0,0.12)';
+      for(var sbx=dx-soff;sbx<dx+dw+dw*0.12;sbx+=Math.round(dw*0.22)) ctx.fillRect(sbx,sby,Math.round(dw*0.20),Math.round(bH*0.30));
+    }
+    ctx.restore();
+    ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(dx,bY,4,bH);
+    ctx.fillStyle='rgba(255,255,255,0.10)';ctx.fillRect(dx+4,bY,dw-8,2);
+    // Timber-siding wall (42% of height)
+    var wH=Math.round(dh*0.42),wY=bY-wH;
+    var plankH=Math.max(3,Math.round(T*0.08));
+    for(var p=wY,pi=0;p<bY;p+=plankH,pi++){
+      ctx.fillStyle=pi%2===0?C.bsM:C.bsD;
+      ctx.fillRect(dx,p,dw,Math.min(plankH,bY-p));
+      ctx.fillStyle=C.bsD;ctx.fillRect(dx,p+Math.max(plankH-2,1),dw,Math.min(2,bY-p-plankH+2));
+      ctx.fillStyle=C.bsL;ctx.fillRect(dx+3,p,dw-6,1);
+    }
+    // Timber posts at L, center-ish, R
+    ctx.fillStyle=C.bsD;
+    ctx.fillRect(dx,wY,5,wH);ctx.fillRect(dx+dw-5,wY,5,wH);ctx.fillRect(cx-2,wY,4,wH);
+    // Ivy climbing left post
+    ctx.fillStyle=C.biv;ctx.fillRect(dx+1,wY+Math.round(wH*0.10),2,Math.round(wH*0.75));
+    [[0.18,-5],[0.35,4],[0.52,-4],[0.72,5],[0.88,-3]].forEach(function(lp){
+      var ly=wY+Math.round(wH*lp[0]);
+      ctx.fillStyle=C.biv;ctx.beginPath();ctx.ellipse(dx+1+lp[1],ly,6,4,0.4,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=C.biv2;ctx.beginPath();ctx.ellipse(dx+lp[1]-1,ly-1,3,3,0,0,Math.PI*2);ctx.fill();
+    });
+    // Two wide panoramic windows with shutters
+    var wW=Math.round(dw*0.27),wHw=Math.round(wH*0.50),wY2=wY+10;
+    var shutW=Math.round(wW*0.30);
+    [dx+Math.round(dw*0.08),dx+Math.round(dw*0.60)].forEach(function(wxp){
+      // Left shutter
+      ctx.fillStyle=C.bshw;ctx.fillRect(wxp-shutW-3,wY2,shutW,wHw);
+      ctx.fillStyle='rgba(0,0,0,0.22)';
+      for(var sl2=wY2+3;sl2<wY2+wHw-2;sl2+=5){ctx.fillRect(wxp-shutW-3,sl2,shutW,2);}
+      ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(wxp-shutW-3,wY2,1,wHw);
+      // Right shutter
+      ctx.fillStyle=C.bshw;ctx.fillRect(wxp+wW+3,wY2,shutW,wHw);
+      ctx.fillStyle='rgba(0,0,0,0.22)';
+      for(var sl3=wY2+3;sl3<wY2+wHw-2;sl3+=5){ctx.fillRect(wxp+wW+3,sl3,shutW,2);}
+      // Window frame
+      ctx.fillStyle='#1e1428';ctx.fillRect(wxp-3,wY2-3,wW+6,wHw+6);
+      // Glass
+      ctx.fillStyle=C.bGl;ctx.fillRect(wxp,wY2,wW,wHw);
+      // 2x2 pane dividers
+      ctx.fillStyle='#1e1428';
+      ctx.fillRect(wxp,wY2+Math.round(wHw/2)-1,wW,2);
+      ctx.fillRect(wxp+Math.round(wW/2)-1,wY2,2,wHw);
+      // Reflection
+      ctx.fillStyle='rgba(255,255,255,0.48)';ctx.fillRect(wxp+2,wY2+2,Math.round(wW*0.32),Math.round(wHw*0.28));
+      // Warm interior glow
+      ctx.fillStyle='rgba(255,220,140,0.22)';ctx.fillRect(wxp,wY2+Math.round(wHw*0.5),wW,Math.round(wHw*0.5));
+    });
+    // Balcony rail
+    ctx.fillStyle=C.bwM;ctx.fillRect(dx-5,bY-5,dw+10,6);
+    ctx.fillStyle='rgba(0,0,0,0.20)';ctx.fillRect(dx-5,bY-5,dw+10,2);
+    ctx.fillStyle=C.bwL;ctx.fillRect(dx-5,bY-14,dw+10,3);
+    ctx.fillStyle=C.bwD;
+    for(var rp=dx-3;rp<dx+dw+6;rp+=Math.max(6,Math.round(T*0.10))) ctx.fillRect(rp,bY-14,Math.max(2,Math.round(T*0.03)),9);
+    // Stone steps at entrance
+    var stW=Math.round(dw*0.30),stX=cx-Math.round(stW/2);
+    ctx.fillStyle=C.bst3;ctx.fillRect(stX-4,bY,stW+8,Math.round(bH*0.45));
+    ctx.fillStyle=C.bst2;ctx.fillRect(stX-2,bY+Math.round(bH*0.10),stW+4,Math.round(bH*0.35));
+    ctx.fillStyle='rgba(255,255,255,0.10)';ctx.fillRect(stX-2,bY+Math.round(bH*0.10),stW+4,2);
+    // Bushes at building base
+    [[dx+Math.round(dw*0.05),bY],[dx+dw-Math.round(dw*0.14),bY]].forEach(function(bp){
+      ctx.fillStyle=C.shD;ctx.beginPath();ctx.arc(bp[0]+8,bp[1]-6,Math.round(T*0.14),0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=C.shM;ctx.beginPath();ctx.arc(bp[0]+7,bp[1]-8,Math.round(T*0.10),0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=C.shL;ctx.beginPath();ctx.arc(bp[0]+5,bp[1]-11,Math.round(T*0.06),0,Math.PI*2);ctx.fill();
+    });
+    // Wide A-frame roof with SHINGLE TILES
+    var rH=Math.round(dh*0.44),ov=Math.round(dw*0.18),rTop=wY-rH;
+    // Eave soffit
+    ctx.fillStyle=C.bsD;ctx.fillRect(dx-ov,wY-2,dw+ov*2,10);
+    // Solid roof base fill (catches gaps between shingle tiles near peak)
+    ctx.fillStyle=C.btD;
+    ctx.beginPath();ctx.moveTo(dx-ov,wY+8);ctx.lineTo(cx,rTop);ctx.lineTo(dx+dw+ov,wY+8);ctx.closePath();ctx.fill();
+    // Draw shingle rows bottom-to-top
+    var shW2=Math.max(5,Math.round(dw*0.11));
+    var shH2=Math.max(4,Math.round(dh*0.07));
+    var shOv=Math.round(shH2*0.38);
+    var row2=0;
+    for(var ry2=wY+4;ry2>rTop+shH2;ry2-=Math.round(shH2*(1-shOv/shH2)),row2++){
+      var pct=(wY+8-ry2)/(wY+8-rTop);
+      var rowLX=cx-pct*(cx-(dx-ov)),rowRX=cx+pct*(dx+dw+ov-cx);
+      var rowW2=rowRX-rowLX;
+      var soff2=row2%2===0?0:Math.round(shW2*0.5);
+      for(var sc=Math.floor((rowLX-soff2)/shW2)*shW2+rowLX-soff2;sc<rowRX;sc+=shW2){
+        var ssl=Math.max(sc,rowLX),ssr=Math.min(sc+shW2-1,rowRX);
+        if(ssr<=ssl) continue;
+        var shCi=Math.floor((sc-rowLX)/shW2);
+        ctx.fillStyle=shCi%3===0?C.btD:shCi%3===1?C.btM:C.btL;
+        ctx.fillRect(ssl,ry2,ssr-ssl,shH2);
+        ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(ssl,ry2+shH2-1,ssr-ssl,1);
+        ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(ssl,ry2,ssr-ssl,1);
+      }
+    }
+    // Snow on ridge
+    ctx.fillStyle='rgba(232,240,252,0.92)';
+    ctx.beginPath();ctx.moveTo(cx-5,rTop-3);ctx.lineTo(cx+5,rTop-3);ctx.lineTo(dx-ov+20,wY+8);ctx.lineTo(dx-ov,wY+8);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(cx-5,rTop-3);ctx.lineTo(cx+5,rTop-3);ctx.lineTo(dx+dw+ov,wY+8);ctx.lineTo(dx+dw+ov-20,wY+8);ctx.closePath();ctx.fill();
+    // Chimney — above roofline only
+    var cX=dx+Math.round(dw*0.27),cW=Math.round(dw*0.09);
+    var cSlope=(wY+8-rTop)/((dx-ov)-cx);
+    var cIntY=Math.round(rTop+(cX-cx)*cSlope);
+    var cTopY=cIntY-Math.round(dh*0.12);
+    ctx.fillStyle=C.bst2;ctx.fillRect(cX,cTopY,cW,cIntY-cTopY+5);
+    // Stone chimney block lines
+    ctx.fillStyle='rgba(0,0,0,0.15)';
+    for(var cl=cTopY+4;cl<cIntY;cl+=5) ctx.fillRect(cX+1,cl,cW-2,1);
+    ctx.fillStyle='rgba(0,0,0,0.20)';ctx.fillRect(cX,cTopY,2,cIntY-cTopY+5);
+    ctx.fillStyle=C.bst3;ctx.fillRect(cX-2,cTopY,cW+4,5);
+    // Animated smoke puffs — rise and fade over time
+    for(var spi=0;spi<6;spi++){
+      var ph=((t2*0.00032+spi/6)%1);
+      var sy5=cTopY-4-ph*38;
+      var sx5=cX+cW/2+Math.sin(ph*Math.PI*2.5)*5;
+      var sr=2.5+ph*5;
+      var sa=0.92*(1-ph)*(1-ph);
+      if(sa<0.02) continue;
+      ctx.fillStyle='rgba(210,200,192,'+sa.toFixed(2)+')';
+      ctx.beginPath();ctx.arc(sx5,sy5,sr,0,Math.PI*2);ctx.fill();
+    }
+    // Roof outline
+    ctx.strokeStyle='rgba(0,0,0,0.45)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(dx-ov,wY+8);ctx.lineTo(cx,rTop);ctx.lineTo(dx+dw+ov,wY+8);ctx.stroke();
+  }
+
+  // ── Teepee (Creatorspace) ─────────────────────────────────
+  function drawTeepee(dx,dy,dw,dh){
+    var cx=Math.round(dx+dw/2),bot=dy+dh;
+    var tipX=cx,tipY=dy+Math.round(dh*0.04);
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,0.28)';
+    ctx.beginPath();ctx.ellipse(cx,bot+3,Math.round(dw*0.46),6,0,0,Math.PI*2);ctx.fill();
+    // Right face (lighter tan)
+    ctx.fillStyle='#c8a060';
+    ctx.beginPath();ctx.moveTo(tipX,tipY);ctx.lineTo(cx,bot);ctx.lineTo(dx+dw,bot);ctx.closePath();ctx.fill();
+    // Left face (darker)
+    ctx.fillStyle='#b08848';
+    ctx.beginPath();ctx.moveTo(tipX,tipY);ctx.lineTo(dx,bot);ctx.lineTo(cx,bot);ctx.closePath();ctx.fill();
+    // Hide stitch lines (subtle diagonal lines on right face)
+    ctx.strokeStyle='rgba(100,60,20,0.18)';ctx.lineWidth=1;
+    for(var sl4=0;sl4<6;sl4++){
+      var sy4=tipY+(bot-tipY)*0.15+sl4*(bot-tipY)*0.14;
+      var hw4=(bot-sy4)/(bot-tipY)*(dw*0.50);
+      ctx.beginPath();ctx.moveTo(cx,sy4);ctx.lineTo(cx+hw4,sy4+(bot-tipY)*0.10);ctx.stroke();
+    }
+    // Decorative hide bands with geometric patterns
+    [{pct:0.28,col:'#c05c30',h:Math.round(dh*0.056)},
+     {pct:0.50,col:'#7a3c18',h:Math.round(dh*0.040)},
+     {pct:0.68,col:'#c05c30',h:Math.round(dh*0.032)}
+    ].forEach(function(bd){
+      var by3=tipY+(bot-tipY)*bd.pct;
+      var hw3=(bot-by3)/(bot-tipY)*(dw*0.50);
+      ctx.fillStyle=bd.col;
+      ctx.beginPath();ctx.moveTo(cx-hw3,by3);ctx.lineTo(cx+hw3,by3);ctx.lineTo(cx+hw3,by3+bd.h);ctx.lineTo(cx-hw3,by3+bd.h);ctx.closePath();ctx.fill();
+      // Dot pattern within band
+      ctx.fillStyle='rgba(255,220,160,0.60)';
+      for(var dot=cx-hw3+5;dot<cx+hw3-4;dot+=7) ctx.fillRect(dot,by3+2,3,Math.max(2,Math.round(bd.h*0.50)));
+      // Band edge highlights
+      ctx.fillStyle='rgba(255,200,120,0.35)';ctx.fillRect(cx-hw3,by3,hw3*2,2);
+    });
+    // Door flap (dark triangle)
+    var dW4=Math.round(dw*0.18),dH4=Math.round(dh*0.24);
+    ctx.fillStyle='#3a1c08';
+    ctx.beginPath();ctx.moveTo(cx,bot-dH4);ctx.lineTo(cx-dW4/2,bot);ctx.lineTo(cx+dW4/2,bot);ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(100,60,20,0.40)';ctx.fillRect(cx-1,bot-dH4+4,2,dH4-8);
+    // Outline
+    ctx.strokeStyle='rgba(0,0,0,0.40)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(tipX,tipY);ctx.lineTo(dx,bot);ctx.lineTo(dx+dw,bot);ctx.lineTo(tipX,tipY);ctx.stroke();
+    // Poles extending above (5 poles fanning)
+    ctx.strokeStyle='#6a4820';ctx.lineWidth=2;
+    [[-11,-22],[-5,-26],[0,-28],[5,-26],[11,-22]].forEach(function(pd){
+      ctx.beginPath();ctx.moveTo(tipX,tipY+8);ctx.lineTo(tipX+pd[0],tipY+pd[1]);ctx.stroke();
+    });
+    ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=1;
+    [[-11,-22],[-5,-26],[0,-28],[5,-26],[11,-22]].forEach(function(pd){
+      ctx.beginPath();ctx.moveTo(tipX-1,tipY+8);ctx.lineTo(tipX+pd[0]-1,tipY+pd[1]);ctx.stroke();
+    });
+  }
+
+  // ── Fort (Signal Desk Pro) ────────────────────────────────
+  function drawFort(dx,dy,dw,dh){
+    var cx=Math.round(dx+dw/2),bot=dy+dh;
+    ctx.fillStyle='rgba(0,0,0,0.28)';ctx.fillRect(dx+4,bot-2,dw+4,8);
+    var bodyH=Math.round(dh*0.72),bodyY=bot-bodyH;
+    // Main stone wall
+    ctx.fillStyle='#9a9080';ctx.fillRect(dx,bodyY,dw,bodyH);
+    // Stone block pattern (staggered)
+    ctx.save();ctx.beginPath();ctx.rect(dx,bodyY,dw,bodyH);ctx.clip();
+    var bkH=Math.max(6,Math.round(T*0.09));
+    var bkW=Math.max(14,Math.round(T*0.22));
+    for(var bkr=0,bky=bodyY+4;bky<bot;bky+=bkH,bkr++){
+      var bkoff=bkr%2===0?0:Math.round(bkW*0.5);
+      for(var bkx=dx-bkoff;bkx<dx+dw+bkW;bkx+=bkW){
+        ctx.fillStyle='rgba(0,0,0,0.10)';ctx.fillRect(bkx,bky,bkW-2,bkH-2);
+        ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fillRect(bkx+1,bky+1,bkW-4,1);
+      }
+    }
+    ctx.restore();
+    ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(dx,bodyY,4,bodyH);
+    ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fillRect(dx+4,bodyY,2,bodyH);
+    // Crenellations (battlements)
+    var mW=Math.round(dw/8),mH=Math.round(dh*0.14);
+    ctx.fillStyle='#9a9080';
+    for(var mi=0;mi<8;mi++) if(mi%2===0)ctx.fillRect(dx+mi*mW,bodyY-mH,mW,mH+3);
+    // Merlon stone detail
+    ctx.fillStyle='rgba(0,0,0,0.12)';
+    for(var mi2=0;mi2<8;mi2++){
+      if(mi2%2===0){
+        ctx.fillRect(dx+mi2*mW,bodyY-mH,mW,3);ctx.fillRect(dx+mi2*mW,bodyY-mH,3,mH+3);
+        ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fillRect(dx+mi2*mW+mW-2,bodyY-mH+2,1,mH);
+        ctx.fillStyle='rgba(0,0,0,0.12)';
+      }
+    }
+    // Portcullis arch + gate
+    var gW=Math.round(dw*0.26),gH=Math.round(bodyH*0.62);
+    var gX=cx-Math.round(gW/2),gY=bot-gH,gR=Math.round(gW/2);
+    ctx.fillStyle='#2a2018';
+    ctx.beginPath();ctx.moveTo(gX,gY+gR);ctx.lineTo(gX,bot);ctx.lineTo(gX+gW,bot);ctx.lineTo(gX+gW,gY+gR);ctx.arc(cx,gY+gR,gR,0,Math.PI,true);ctx.closePath();ctx.fill();
+    // Arch keystone detail
+    ctx.fillStyle='#403820';ctx.fillRect(cx-3,gY,6,Math.round(gR*0.40));
+    // Portcullis bars (vertical)
+    ctx.strokeStyle='#6a5840';ctx.lineWidth=2;
+    for(var bv=gX+5;bv<gX+gW-3;bv+=6){ctx.beginPath();ctx.moveTo(bv,gY+gR);ctx.lineTo(bv,bot);ctx.stroke();}
+    // Portcullis bars (horizontal)
+    for(var bh4=gY+gR+8;bh4<bot-2;bh4+=8){ctx.beginPath();ctx.moveTo(gX+3,bh4);ctx.lineTo(gX+gW-3,bh4);ctx.stroke();}
+    // Bottom spikes on portcullis
+    ctx.fillStyle='#6a5840';
+    for(var sp=gX+5;sp<gX+gW-3;sp+=6){
+      ctx.beginPath();ctx.moveTo(sp,bot-4);ctx.lineTo(sp-2,bot+3);ctx.lineTo(sp+2,bot+3);ctx.closePath();ctx.fill();
+    }
+    // Corner tower suggestion (slight protrusion on left)
+    ctx.fillStyle='#8a8070';ctx.fillRect(dx-4,bodyY-Math.round(mH*0.5),6,bodyH+mH*0.5);
+    ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(dx-4,bodyY-Math.round(mH*0.5),2,bodyH+mH*0.5);
+    // Flag
+    var fX=dx+Math.round(dw*0.82),fPoleBot=bodyY-mH+3,fPoleTop=fPoleBot-24;
+    ctx.strokeStyle='#7a5830';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(fX,fPoleBot);ctx.lineTo(fX,fPoleTop);ctx.stroke();
+    ctx.fillStyle='#c83020';
+    ctx.beginPath();ctx.moveTo(fX,fPoleTop);ctx.lineTo(fX+18,fPoleTop+6);ctx.lineTo(fX,fPoleTop+12);ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.30)';
+    ctx.beginPath();ctx.moveTo(fX,fPoleTop);ctx.lineTo(fX+18,fPoleTop+6);ctx.lineTo(fX,fPoleTop+4);ctx.closePath();ctx.fill();
+    // Outline
+    ctx.strokeStyle='rgba(0,0,0,0.40)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(dx,bot);ctx.lineTo(dx,bodyY);ctx.lineTo(dx+dw,bodyY);ctx.lineTo(dx+dw,bot);ctx.stroke();
+  }
+
+  // ── Lighthouse (Memex) ────────────────────────────────────
+  function drawLighthouse(dx,dy,dw,dh){
+    var cx=Math.round(dx+dw/2),bot=dy+dh;
+    var tW=Math.round(dw*0.38),tH=Math.round(dh*0.82);
+    var tX=cx-Math.round(tW/2),tTop=bot-tH;
+    var topW=Math.round(tW*0.70),topX=cx-Math.round(topW/2);
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,0.26)';ctx.fillRect(tX+2,bot-2,tW+4,8);
+    // Rock/stone base at foot
+    ctx.fillStyle=C.bst2;ctx.fillRect(tX-4,bot-Math.round(dh*0.10),tW+8,Math.round(dh*0.10));
+    ctx.fillStyle='rgba(0,0,0,0.14)';
+    for(var rb=0;rb<3;rb++) ctx.fillRect(tX-4+Math.round(rb*tW*0.36),bot-Math.round(dh*0.06),Math.round(tW*0.30),Math.round(dh*0.06));
+    // Tower body (trapezoidal)
+    ctx.fillStyle='#f0ece0';
+    ctx.beginPath();ctx.moveTo(tX,bot-Math.round(dh*0.06));ctx.lineTo(tX+tW,bot-Math.round(dh*0.06));ctx.lineTo(topX+topW,tTop);ctx.lineTo(topX,tTop);ctx.closePath();ctx.fill();
+    // Horizontal band details (subtle lines)
+    ctx.fillStyle='rgba(0,0,0,0.07)';
+    for(var hl=tTop+10;hl<bot-Math.round(dh*0.10);hl+=Math.max(6,Math.round(tH*0.06))){
+      var pct2=(hl-tTop)/tH;
+      var lx2=topX+pct2*(tX-topX),lw4=topW+(tW-topW)*pct2;
+      ctx.fillRect(lx2,hl,lw4,1);
+    }
+    // Red stripe band (center)
+    var sH2=Math.round(tH*0.20),sY2=tTop+Math.round(tH*0.38);
+    var p1=(sY2-tTop)/tH,p2=(sY2+sH2-tTop)/tH;
+    var s1X=topX+p1*(tX-topX),s1W=topW+(tW-topW)*p1;
+    var s2X=topX+p2*(tX-topX),s2W=topW+(tW-topW)*p2;
+    ctx.fillStyle='#c83020';
+    ctx.beginPath();ctx.moveTo(s1X,sY2);ctx.lineTo(s1X+s1W,sY2);ctx.lineTo(s2X+s2W,sY2+sH2);ctx.lineTo(s2X,sY2+sH2);ctx.closePath();ctx.fill();
+    // Stripe highlight
+    ctx.fillStyle='rgba(255,255,255,0.18)';
+    ctx.beginPath();ctx.moveTo(s1X,sY2);ctx.lineTo(s1X+s1W,sY2);ctx.lineTo(s2X+s2W*0.5,sY2+3);ctx.lineTo(s2X+s2W*0.2,sY2+3);ctx.closePath();ctx.fill();
+    // Tower left shadow edge
+    ctx.fillStyle='rgba(0,0,0,0.12)';
+    ctx.beginPath();ctx.moveTo(tX,bot-Math.round(dh*0.06));ctx.lineTo(topX,tTop);ctx.lineTo(topX+4,tTop);ctx.lineTo(tX+4,bot-Math.round(dh*0.06));ctx.closePath();ctx.fill();
+    // Arched door at base
+    var dW5=Math.round(tW*0.40),dH5=Math.round(tH*0.19),dX5=cx-Math.round(dW5/2);
+    ctx.fillStyle='#3a2810';ctx.fillRect(dX5,bot-dH5-Math.round(dh*0.06),dW5,dH5);
+    ctx.fillStyle='#3a2810';ctx.beginPath();ctx.arc(cx,bot-dH5-Math.round(dh*0.06),Math.round(dW5/2),Math.PI,0);ctx.fill();
+    ctx.fillStyle='rgba(255,200,120,0.32)';ctx.fillRect(dX5+2,bot-dH5-Math.round(dh*0.06)+2,dW5-4,dH5-4);
+    ctx.fillStyle='rgba(255,180,80,0.20)';ctx.fillRect(dX5+2,bot-Math.round(dH5*0.5)-Math.round(dh*0.06),dW5-4,Math.round(dH5*0.5));
+    // Lantern platform + railing
+    var platW=topW+12,platX=cx-Math.round(platW/2),platY=tTop+5;
+    ctx.fillStyle='#d0c8b4';ctx.fillRect(platX,platY,platW,5);
+    ctx.fillStyle='rgba(0,0,0,0.15)';ctx.fillRect(platX,platY,platW,2);
+    ctx.fillStyle='#8a8070';
+    for(var rp3=platX;rp3<=platX+platW;rp3+=5) ctx.fillRect(rp3,platY-8,1,8);
+    ctx.fillStyle='#a09880';ctx.fillRect(platX,platY-9,platW,2);
+    // Lantern housing (dark)
+    var lhW2=Math.round(topW*0.82),lhH2=Math.round(tH*0.17),lhX2=cx-Math.round(lhW2/2),lhY2=platY-lhH2-4;
+    ctx.fillStyle='#1e1c18';ctx.fillRect(lhX2,lhY2,lhW2,lhH2);
+    // Lantern frame details (vertical mullions)
+    ctx.fillStyle='#2a2820';
+    for(var lm=lhX2+Math.round(lhW2*0.25);lm<lhX2+lhW2-2;lm+=Math.round(lhW2*0.25)) ctx.fillRect(lm,lhY2,2,lhH2);
+    // Glowing lantern panes
+    var lwW2=Math.round(lhW2*0.20);
+    ctx.fillStyle='#ffd840';
+    for(var lw3=lhX2+4;lw3<lhX2+lhW2-4;lw3+=lwW2+4) ctx.fillRect(lw3,lhY2+3,lwW2,lhH2-6);
+    // Glow halo (radial gradient)
+    var glowR2=ctx.createRadialGradient(cx,lhY2+lhH2/2,2,cx,lhY2+lhH2/2,Math.round(lhW2*0.90));
+    glowR2.addColorStop(0,'rgba(255,220,80,0.60)');glowR2.addColorStop(0.6,'rgba(255,200,50,0.18)');glowR2.addColorStop(1,'rgba(255,220,80,0)');
+    ctx.fillStyle=glowR2;ctx.beginPath();ctx.arc(cx,lhY2+lhH2/2,Math.round(lhW2*0.90),0,Math.PI*2);ctx.fill();
+    // Conical roof cap with detail
+    ctx.fillStyle='#2a2018';
+    ctx.beginPath();ctx.moveTo(cx,lhY2-14);ctx.lineTo(lhX2,lhY2);ctx.lineTo(lhX2+lhW2,lhY2);ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.10)';
+    ctx.beginPath();ctx.moveTo(cx,lhY2-14);ctx.lineTo(cx+Math.round(lhW2*0.5),lhY2);ctx.lineTo(lhX2+lhW2,lhY2);ctx.closePath();ctx.fill();
+    // Outline
+    ctx.strokeStyle='rgba(0,0,0,0.35)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(tX,bot-Math.round(dh*0.06));ctx.lineTo(topX,tTop);ctx.moveTo(tX+tW,bot-Math.round(dh*0.06));ctx.lineTo(topX+topW,tTop);ctx.stroke();
+  }
+
+  // ── Shrubs: SDV-style dark green rounded bushes ───────────
+  function drawShrub(tx,ty){
+    var x=OX+tx*T, y=OY+ty*T;
+    var cx=x+T/2, cy=y+Math.round(T*0.60);
+    var r=Math.round(T*0.40);
+    // Ground shadow
+    ctx.fillStyle='rgba(0,0,0,0.22)';
+    ctx.beginPath();ctx.ellipse(cx,cy+Math.round(r*0.55),Math.round(r*0.90),Math.round(r*0.26),0,0,Math.PI*2);ctx.fill();
+    // Dark outer mass (3-lobe shape)
+    ctx.fillStyle=C.shD;
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx-Math.round(r*0.52),cy+Math.round(r*0.10),Math.round(r*0.60),0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx+Math.round(r*0.52),cy+Math.round(r*0.10),Math.round(r*0.56),0,Math.PI*2);ctx.fill();
+    // Mid green layer
+    ctx.fillStyle=C.shM;
+    ctx.beginPath();ctx.arc(cx,cy-Math.round(r*0.06),Math.round(r*0.82),0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx-Math.round(r*0.46),cy+Math.round(r*0.04),Math.round(r*0.50),0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx+Math.round(r*0.46),cy+Math.round(r*0.04),Math.round(r*0.47),0,Math.PI*2);ctx.fill();
+    // Light green (upper)
+    ctx.fillStyle=C.shL;
+    ctx.beginPath();ctx.arc(cx-Math.round(r*0.10),cy-Math.round(r*0.22),Math.round(r*0.60),0,Math.PI*2);ctx.fill();
+    // Bright highlight
+    ctx.fillStyle=C.shH;
+    ctx.beginPath();ctx.arc(cx-Math.round(r*0.22),cy-Math.round(r*0.40),Math.round(r*0.30),0,Math.PI*2);ctx.fill();
+    // White specular
+    ctx.fillStyle='rgba(255,255,255,0.18)';
+    ctx.beginPath();ctx.arc(cx-Math.round(r*0.28),cy-Math.round(r*0.48),Math.round(r*0.12),0,Math.PI*2);ctx.fill();
+  }
+
+  // ── Fences: SDV-style wooden horizontal fence ─────────────
+  function drawFence(tx,ty){
+    var x=sx(tx), y=sy(ty);
+    var fy=Math.round(y+T*0.46); // fence vertical center
+    var postW=Math.max(3,Math.round(T*0.07));
+    var postH=Math.round(T*0.40);
+    // Draw two posts (left and right of tile)
+    [x+Math.round(postW*0.5), x+T-Math.round(postW*1.5)].forEach(function(px){
+      ctx.fillStyle=C.fnM;ctx.fillRect(px,fy-Math.round(postH*0.58),postW,postH);
+      ctx.fillStyle=C.fnD;ctx.fillRect(px,fy-Math.round(postH*0.58),Math.ceil(postW*0.38),postH);
+      ctx.fillStyle=C.fnL;ctx.fillRect(px+Math.ceil(postW*0.38),fy-Math.round(postH*0.55),Math.floor(postW*0.45),postH-4);
+      // Post cap
+      ctx.fillStyle=C.fnL;ctx.fillRect(px-1,fy-Math.round(postH*0.58)-4,postW+2,5);
+      ctx.fillStyle=C.fnD;ctx.fillRect(px-1,fy-Math.round(postH*0.58)-4,postW+2,2);
+    });
+    // Two horizontal rails
+    var railH=Math.max(2,Math.round(T*0.045));
+    [fy-Math.round(postH*0.20), fy+Math.round(postH*0.14)].forEach(function(ry){
+      ctx.fillStyle=C.fnM;ctx.fillRect(x,ry,T,railH);
+      ctx.fillStyle=C.fnD;ctx.fillRect(x,ry,T,Math.max(1,Math.round(railH*0.40)));
+      ctx.fillStyle=C.fnL;ctx.fillRect(x,ry+Math.max(1,Math.round(railH*0.45)),T,Math.max(1,Math.round(railH*0.35)));
+    });
+  }
+
+  // ── Trees: SDV-style large detailed canopies ──────────────
   function drawTree(tx,ty){
     var pine=(tx>=16||tx===19);
     var x=sx(tx)+T/2, y=sy(ty)+T/2;
-    // Shadow
-    ctx.fillStyle='rgba(0,0,0,0.18)';
-    ctx.beginPath();ctx.ellipse(x,y+16,Math.round(T*0.28),Math.round(T*0.10),0,0,Math.PI*2);ctx.fill();
+    // Ground shadow
+    ctx.fillStyle='rgba(0,0,0,0.22)';
+    ctx.beginPath();ctx.ellipse(x,y+Math.round(T*0.20),Math.round(T*0.38),Math.round(T*0.12),0,0,Math.PI*2);ctx.fill();
 
     if(pine){
-      // Tall triangular conifer (SDV right-side pines)
-      var ph2=Math.round(T*1.8), pw2=Math.round(T*0.62);
-      ctx.fillStyle=C.tPt;ctx.fillRect(x-3,y+4,6,Math.round(T*0.28));
-      var layers=[[pw2,0],[pw2*0.80,-ph2*0.28],[pw2*0.58,-ph2*0.56],[pw2*0.36,-ph2*0.82]];
+      // Tall triangular conifer
+      var ph2=Math.round(T*2.0), pw2=Math.round(T*0.66);
+      var ty2=y+Math.round(T*0.10);
+      // Trunk
+      ctx.fillStyle=C.tPt;ctx.fillRect(x-3,ty2+Math.round(ph2*0.60),6,Math.round(T*0.38));
+      ctx.fillStyle='rgba(0,0,0,0.22)';ctx.fillRect(x-3,ty2+Math.round(ph2*0.60),2,Math.round(T*0.38));
+      // 4 layered triangle sections
+      var layers=[[pw2,0],[pw2*0.78,-ph2*0.26],[pw2*0.56,-ph2*0.52],[pw2*0.34,-ph2*0.78]];
       for(var li=0;li<layers.length-1;li++){
-        var lw2=layers[li][0],  lt=y-T*0.18+layers[li][1];
-        var lw2n=layers[li+1][0],ltn=y-T*0.18+layers[li+1][1];
+        var lw3=layers[li][0], lt=ty2-T*0.16+layers[li][1];
+        var lw3n=layers[li+1][0], ltn=ty2-T*0.16+layers[li+1][1];
         ctx.fillStyle=li%2===0?C.tPm:C.tPd;
-        ctx.beginPath();ctx.moveTo(x,ltn-6);ctx.lineTo(x-lw2/2,lt+8);ctx.lineTo(x+lw2/2,lt+8);ctx.closePath();ctx.fill();
+        ctx.beginPath();ctx.moveTo(x,ltn-8);ctx.lineTo(x-lw3/2,lt+10);ctx.lineTo(x+lw3/2,lt+10);ctx.closePath();ctx.fill();
+        // Right-side highlight strip
         ctx.fillStyle=C.tPl;
-        ctx.beginPath();ctx.moveTo(x,ltn-6);ctx.lineTo(x+lw2n/2,ltn+4);ctx.lineTo(x+lw2/2,lt+8);ctx.closePath();ctx.fill();
+        ctx.beginPath();ctx.moveTo(x,ltn-8);ctx.lineTo(x+lw3n/2,ltn+5);ctx.lineTo(x+lw3/2,lt+10);ctx.closePath();ctx.fill();
+        // Snow/highlight tip
+        ctx.fillStyle='rgba(200,230,180,0.35)';
+        ctx.beginPath();ctx.moveTo(x,ltn-8);ctx.lineTo(x+Math.round(lw3n*0.25),ltn+4);ctx.lineTo(x-Math.round(lw3n*0.10),ltn+2);ctx.closePath();ctx.fill();
       }
     } else {
-      // Round deciduous (SDV ball-canopy style)
-      var tr=Math.round(T*0.46);
-      ctx.fillStyle=C.tRt;ctx.fillRect(x-4,y+2,8,Math.round(T*0.34));
-      ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(x-4,y+2,3,Math.round(T*0.34));
-      ctx.fillStyle=C.tRo;ctx.beginPath();ctx.arc(x,y-tr*0.22,tr,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=C.tRd;ctx.beginPath();ctx.arc(x-1,y-tr*0.30,tr-2,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=C.tRm;ctx.beginPath();ctx.arc(x-2,y-tr*0.42,Math.round(tr*0.80),0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=C.tRl;ctx.beginPath();ctx.arc(x-3,y-tr*0.60,Math.round(tr*0.55),0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(255,255,255,0.14)';ctx.beginPath();ctx.arc(x-5,y-tr*0.78,Math.round(tr*0.28),0,Math.PI*2);ctx.fill();
+      // Round deciduous — large, irregular, multi-layer SDV style
+      var tr=Math.round(T*0.72); // large radius
+      var cy2=y-Math.round(T*0.28); // canopy center higher up
+      // Trunk with wood detail
+      var tw=Math.max(5,Math.round(T*0.10));
+      ctx.fillStyle=C.tRt;ctx.fillRect(x-Math.round(tw/2),cy2+Math.round(tr*0.58),tw,Math.round(T*0.50));
+      ctx.fillStyle='rgba(0,0,0,0.28)';ctx.fillRect(x-Math.round(tw/2),cy2+Math.round(tr*0.58),Math.round(tw*0.38),Math.round(T*0.50));
+      ctx.fillStyle='rgba(255,255,255,0.14)';ctx.fillRect(x+Math.round(tw*0.04),cy2+Math.round(tr*0.58),Math.round(tw*0.30),Math.round(T*0.35));
+      // Outermost dark canopy base
+      ctx.fillStyle=C.tRo;
+      ctx.beginPath();ctx.arc(x,cy2,tr,0,Math.PI*2);ctx.fill();
+      // Irregular bumps around perimeter (6 lobes)
+      for(var bi=0;bi<6;bi++){
+        var ba=bi*Math.PI/3+hash(tx,ty,bi)*0.7;
+        var bdist=Math.round(tr*0.82);
+        var br=Math.round(tr*(0.28+hash(tx,ty,bi+6)*0.14));
+        ctx.beginPath();ctx.arc(x+Math.round(bdist*Math.cos(ba)),cy2+Math.round(bdist*Math.sin(ba)),br,0,Math.PI*2);ctx.fill();
+      }
+      // Dark mid layer
+      ctx.fillStyle=C.tRd;
+      ctx.beginPath();ctx.arc(x,cy2,Math.round(tr*0.86),0,Math.PI*2);ctx.fill();
+      // More shadow lobes (lower left quadrant)
+      ctx.fillStyle=C.tRo;
+      for(var si2=0;si2<3;si2++){
+        var sa=Math.PI*(0.60+si2*0.16);
+        var sdist=Math.round(tr*(0.48+hash(tx,ty,si2+12)*0.22));
+        ctx.beginPath();ctx.arc(x+Math.round(sdist*Math.cos(sa)),cy2+Math.round(sdist*Math.sin(sa)),Math.round(tr*0.20),0,Math.PI*2);ctx.fill();
+      }
+      // Mid-green main layer
+      ctx.fillStyle=C.tRm;
+      ctx.beginPath();ctx.arc(x-Math.round(T*0.06),cy2-Math.round(T*0.08),Math.round(tr*0.72),0,Math.PI*2);ctx.fill();
+      // Bright layer (upper area)
+      ctx.fillStyle=C.tRl;
+      ctx.beginPath();ctx.arc(x-Math.round(T*0.14),cy2-Math.round(T*0.20),Math.round(tr*0.50),0,Math.PI*2);ctx.fill();
+      // Highlight lobes (upper-right area, brightest)
+      ctx.fillStyle=C.g4;
+      ctx.beginPath();ctx.arc(x-Math.round(T*0.22),cy2-Math.round(T*0.32),Math.round(tr*0.30),0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(x+Math.round(T*0.08),cy2-Math.round(T*0.38),Math.round(tr*0.18),0,Math.PI*2);ctx.fill();
+      // White specular
+      ctx.fillStyle='rgba(255,255,255,0.20)';
+      ctx.beginPath();ctx.arc(x-Math.round(T*0.26),cy2-Math.round(T*0.38),Math.round(tr*0.11),0,Math.PI*2);ctx.fill();
     }
   }
 
@@ -8359,8 +9073,14 @@ function closeTerminal() {
     TREES.forEach(function(tr){
       objs.push({d:tr.ty+1,fn:(function(t3){return function(){drawTree(t3.tx,t3.ty);};})(tr)});
     });
+    SHRUBS.forEach(function(sh){
+      objs.push({d:sh.ty+0.8,fn:(function(s2){return function(){drawShrub(s2.tx,s2.ty);};})(sh)});
+    });
+    FENCES.forEach(function(fn2){
+      objs.push({d:fn2.ty+0.6,fn:(function(f2){return function(){drawFence(f2.tx,f2.ty);};})(fn2)});
+    });
     BLDS.forEach(function(b){
-      objs.push({d:b.ty+b.h,fn:(function(b2){return function(){drawBuilding(b2);};})(b)});
+      objs.push({d:b.ty+b.h,fn:(function(b2){return function(){drawBuilding(b2,t2);};})(b)});
     });
     WOLTS.forEach(function(w){
       objs.push({d:w.y+0.5,fn:(function(w2){return function(){drawWolt(w2,t2);};})(w)});
