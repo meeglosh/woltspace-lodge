@@ -3480,6 +3480,24 @@
     text-transform: uppercase;
     pointer-events: none;
   }
+  .lodge-set-home-btn {
+    position: absolute;
+    top: 14px;
+    right: 24px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    background: rgba(0,0,0,0.18);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .lodge-set-home-btn:hover { background: rgba(0,0,0,0.32); color: rgba(255,255,255,0.92); }
+  .lodge-set-home-btn:disabled { opacity: 0.35; cursor: default; }
 
   /* ── WOLT PICKER ───────────────────────────────────────────── */
   #woltspace-toast {
@@ -4114,6 +4132,7 @@
 <div id="lodge-view" style="display:none">
   <canvas id="lodge-canvas"></canvas>
   <div class="lodge-hud">woltspace lodge · live view</div>
+  <button class="lodge-set-home-btn" id="lodge-set-home-btn" onclick="lodgeSetAsHome()">⌂ Set as Home</button>
 </div>
 
 <!-- ── THREADS VIEW ───────────────────────────────────────────── -->
@@ -4494,13 +4513,29 @@
       // Default home is creationwolt
       return isWoltSite && name === 'creationwolt';
     }
+    if (customHomeProject.isLodge) {
+      return name === '__lodge__';
+    }
     return customHomeProject.name === name && customHomeProject.isWoltSite === isWoltSite;
+  }
+
+  function syncLodgeNav() {
+    const lodgeIsHome = !!(customHomeProject && customHomeProject.isLodge);
+    document.getElementById('nav-lodge').style.display = lodgeIsHome ? 'none' : '';
+  }
+
+  function lodgeSetAsHome() {
+    customHomeProject = { isLodge: true };
+    syncLodgeNav();
+    const btn = document.getElementById('lodge-set-home-btn');
+    if (btn) btn.disabled = true;
   }
 
   function cardSetAsHome(name) {
     if (isCurrentHome(name, false)) return;
     document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('open'));
     customHomeProject = { name: name, isWoltSite: false };
+    syncLodgeNav();
     showHome();
   }
 
@@ -4572,6 +4607,7 @@
     } else {
       customHomeProject = { name: pdProjectName, isWoltSite: pdIsWoltSite };
     }
+    syncLodgeNav();
     closeProject();
     showHome();
   }
@@ -5293,6 +5329,8 @@ function showLodge() {
   setNavActive('nav-lodge');
   setGeoVisible(false);
   currentWolt = null;
+  const btn = document.getElementById('lodge-set-home-btn');
+  if (btn) btn.disabled = !!(customHomeProject && customHomeProject.isLodge);
   if (typeof startLodge === 'function') startLodge();
 }
 
@@ -5742,6 +5780,13 @@ function showHome() {
   hideAllViews();
   setNavActive('nav-home');
   document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
+
+  if (customHomeProject && customHomeProject.isLodge) {
+    // Lodge is home — show it but keep nav-home active
+    showLodge();
+    setNavActive('nav-home');
+    return;
+  }
 
   if (customHomeProject) {
     // Load the set-as-home project/site into the full-width iframe
