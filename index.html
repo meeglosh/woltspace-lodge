@@ -3426,6 +3426,7 @@
     transition: background 0.12s;
   }
   .context-menu-item:hover { background: rgba(255,255,255,0.1); }
+  .context-menu-item.disabled { color: rgba(255,255,255,0.25); cursor: default; pointer-events: none; }
   .context-menu-item.danger { color: #F08070; }
   .context-menu-item.danger:hover { background: rgba(196,83,30,0.2); }
   .context-menu-divider {
@@ -3977,7 +3978,7 @@
         </div>
       </div>
       <div class="context-menu" id="menu-1">
-        <div class="context-menu-item" onclick="cardSetAsHome('Creatorspace')">⌂ Set as Home</div>
+        <div class="context-menu-item" data-action="set-home" data-project="Creatorspace" onclick="cardSetAsHome('Creatorspace')">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Reassign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
@@ -4024,7 +4025,7 @@
         </div>
       </div>
       <div class="context-menu" id="menu-2">
-        <div class="context-menu-item" onclick="cardSetAsHome('Signal Desk Pro')">⌂ Set as Home</div>
+        <div class="context-menu-item" data-action="set-home" data-project="Signal Desk Pro" onclick="cardSetAsHome('Signal Desk Pro')">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Reassign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
@@ -4068,7 +4069,7 @@
         </div>
       </div>
       <div class="context-menu" id="menu-4">
-        <div class="context-menu-item" onclick="cardSetAsHome('Memex')">⌂ Set as Home</div>
+        <div class="context-menu-item" data-action="set-home" data-project="Memex" onclick="cardSetAsHome('Memex')">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Assign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
@@ -4478,10 +4479,26 @@
     document.querySelectorAll('.context-menu').forEach(m => {
       if (m.id !== id) m.classList.remove('open');
     });
-    document.getElementById(id).classList.toggle('open');
+    const menu = document.getElementById(id);
+    // Update the "Set as Home" item disabled state before showing
+    const setHomeItem = menu.querySelector('.context-menu-item[data-action="set-home"]');
+    if (setHomeItem) {
+      const name = setHomeItem.dataset.project;
+      setHomeItem.classList.toggle('disabled', isCurrentHome(name, false));
+    }
+    menu.classList.toggle('open');
+  }
+
+  function isCurrentHome(name, isWoltSite) {
+    if (customHomeProject === null) {
+      // Default home is creationwolt
+      return isWoltSite && name === 'creationwolt';
+    }
+    return customHomeProject.name === name && customHomeProject.isWoltSite === isWoltSite;
   }
 
   function cardSetAsHome(name) {
+    if (isCurrentHome(name, false)) return;
     document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('open'));
     customHomeProject = { name: name, isWoltSite: false };
     showHome();
@@ -4520,7 +4537,8 @@
     const github = proj?.github;
     let html = '';
 
-    html += `<div class="context-menu-item" onclick="pdMenuSetHome()">⌂ Set as Home</div>`;
+    const alreadyHome = isCurrentHome(pdProjectName, pdIsWoltSite);
+    html += `<div class="context-menu-item${alreadyHome ? ' disabled' : ''}" onclick="pdMenuSetHome()">⌂ Set as Home</div>`;
 
     if (!pdIsWoltSite) {
       html += `<div class="context-menu-item" onclick="pdMenuReassignWolt(event)">🔁 Reassign wolt</div>`;
@@ -4548,7 +4566,12 @@
 
   function pdMenuSetHome() {
     pdCloseMenu();
-    customHomeProject = { name: pdProjectName, isWoltSite: pdIsWoltSite };
+    // creationwolt is the de-facto default home — setting it as home resets to default
+    if (pdIsWoltSite && pdProjectName === 'creationwolt') {
+      customHomeProject = null;
+    } else {
+      customHomeProject = { name: pdProjectName, isWoltSite: pdIsWoltSite };
+    }
     closeProject();
     showHome();
   }
