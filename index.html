@@ -3725,7 +3725,7 @@
     </div>
 
     <div class="sidebar-nav-item" id="nav-all-sessions" onclick="showAllSessions()">
-      <span class="sidebar-nav-icon">💬</span>
+      <span class="sidebar-nav-icon">🌿</span>
       <span class="sidebar-nav-label">All Sessions</span>
     </div>
 
@@ -8347,7 +8347,7 @@ function closeTerminal() {
   //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19
    [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],//0
    [4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4],//1
-   [4, 4, 4, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 4, 4, 4, 4],//2
+   [4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4],//2
    [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4],//3
    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//4
    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],//5
@@ -8526,26 +8526,50 @@ function closeTerminal() {
   }
   function drawPath(tx,ty){
     var x=sx(tx),y=sy(ty);
+    // Base dirt fill
     ctx.fillStyle=C.d1; ctx.fillRect(x,y,T,T);
+    // Darker rut lines (horizontal wear marks)
+    ctx.fillStyle=C.d2;
+    for(var ri=0;ri<3;ri++){
+      var ry=y+Math.round(hash(tx,ty,ri+20)*(T-4));
+      var rw=Math.round(hash(tx,ty,ri+30)*(T*0.55)+T*0.20);
+      var rx=x+Math.round(hash(tx,ty,ri+40)*(T-rw));
+      ctx.fillRect(rx,ry,rw,1);
+    }
+    // Light highlight specks (pebbles/gravel)
+    ctx.fillStyle=C.d3;
+    for(var pi=0;pi<6;pi++){
+      var px=x+Math.round(hash(tx,ty,pi)*( T-3))+1;
+      var py=y+Math.round(hash(tx,ty,pi+10)*(T-3))+1;
+      var ps=hash(tx,ty,pi+50)>0.55?2:1;
+      ctx.fillRect(px,py,ps,ps);
+    }
+    // Dark pebble specks
+    ctx.fillStyle=C.d2;
+    for(var di=0;di<5;di++){
+      var dpx=x+Math.round(hash(tx,ty,di+60)*(T-3))+1;
+      var dpy=y+Math.round(hash(tx,ty,di+70)*(T-3))+1;
+      ctx.fillRect(dpx,dpy,1,1);
+    }
   }
   function drawWater(tx,ty,t2){ /* handled by drawLake */ }
 
   function drawLake(t2){
     var r = T * 0.52;
     // Organic lake shape — more vertices with slight offsets for a natural shoreline
-    var D = T*1.35; // downward shift (1 tile + 0.35 to clear the mountains)
+    var D = T*1.85; // downward shift
     var pts = [
       [sx(6)  + T*0.10, sy(1)  + T*0.00 + D],  // top-left
       [sx(8)  - T*0.05, sy(1)  - T*0.20 + D],  // top, bows upward left-center
       [sx(10) + T*0.10, sy(1)  - T*0.16 + D],  // top, slight peak right-center
       [sx(12) + T*0.55, sy(1)  + T*0.02 + D],  // top-right corner
       [sx(13) - T*0.08, sy(1)  + T*0.28 + D],  // right, upper
-      [sx(12) + T*0.38, sy(1)  + T*0.68 + D],  // right, mid
-      [sx(12) - T*0.05, sy(2)  + T*0.02 + D],  // bottom-right
-      [sx(10) + T*0.05, sy(2)  + T*0.14 + D],  // bottom, bows downward right-center
-      [sx(8)  - T*0.08, sy(2)  + T*0.07 + D],  // bottom, left-center
-      [sx(6)  + T*0.12, sy(2)  - T*0.02 + D],  // bottom-left
-      [sx(6)  - T*0.18, sy(1)  + T*0.57 + D],  // left, slight outward bulge
+      [sx(12) + T*0.38, sy(1)  + T*0.50 + D],  // right, mid
+      [sx(12) - T*0.05, sy(1)  + T*0.52 + D],  // bottom-right
+      [sx(10) + T*0.05, sy(1)  + T*0.64 + D],  // bottom, bows downward right-center
+      [sx(8)  - T*0.08, sy(1)  + T*0.57 + D],  // bottom, left-center
+      [sx(6)  + T*0.12, sy(1)  + T*0.48 + D],  // bottom-left
+      [sx(6)  - T*0.18, sy(1)  + T*0.40 + D],  // left, slight outward bulge
     ];
     function lakePath(){
       var n=pts.length;
@@ -8574,8 +8598,9 @@ function closeTerminal() {
         var x=sx(tx2),y=sy(ty2);
         var ph=(tx2*1.9+ty2*2.7+t2*0.0009)%(Math.PI*2);
         var ry=Math.sin(ph)*3.5;
-        ctx.fillStyle=C.wl; ctx.fillRect(x+5,y+22+ry,16,3); ctx.fillRect(x+24,y+38+ry*0.6,12,2);
-        ctx.fillStyle=C.wf; ctx.fillRect(x+7,y+22+ry,4,1);
+        var wOff=Math.round(T*0.5);
+        ctx.fillStyle=C.wl; ctx.fillRect(x+5,y+22+wOff+ry,16,3); ctx.fillRect(x+24,y+38+wOff+ry*0.6,12,2);
+        ctx.fillStyle=C.wf; ctx.fillRect(x+7,y+22+wOff+ry,4,1);
       }
     }
     // Subtle dark top-edge shadow
@@ -9196,7 +9221,7 @@ function closeTerminal() {
       if(b.x>xCap){b.x=xCap;b.vx=-Math.abs(b.vx);}
       // y bounds
       if(b.y<2.31){b.y=2.31;b.vy=Math.abs(b.vy);}
-      if(b.y>3.30){b.y=3.30;b.vy=-Math.abs(b.vy);}
+      if(b.y>3.10){b.y=3.10;b.vy=-Math.abs(b.vy);}
     });
   }
 
