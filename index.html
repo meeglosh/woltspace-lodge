@@ -8346,7 +8346,7 @@ function closeTerminal() {
   var MAP = [
   //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19
    [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],//0
-   [4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 0, 4, 4, 4, 4, 4, 4],//1
+   [4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4],//1
    [4, 4, 4, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 4, 4, 4, 4],//2
    [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4],//3
    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//4
@@ -8364,22 +8364,26 @@ function closeTerminal() {
 
   var BLDS = [
     {tx:7, ty:4, w:4, h:3, name:'Woltspace Lodge',   style:'ski_lodge',  cx:9,    cy:7.6,  project:null},
-    {tx:14,ty:1, w:3, h:2, name:'Creatorspace',      style:'teepee',     cx:15.5, cy:3.6,  project:'Creatorspace'},
+    {tx:14,ty:2, w:3, h:2, name:'Creatorspace',      style:'teepee',     cx:15.5, cy:4.6,  project:'Creatorspace'},
     {tx:0, ty:8, w:3, h:3, name:'Signal Desk Pro',   style:'fort',       cx:1.5,  cy:11.6, project:'Signal Desk Pro'},
     {tx:16,ty:8, w:3, h:3, name:'Memex',             style:'lighthouse', cx:17.5, cy:11.6, project:'Memex'},
   ];
 
   var TREES = [
-    {tx:16,ty:0},{tx:17,ty:0},{tx:18,ty:0},{tx:19,ty:0},
-    {tx:19,ty:1},{tx:19,ty:2},
+    {tx:19,ty:0},
+    {tx:16,ty:1},{tx:17,ty:1},{tx:18,ty:1},{tx:19,ty:1},{tx:19,ty:2},
     {tx:0,ty:13},{tx:0,ty:14},{tx:1,ty:14},{tx:2,ty:14},
     {tx:17,ty:13},{tx:18,ty:14},{tx:19,ty:13},{tx:19,ty:14},
     {tx:4,ty:12},{tx:5,ty:13},{tx:10,ty:12},
+    // Left-side cluster — above the left fence run, below the mountains
+    {tx:1,ty:4,sz:0.55},{tx:3,ty:4,sz:0.55},{tx:0,ty:5,sz:0.55},{tx:2,ty:5,sz:0.55},{tx:1,ty:6,sz:0.55},
+    // Right-side cluster — above the right fence run (tx<16 to stay deciduous)
+    {tx:16,ty:4,sz:0.55},{tx:17,ty:4,sz:0.55},{tx:18,ty:5,sz:0.55},
   ];
 
   var WOLTS = [
     {name:'Woltaire',     emoji:'\uD83E\uDD9D', x:9,    y:7.6,  tx:9,    ty:7.6,  state:'idle', wait:2.0},
-    {name:'creationwolt', emoji:'\uD83E\uDDAB', x:15.5, y:3.6,  tx:15.5, ty:3.6,  state:'idle', wait:3.5},
+    {name:'creationwolt', emoji:'\uD83E\uDDAB', x:15.5, y:4.6,  tx:15.5, ty:4.6,  state:'idle', wait:3.5},
     {name:'lodgebuilder', emoji:'\uD83E\uDDA6', x:1.5,  y:11.6, tx:1.5,  ty:11.6, state:'idle', wait:1.2},
     {name:'Wolten',       emoji:'\uD83D\uDC15', x:17.5, y:11.6, tx:17.5, ty:11.6, state:'idle', wait:4.0},
   ];
@@ -8465,7 +8469,7 @@ function closeTerminal() {
     cdefs.forEach(function(cl){
       var cw2=Math.round(cl.w*CW), ch2=Math.round(cw2*0.28);
       var cx2=((cl.fx*CW+Math.sin(t2*cl.sp)*28)%CW+CW)%CW;
-      var cy2=Math.round(cl.fy*h);
+      var cy2=Math.round(cl.fy*h+T);
       if(cy2+ch2<0||cy2>h) return;
       ctx.fillStyle=C.cld;
       ctx.fillRect(cx2,cy2,cw2,ch2);
@@ -8478,12 +8482,12 @@ function closeTerminal() {
       ctx.fillRect(cx2,cy2+ch2*0.66,cw2,Math.max(2,Math.round(ch2*0.34)));
     });
 
-    // Mountains — two layers, polygon fills
+    // Mountains — two layers, polygon fills (shifted down 1 tile)
     var base=h+T*0.5;
     function mPoly(col,pts){
-      ctx.fillStyle=col; ctx.beginPath(); ctx.moveTo(0,base);
-      for(var pi=0;pi<pts.length;pi+=2) ctx.lineTo(pts[pi]*CW,pts[pi+1]*h);
-      ctx.lineTo(CW,base); ctx.closePath(); ctx.fill();
+      ctx.fillStyle=col; ctx.beginPath(); ctx.moveTo(0,base+T);
+      for(var pi=0;pi<pts.length;pi+=2) ctx.lineTo(pts[pi]*CW,pts[pi+1]*h+T);
+      ctx.lineTo(CW,base+T); ctx.closePath(); ctx.fill();
     }
     // Far mountains (sage-green, smaller peaks)
     mPoly(C.mF,[
@@ -8524,14 +8528,60 @@ function closeTerminal() {
     var x=sx(tx),y=sy(ty);
     ctx.fillStyle=C.d1; ctx.fillRect(x,y,T,T);
   }
-  function drawWater(tx,ty,t2){
-    var x=sx(tx),y=sy(ty);
-    ctx.fillStyle=C.w1;ctx.fillRect(x,y,T,T);
-    var ph=(tx*1.9+ty*2.7+t2*0.0009)%(Math.PI*2);
-    var ry=Math.sin(ph)*3.5;
-    ctx.fillStyle=C.wl;ctx.fillRect(x+5,y+9+ry,16,3);ctx.fillRect(x+24,y+25+ry*0.6,12,2);
-    ctx.fillStyle=C.wf;ctx.fillRect(x+7,y+9+ry,4,1);
-    ctx.fillStyle='rgba(0,0,80,0.12)';ctx.fillRect(x,y,T,2);
+  function drawWater(tx,ty,t2){ /* handled by drawLake */ }
+
+  function drawLake(t2){
+    var r = T * 0.52;
+    // Organic lake shape — more vertices with slight offsets for a natural shoreline
+    var D = T*1.35; // downward shift (1 tile + 0.35 to clear the mountains)
+    var pts = [
+      [sx(6)  + T*0.10, sy(1)  + T*0.00 + D],  // top-left
+      [sx(8)  - T*0.05, sy(1)  - T*0.20 + D],  // top, bows upward left-center
+      [sx(10) + T*0.10, sy(1)  - T*0.16 + D],  // top, slight peak right-center
+      [sx(12) + T*0.55, sy(1)  + T*0.02 + D],  // top-right corner
+      [sx(13) - T*0.08, sy(1)  + T*0.28 + D],  // right, upper
+      [sx(12) + T*0.38, sy(1)  + T*0.68 + D],  // right, mid
+      [sx(12) - T*0.05, sy(2)  + T*0.02 + D],  // bottom-right
+      [sx(10) + T*0.05, sy(2)  + T*0.14 + D],  // bottom, bows downward right-center
+      [sx(8)  - T*0.08, sy(2)  + T*0.07 + D],  // bottom, left-center
+      [sx(6)  + T*0.12, sy(2)  - T*0.02 + D],  // bottom-left
+      [sx(6)  - T*0.18, sy(1)  + T*0.57 + D],  // left, slight outward bulge
+    ];
+    function lakePath(){
+      var n=pts.length;
+      ctx.beginPath();
+      for(var i=0;i<n;i++){
+        var prev=pts[(i-1+n)%n], curr=pts[i], next=pts[(i+1)%n];
+        var dx1=prev[0]-curr[0], dy1=prev[1]-curr[1];
+        var l1=Math.sqrt(dx1*dx1+dy1*dy1);
+        var dx2=next[0]-curr[0], dy2=next[1]-curr[1];
+        var l2=Math.sqrt(dx2*dx2+dy2*dy2);
+        var rr=Math.min(r,l1/2,l2/2);
+        var p1x=curr[0]+dx1/l1*rr, p1y=curr[1]+dy1/l1*rr;
+        if(i===0) ctx.moveTo(p1x,p1y); else ctx.lineTo(p1x,p1y);
+        ctx.arcTo(curr[0],curr[1],next[0],next[1],rr);
+      }
+      ctx.closePath();
+    }
+    ctx.save();
+    lakePath();
+    ctx.fillStyle=C.w1; ctx.fill();
+    ctx.clip();
+    // Animated waves inside clipped shape
+    for(var ty2=1;ty2<=2;ty2++){
+      var txEnd=(ty2===1)?12:11;
+      for(var tx2=6;tx2<=txEnd;tx2++){
+        var x=sx(tx2),y=sy(ty2);
+        var ph=(tx2*1.9+ty2*2.7+t2*0.0009)%(Math.PI*2);
+        var ry=Math.sin(ph)*3.5;
+        ctx.fillStyle=C.wl; ctx.fillRect(x+5,y+22+ry,16,3); ctx.fillRect(x+24,y+38+ry*0.6,12,2);
+        ctx.fillStyle=C.wf; ctx.fillRect(x+7,y+22+ry,4,1);
+      }
+    }
+    // Subtle dark top-edge shadow
+    ctx.fillStyle='rgba(0,0,80,0.10)';
+    ctx.fillRect(sx(6),sy(1),sx(13)-sx(6),Math.round(T*0.08));
+    ctx.restore();
   }
   function drawFlower(tx,ty,n){
     drawGrass(tx,ty,n);
@@ -8559,11 +8609,12 @@ function closeTerminal() {
     var dw=Math.round(bw*0.75),dh=Math.round(bh*0.75);
     var dx=bx+Math.round(bw*0.125),dy=by+bh-dh;
     if(b.style==='teepee')      drawTeepee(dx,dy,dw,dh);
-    else if(b.style==='fort')   drawFort(dx,dy,dw,dh);
-    else if(b.style==='lighthouse') drawLighthouse(dx,dy,dw,dh);
+    else if(b.style==='fort')   drawFort(dx,dy,dw,dh,t2);
+    else if(b.style==='lighthouse') drawLighthouse(dx,dy,dw,dh,t2);
     else                        drawSkiLodge(dx,dy,dw,dh,t2);
     ctx.font='bold 11px monospace';ctx.textAlign='center';
-    var lw=ctx.measureText(b.name).width+16,lx=bx+bw/2,lby=by-14;
+    var lby=Math.round(by+bh*(b.style==='ski_lodge'?0.52:0.625));
+    var lw=ctx.measureText(b.name).width+16,lx=bx+bw/2;
     ctx.fillStyle='rgba(20,12,6,0.88)';
     rr(lx-lw/2,lby-10,lw,18,4);ctx.fill();
     ctx.fillStyle='#EDE8DE';ctx.textBaseline='middle';
@@ -8762,78 +8813,159 @@ function closeTerminal() {
   }
 
   // ── Fort (Signal Desk Pro) ────────────────────────────────
-  function drawFort(dx,dy,dw,dh){
+  function drawFort(dx,dy,dw,dh,t2){
     var cx=Math.round(dx+dw/2),bot=dy+dh;
-    ctx.fillStyle='rgba(0,0,0,0.28)';ctx.fillRect(dx+4,bot-2,dw+4,8);
-    var bodyH=Math.round(dh*0.72),bodyY=bot-bodyH;
-    // Main stone wall
-    ctx.fillStyle='#9a9080';ctx.fillRect(dx,bodyY,dw,bodyH);
-    // Stone block pattern (staggered)
-    ctx.save();ctx.beginPath();ctx.rect(dx,bodyY,dw,bodyH);ctx.clip();
-    var bkH=Math.max(6,Math.round(T*0.09));
-    var bkW=Math.max(14,Math.round(T*0.22));
-    for(var bkr=0,bky=bodyY+4;bky<bot;bky+=bkH,bkr++){
-      var bkoff=bkr%2===0?0:Math.round(bkW*0.5);
-      for(var bkx=dx-bkoff;bkx<dx+dw+bkW;bkx+=bkW){
-        ctx.fillStyle='rgba(0,0,0,0.10)';ctx.fillRect(bkx,bky,bkW-2,bkH-2);
-        ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fillRect(bkx+1,bky+1,bkW-4,1);
+    var stB='#8c8880',stD='#706c64',stM='#9e9a90';
+
+    function stonePat(rx,ry,rw,rh){
+      ctx.save();ctx.beginPath();ctx.rect(rx,ry,rw,rh);ctx.clip();
+      var bH=Math.max(5,Math.round(T*0.08)),bW=Math.max(11,Math.round(T*0.17));
+      for(var r=0,y2=ry+2;y2<ry+rh;y2+=bH,r++){
+        var off=r%2===0?0:Math.round(bW*0.5);
+        for(var x2=rx-off;x2<rx+rw+bW;x2+=bW){
+          ctx.fillStyle='rgba(0,0,0,0.11)';ctx.fillRect(x2,y2,bW-2,bH-2);
+          ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fillRect(x2+1,y2+1,bW-4,1);
+        }
+      }
+      ctx.restore();
+    }
+    function crenel(wx,wy,ww,cH,n){
+      var cW=Math.round(ww/n);
+      ctx.fillStyle=stB;
+      for(var i=0;i<n;i+=2)ctx.fillRect(wx+i*cW,wy-cH,cW,cH+2);
+      for(var i=0;i<n;i+=2){
+        ctx.fillStyle='rgba(0,0,0,0.12)';ctx.fillRect(wx+i*cW,wy-cH,cW,2);ctx.fillRect(wx+i*cW,wy-cH,2,cH+2);
+        ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fillRect(wx+i*cW+cW-2,wy-cH+2,1,cH);
       }
     }
-    ctx.restore();
-    ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(dx,bodyY,4,bodyH);
-    ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fillRect(dx+4,bodyY,2,bodyH);
-    // Crenellations (battlements)
-    var mW=Math.round(dw/8),mH=Math.round(dh*0.14);
-    ctx.fillStyle='#9a9080';
-    for(var mi=0;mi<8;mi++) if(mi%2===0)ctx.fillRect(dx+mi*mW,bodyY-mH,mW,mH+3);
-    // Merlon stone detail
-    ctx.fillStyle='rgba(0,0,0,0.12)';
-    for(var mi2=0;mi2<8;mi2++){
-      if(mi2%2===0){
-        ctx.fillRect(dx+mi2*mW,bodyY-mH,mW,3);ctx.fillRect(dx+mi2*mW,bodyY-mH,3,mH+3);
-        ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fillRect(dx+mi2*mW+mW-2,bodyY-mH+2,1,mH);
-        ctx.fillStyle='rgba(0,0,0,0.12)';
-      }
-    }
-    // Portcullis arch + gate
-    var gW=Math.round(dw*0.26),gH=Math.round(bodyH*0.62);
+
+    // Ground shadow
+    ctx.fillStyle='rgba(0,0,0,0.32)';ctx.fillRect(dx+4,bot-2,dw+6,9);
+
+    var mH=Math.round(dh*0.11);
+    var twW=Math.round(dw*0.21),twH=Math.round(dh*0.86),twY=bot-twH;
+    var wallH=Math.round(dh*0.56),wallY=bot-wallH;
+    var ghW=Math.round(dw*0.32),ghH=Math.round(dh*0.68),ghY=bot-ghH,ghX=cx-Math.round(ghW/2);
+
+    // Curtain walls (between towers and gatehouse)
+    ctx.fillStyle=stD;
+    var wl1X=dx+twW,wl1W=ghX-wl1X;
+    ctx.fillRect(wl1X,wallY,wl1W,wallH); stonePat(wl1X,wallY,wl1W,wallH);
+    var wl2X=ghX+ghW,wl2W=dx+dw-twW-wl2X;
+    ctx.fillRect(wl2X,wallY,wl2W,wallH); stonePat(wl2X,wallY,wl2W,wallH);
+    crenel(wl1X,wallY,wl1W,mH,3);
+    crenel(wl2X,wallY,wl2W,mH,3);
+
+    // Left flanking tower
+    ctx.fillStyle=stM;ctx.fillRect(dx,twY,twW,twH); stonePat(dx,twY,twW,twH);
+    ctx.fillStyle='rgba(0,0,0,0.22)';ctx.fillRect(dx,twY,3,twH);
+    ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fillRect(dx+twW-2,twY,2,twH);
+    // Arrow slit
+    var asH=Math.round(twH*0.17),asX=dx+Math.round(twW/2)-1;
+    ctx.fillStyle='#181410';ctx.fillRect(asX,twY+Math.round(twH*0.40),3,asH);
+    ctx.fillRect(asX-3,twY+Math.round(twH*0.40)+Math.round(asH*0.38),9,Math.round(asH*0.24));
+    // Small window with warm glow
+    var wH2=Math.round(twH*0.10),wW2=Math.round(twW*0.28);
+    ctx.fillStyle='#0e0c08';ctx.fillRect(asX-Math.round(wW2/2)+1,twY+Math.round(twH*0.20),wW2,wH2);
+    ctx.fillStyle='rgba(255,175,55,0.22)';ctx.fillRect(asX-Math.round(wW2/2)+2,twY+Math.round(twH*0.20)+1,wW2-2,wH2-2);
+    crenel(dx,twY,twW,mH,4);
+
+    // Right flanking tower
+    var rtX=dx+dw-twW;
+    ctx.fillStyle='#969290';ctx.fillRect(rtX,twY,twW,twH); stonePat(rtX,twY,twW,twH);
+    ctx.fillStyle='rgba(0,0,0,0.14)';ctx.fillRect(rtX,twY,3,twH);
+    ctx.fillStyle='rgba(255,255,255,0.07)';ctx.fillRect(dx+dw-2,twY,2,twH);
+    asX=rtX+Math.round(twW/2)-1;
+    ctx.fillStyle='#181410';ctx.fillRect(asX,twY+Math.round(twH*0.40),3,asH);
+    ctx.fillRect(asX-3,twY+Math.round(twH*0.40)+Math.round(asH*0.38),9,Math.round(asH*0.24));
+    ctx.fillStyle='#0e0c08';ctx.fillRect(asX-Math.round(wW2/2)+1,twY+Math.round(twH*0.20),wW2,wH2);
+    ctx.fillStyle='rgba(255,175,55,0.22)';ctx.fillRect(asX-Math.round(wW2/2)+2,twY+Math.round(twH*0.20)+1,wW2-2,wH2-2);
+    crenel(rtX,twY,twW,mH,4);
+
+    // Central gatehouse
+    ctx.fillStyle=stB;ctx.fillRect(ghX,ghY,ghW,ghH); stonePat(ghX,ghY,ghW,ghH);
+    ctx.fillStyle='rgba(0,0,0,0.16)';ctx.fillRect(ghX,ghY,3,ghH);
+    ctx.fillStyle='rgba(255,255,255,0.07)';ctx.fillRect(ghX+ghW-2,ghY,2,ghH);
+    // Gatehouse side windows
+    var gwH=Math.round(ghH*0.12),gwW=Math.round(ghW*0.14),gwY=ghY+Math.round(ghH*0.22);
+    ctx.fillStyle='#181410';
+    ctx.fillRect(ghX+Math.round(ghW*0.10),gwY,gwW,gwH);
+    ctx.fillRect(ghX+ghW-Math.round(ghW*0.10)-gwW,gwY,gwW,gwH);
+    ctx.fillStyle='rgba(255,175,55,0.20)';
+    ctx.fillRect(ghX+Math.round(ghW*0.10)+1,gwY+1,gwW-2,gwH-2);
+    ctx.fillRect(ghX+ghW-Math.round(ghW*0.10)-gwW+1,gwY+1,gwW-2,gwH-2);
+    crenel(ghX,ghY,ghW,mH,5);
+
+    // Portcullis arch
+    var gW=Math.round(ghW*0.48),gH=Math.round(ghH*0.60);
     var gX=cx-Math.round(gW/2),gY=bot-gH,gR=Math.round(gW/2);
-    ctx.fillStyle='#2a2018';
+    ctx.fillStyle='#1c1610';
     ctx.beginPath();ctx.moveTo(gX,gY+gR);ctx.lineTo(gX,bot);ctx.lineTo(gX+gW,bot);ctx.lineTo(gX+gW,gY+gR);ctx.arc(cx,gY+gR,gR,0,Math.PI,true);ctx.closePath();ctx.fill();
-    // Arch keystone detail
-    ctx.fillStyle='#403820';ctx.fillRect(cx-3,gY,6,Math.round(gR*0.40));
-    // Portcullis bars (vertical)
-    ctx.strokeStyle='#6a5840';ctx.lineWidth=2;
+    ctx.fillStyle='#302818';ctx.fillRect(cx-3,gY,6,Math.round(gR*0.36)); // keystone
+    // Portcullis grid
+    ctx.strokeStyle='#5a4a28';ctx.lineWidth=2;
     for(var bv=gX+5;bv<gX+gW-3;bv+=6){ctx.beginPath();ctx.moveTo(bv,gY+gR);ctx.lineTo(bv,bot);ctx.stroke();}
-    // Portcullis bars (horizontal)
-    for(var bh4=gY+gR+8;bh4<bot-2;bh4+=8){ctx.beginPath();ctx.moveTo(gX+3,bh4);ctx.lineTo(gX+gW-3,bh4);ctx.stroke();}
-    // Bottom spikes on portcullis
-    ctx.fillStyle='#6a5840';
-    for(var sp=gX+5;sp<gX+gW-3;sp+=6){
-      ctx.beginPath();ctx.moveTo(sp,bot-4);ctx.lineTo(sp-2,bot+3);ctx.lineTo(sp+2,bot+3);ctx.closePath();ctx.fill();
-    }
-    // Corner tower suggestion (slight protrusion on left)
-    ctx.fillStyle='#8a8070';ctx.fillRect(dx-4,bodyY-Math.round(mH*0.5),6,bodyH+mH*0.5);
-    ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(dx-4,bodyY-Math.round(mH*0.5),2,bodyH+mH*0.5);
-    // Flag
-    var fX=dx+Math.round(dw*0.82),fPoleBot=bodyY-mH+3,fPoleTop=fPoleBot-24;
+    for(var bh2=gY+gR+8;bh2<bot-2;bh2+=8){ctx.beginPath();ctx.moveTo(gX+3,bh2);ctx.lineTo(gX+gW-3,bh2);ctx.stroke();}
+    ctx.fillStyle='#5a4a28';
+    for(var sp=gX+5;sp<gX+gW-3;sp+=6){ctx.beginPath();ctx.moveTo(sp,bot-4);ctx.lineTo(sp-2,bot+3);ctx.lineTo(sp+2,bot+3);ctx.closePath();ctx.fill();}
+    // Warm torch glow inside arch
+    ctx.fillStyle='rgba(255,140,30,0.11)';
+    ctx.beginPath();ctx.arc(cx,bot-Math.round(gH*0.30),Math.round(gW*0.40),0,Math.PI*2);ctx.fill();
+
+    // Animated flag on left tower
+    var fX=dx+Math.round(twW*0.62);
+    var fPoleBot=twY-mH+3,fPoleTop=fPoleBot-28;
     ctx.strokeStyle='#7a5830';ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(fX,fPoleBot);ctx.lineTo(fX,fPoleTop);ctx.stroke();
+    var fw=Math.sin(t2*0.0028)*5,fwm=Math.sin(t2*0.0028+1.2)*3;
     ctx.fillStyle='#c83020';
-    ctx.beginPath();ctx.moveTo(fX,fPoleTop);ctx.lineTo(fX+18,fPoleTop+6);ctx.lineTo(fX,fPoleTop+12);ctx.closePath();ctx.fill();
-    ctx.fillStyle='rgba(255,255,255,0.30)';
-    ctx.beginPath();ctx.moveTo(fX,fPoleTop);ctx.lineTo(fX+18,fPoleTop+6);ctx.lineTo(fX,fPoleTop+4);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(fX,fPoleTop);ctx.quadraticCurveTo(fX+9+fwm,fPoleTop+3,fX+18+fw,fPoleTop+6);ctx.quadraticCurveTo(fX+9+fwm,fPoleTop+9,fX,fPoleTop+12);ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.28)';
+    ctx.beginPath();ctx.moveTo(fX,fPoleTop);ctx.quadraticCurveTo(fX+9+fwm,fPoleTop+1,fX+18+fw,fPoleTop+6);ctx.quadraticCurveTo(fX+9+fwm,fPoleTop+3,fX,fPoleTop+4);ctx.closePath();ctx.fill();
+    // Animated flag on right tower (slight phase offset so they don't wave in sync)
+    var fX2=rtX+Math.round(twW*0.62);
+    var fw2=Math.sin(t2*0.0028+0.8)*5,fwm2=Math.sin(t2*0.0028+2.0)*3;
+    ctx.strokeStyle='#7a5830';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(fX2,fPoleBot);ctx.lineTo(fX2,fPoleTop);ctx.stroke();
+    ctx.fillStyle='#c83020';
+    ctx.beginPath();ctx.moveTo(fX2,fPoleTop);ctx.quadraticCurveTo(fX2+9+fwm2,fPoleTop+3,fX2+18+fw2,fPoleTop+6);ctx.quadraticCurveTo(fX2+9+fwm2,fPoleTop+9,fX2,fPoleTop+12);ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.28)';
+    ctx.beginPath();ctx.moveTo(fX2,fPoleTop);ctx.quadraticCurveTo(fX2+9+fwm2,fPoleTop+1,fX2+18+fw2,fPoleTop+6);ctx.quadraticCurveTo(fX2+9+fwm2,fPoleTop+3,fX2,fPoleTop+4);ctx.closePath();ctx.fill();
+
     // Outline
-    ctx.strokeStyle='rgba(0,0,0,0.40)';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.moveTo(dx,bot);ctx.lineTo(dx,bodyY);ctx.lineTo(dx+dw,bodyY);ctx.lineTo(dx+dw,bot);ctx.stroke();
+    ctx.strokeStyle='rgba(0,0,0,0.34)';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(dx,bot);ctx.lineTo(dx,twY);ctx.lineTo(dx+twW,twY);ctx.lineTo(dx+twW,wallY);
+    ctx.moveTo(dx+dw,bot);ctx.lineTo(dx+dw,twY);ctx.lineTo(rtX,twY);ctx.lineTo(rtX,wallY);
+    ctx.stroke();
   }
 
   // ── Lighthouse (Memex) ────────────────────────────────────
-  function drawLighthouse(dx,dy,dw,dh){
+  function drawLighthouse(dx,dy,dw,dh,t2){
     var cx=Math.round(dx+dw/2),bot=dy+dh;
     var tW=Math.round(dw*0.38),tH=Math.round(dh*0.82);
     var tX=cx-Math.round(tW/2),tTop=bot-tH;
     var topW=Math.round(tW*0.70),topX=cx-Math.round(topW/2);
+    // Sweeping light — circular "pointing at us" halo (drawn first, lighthouse renders on top)
+    var lhH2b=Math.round(tH*0.17),lhY2b=tTop+5-lhH2b-4;
+    var lhCY=lhY2b+Math.round(lhH2b/2);
+    var phase=(t2%10000)/10000;
+    if(phase>0.375&&phase<0.625){
+      var sweepT=(phase-0.375)/0.25;           // 0→1 across the sweep window
+      var pulse=Math.sin(sweepT*Math.PI);       // 0→1→0, peaks at sweepT=0.5
+      if(pulse>0.01){
+        // Circle drifts slightly across the lantern face as it sweeps past
+        var glowX=cx+(sweepT-0.5)*T*0.6;
+        var glowR=T*2.8*pulse;
+        var gr=ctx.createRadialGradient(glowX,lhCY,0,glowX,lhCY,glowR);
+        gr.addColorStop(0,  'rgba(255,248,180,'+(pulse*0.90)+')');
+        gr.addColorStop(0.25,'rgba(255,230,120,'+(pulse*0.60)+')');
+        gr.addColorStop(0.6, 'rgba(255,210,80,' +(pulse*0.28)+')');
+        gr.addColorStop(1,   'rgba(255,200,60,0)');
+        ctx.fillStyle=gr;
+        ctx.beginPath();ctx.arc(glowX,lhCY,glowR,0,Math.PI*2);ctx.fill();
+      }
+    }
     // Shadow
     ctx.fillStyle='rgba(0,0,0,0.26)';ctx.fillRect(tX+2,bot-2,tW+4,8);
     // Rock/stone base at foot
@@ -8895,6 +9027,11 @@ function closeTerminal() {
     ctx.beginPath();ctx.moveTo(cx,lhY2-14);ctx.lineTo(lhX2,lhY2);ctx.lineTo(lhX2+lhW2,lhY2);ctx.closePath();ctx.fill();
     ctx.fillStyle='rgba(255,255,255,0.10)';
     ctx.beginPath();ctx.moveTo(cx,lhY2-14);ctx.lineTo(cx+Math.round(lhW2*0.5),lhY2);ctx.lineTo(lhX2+lhW2,lhY2);ctx.closePath();ctx.fill();
+    // Lantern brightens during sweep
+    if(phase>0.375&&phase<0.625){
+      var sweepT2=(phase-0.375)/0.25,pulse2=Math.sin(sweepT2*Math.PI);
+      if(pulse2>0.01){ctx.fillStyle='rgba(255,255,210,'+(pulse2*0.45)+')';ctx.fillRect(lhX2,lhY2,lhW2,lhH2);}
+    }
     // Outline
     ctx.strokeStyle='rgba(0,0,0,0.35)';ctx.lineWidth=1.5;
     ctx.beginPath();ctx.moveTo(tX,bot-Math.round(dh*0.06));ctx.lineTo(topX,tTop);ctx.moveTo(tX+tW,bot-Math.round(dh*0.06));ctx.lineTo(topX+topW,tTop);ctx.stroke();
@@ -8954,12 +9091,13 @@ function closeTerminal() {
   }
 
   // ── Trees: SDV-style large detailed canopies ──────────────
-  function drawTree(tx,ty){
-    var pine=(tx>=16||tx===19);
+  function drawTree(tx,ty,sz){
+    sz=sz||1.0;
+    var pine=(tx>=16&&ty<=2)||tx===19;
     var x=sx(tx)+T/2, y=sy(ty)+T/2;
     // Ground shadow
     ctx.fillStyle='rgba(0,0,0,0.22)';
-    ctx.beginPath();ctx.ellipse(x,y+Math.round(T*0.20),Math.round(T*0.38),Math.round(T*0.12),0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(x,y+Math.round(T*0.20*sz),Math.round(T*0.38*sz),Math.round(T*0.12*sz),0,0,Math.PI*2);ctx.fill();
 
     if(pine){
       // Tall triangular conifer
@@ -8971,8 +9109,8 @@ function closeTerminal() {
       // 4 layered triangle sections
       var layers=[[pw2,0],[pw2*0.78,-ph2*0.26],[pw2*0.56,-ph2*0.52],[pw2*0.34,-ph2*0.78]];
       for(var li=0;li<layers.length-1;li++){
-        var lw3=layers[li][0], lt=ty2-T*0.16+layers[li][1];
-        var lw3n=layers[li+1][0], ltn=ty2-T*0.16+layers[li+1][1];
+        var lw3=layers[li][0], lt=ty2+T*1.00+layers[li][1];
+        var lw3n=layers[li+1][0], ltn=ty2+T*1.00+layers[li+1][1];
         ctx.fillStyle=li%2===0?C.tPm:C.tPd;
         ctx.beginPath();ctx.moveTo(x,ltn-8);ctx.lineTo(x-lw3/2,lt+10);ctx.lineTo(x+lw3/2,lt+10);ctx.closePath();ctx.fill();
         // Right-side highlight strip
@@ -8984,10 +9122,10 @@ function closeTerminal() {
       }
     } else {
       // Round deciduous — large, irregular, multi-layer SDV style
-      var tr=Math.round(T*0.72); // large radius
-      var cy2=y-Math.round(T*0.28); // canopy center higher up
+      var tr=Math.round(T*0.72*sz); // large radius
+      var cy2=y-Math.round(T*0.28*sz); // canopy center higher up
       // Trunk with wood detail
-      var tw=Math.max(5,Math.round(T*0.10));
+      var tw=Math.max(3,Math.round(T*0.10*sz));
       ctx.fillStyle=C.tRt;ctx.fillRect(x-Math.round(tw/2),cy2+Math.round(tr*0.58),tw,Math.round(T*0.50));
       ctx.fillStyle='rgba(0,0,0,0.28)';ctx.fillRect(x-Math.round(tw/2),cy2+Math.round(tr*0.58),Math.round(tw*0.38),Math.round(T*0.50));
       ctx.fillStyle='rgba(255,255,255,0.14)';ctx.fillRect(x+Math.round(tw*0.04),cy2+Math.round(tr*0.58),Math.round(tw*0.30),Math.round(T*0.35));
@@ -9043,6 +9181,68 @@ function closeTerminal() {
     ctx.fillStyle='#EDE8DE';ctx.textBaseline='middle';ctx.fillText(w.name,x,ly+7);
   }
 
+  // ── Boats ─────────────────────────────────────────────────
+  var BOATS = [
+    {x:7.4, y:2.75, vx: 0.095, vy: 0.008, hull:'#7a5030', sail:'#e8e0d0', phase:0.0},
+  ];
+
+  function updateBoats(dt){
+    BOATS.forEach(function(b){
+      b.x+=b.vx*dt; b.y+=b.vy*dt;
+      // x bounds
+      if(b.x<6.55){b.x=6.55;b.vx=Math.abs(b.vx);}
+      // x right: row1 cap 12.1, row2 cap 11.3
+      var xCap=(b.y<1.95)?12.1:11.3;
+      if(b.x>xCap){b.x=xCap;b.vx=-Math.abs(b.vx);}
+      // y bounds
+      if(b.y<2.31){b.y=2.31;b.vy=Math.abs(b.vy);}
+      if(b.y>3.30){b.y=3.30;b.vy=-Math.abs(b.vy);}
+    });
+  }
+
+  function drawBoat(b,t2){
+    var px=Math.round(OX+b.x*T), py=Math.round(OY+b.y*T);
+    var bob=Math.sin(t2*0.0018+b.phase)*2.0;
+    var dir=b.vx>=0?1:-1; // sail direction
+    var hw=Math.round(T*0.22), hh=Math.round(T*0.11);
+    var mh=Math.round(T*0.26), sw=Math.round(T*0.18);
+    // Water shadow
+    ctx.fillStyle='rgba(0,0,60,0.20)';
+    ctx.beginPath();ctx.ellipse(px,py+hh+2+bob,hw,Math.round(T*0.04),0,0,Math.PI*2);ctx.fill();
+    // Hull
+    ctx.fillStyle=b.hull;
+    ctx.beginPath();
+    ctx.moveTo(px-hw,   py+bob);
+    ctx.lineTo(px+hw,   py+bob);
+    ctx.lineTo(px+hw-3, py+hh+bob);
+    ctx.lineTo(px-hw+3, py+hh+bob);
+    ctx.closePath(); ctx.fill();
+    // Hull highlight strip
+    ctx.fillStyle='rgba(255,255,255,0.18)';
+    ctx.fillRect(px-hw+2,py+bob,hw*2-4,2);
+    // Mast
+    ctx.fillStyle='#b89050';
+    ctx.fillRect(px-1,py-mh+bob,2,mh);
+    // Sail: narrow at top, wide at bottom (correct orientation)
+    ctx.fillStyle=b.sail;
+    var steps=7;
+    for(var si=0;si<steps;si++){
+      var frac=si/steps; // 0=top, 1=bottom
+      var sw2=Math.round(sw*(0.10+frac*0.90)); // wide at bottom, pointed at top
+      var sy4=py-mh+bob+Math.round(mh*frac);
+      var sh2=Math.round(mh/steps)+1;
+      ctx.fillRect(px+(dir>0?1:-sw2),sy4,sw2,sh2);
+    }
+    // Sail shadow edge
+    ctx.fillStyle='rgba(0,0,0,0.12)';
+    for(var si2=0;si2<steps;si2++){
+      var frac2=si2/steps;
+      var sw3=Math.round(sw*(0.10+frac2*0.90));
+      var sy5=py-mh+bob+Math.round(mh*frac2);
+      ctx.fillRect(px+(dir>0?1:-sw3),sy5,2,Math.round(mh/steps)+1);
+    }
+  }
+
   // ── Update wolts ──────────────────────────────────────────
   function updateWolts(dt){
     WOLTS.forEach(function(w){
@@ -9068,10 +9268,12 @@ function closeTerminal() {
     drawBackground(t2);
     // Ground tiles (dark-grass in top 3 rows are transparent → bg shows)
     for(var gy=0;gy<MH;gy++) for(var gx=0;gx<MW;gx++) drawTile(gx,gy,t2);
+    // Lake drawn as one smooth rounded shape over the tile grid
+    drawLake(t2);
     // Painter-sorted objects
     var objs=[];
     TREES.forEach(function(tr){
-      objs.push({d:tr.ty+1,fn:(function(t3){return function(){drawTree(t3.tx,t3.ty);};})(tr)});
+      objs.push({d:tr.ty+1,fn:(function(t3){return function(){drawTree(t3.tx,t3.ty,t3.sz);};})(tr)});
     });
     SHRUBS.forEach(function(sh){
       objs.push({d:sh.ty+0.8,fn:(function(s2){return function(){drawShrub(s2.tx,s2.ty);};})(sh)});
@@ -9081,6 +9283,9 @@ function closeTerminal() {
     });
     BLDS.forEach(function(b){
       objs.push({d:b.ty+b.h,fn:(function(b2){return function(){drawBuilding(b2,t2);};})(b)});
+    });
+    BOATS.forEach(function(bo){
+      objs.push({d:bo.y+0.2,fn:(function(b2){return function(){drawBoat(b2,t2);};})(bo)});
     });
     WOLTS.forEach(function(w){
       objs.push({d:w.y+0.5,fn:(function(w2){return function(){drawWolt(w2,t2);};})(w)});
@@ -9092,7 +9297,7 @@ function closeTerminal() {
   // ── Loop / resize / click ─────────────────────────────────
   function loop(t2){
     var dt=Math.min((t2-lastT)/1000,0.05);lastT=t2;
-    updateWolts(dt);draw(t2);
+    updateBoats(dt);updateWolts(dt);draw(t2);
     raf=requestAnimationFrame(loop);
   }
 
