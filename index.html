@@ -4527,6 +4527,7 @@
   function lodgeSetAsHome() {
     customHomeProject = { isLodge: true };
     syncLodgeNav();
+    setNavActive('nav-home');
     const btn = document.getElementById('lodge-set-home-btn');
     if (btn) btn.disabled = true;
   }
