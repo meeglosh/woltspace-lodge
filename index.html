@@ -8009,10 +8009,10 @@ function closeTerminal() {
 
   // ── Buildings ───────────────────────────────────────────────
   var BLDS = [
-    {tx:7, ty:4, w:4, h:3, name:'Woltspace Lodge',   roof:'red',   cx:9,    cy:7.6 },
-    {tx:14,ty:1, w:3, h:2, name:'Creatorspace',      roof:'blue',  cx:15.5, cy:3.6 },
-    {tx:0, ty:8, w:3, h:3, name:'Signal Desk Pro',   roof:'green', cx:1.5,  cy:11.6},
-    {tx:16,ty:8, w:3, h:3, name:'Memex',             roof:'amber', cx:17.5, cy:11.6},
+    {tx:7, ty:4, w:4, h:3, name:'Woltspace Lodge',   roof:'red',   cx:9,    cy:7.6,  project:null},
+    {tx:14,ty:1, w:3, h:2, name:'Creatorspace',      roof:'blue',  cx:15.5, cy:3.6,  project:'Creatorspace'},
+    {tx:0, ty:8, w:3, h:3, name:'Signal Desk Pro',   roof:'green', cx:1.5,  cy:11.6, project:'Signal Desk Pro'},
+    {tx:16,ty:8, w:3, h:3, name:'Memex',             roof:'amber', cx:17.5, cy:11.6, project:'Memex'},
   ];
 
   // ── Trees (tile coords; skip building footprints) ───────────
@@ -8309,11 +8309,36 @@ function closeTerminal() {
     OY=Math.round((CH-MH*T)/2);
   }
 
+  function bldAtPoint(px, py) {
+    for (var i=0; i<BLDS.length; i++) {
+      var b=BLDS[i];
+      if (px>=OX+b.tx*T && px<=OX+(b.tx+b.w)*T && py>=OY+b.ty*T && py<=OY+(b.ty+b.h)*T) return b;
+    }
+    return null;
+  }
+
+  var _onClick, _onMove;
   window.startLodge=function(){
     var canvas=document.getElementById('lodge-canvas');
     if (!canvas) return;
     ctx=canvas.getContext('2d');
     ctx.imageSmoothingEnabled=false;
+
+    _onClick=function(e){
+      var r=canvas.getBoundingClientRect();
+      var scaleX=canvas.width/r.width, scaleY=canvas.height/r.height;
+      var b=bldAtPoint((e.clientX-r.left)*scaleX,(e.clientY-r.top)*scaleY);
+      if (b&&b.project&&typeof openProject==='function') openProject(b.project);
+    };
+    _onMove=function(e){
+      var r=canvas.getBoundingClientRect();
+      var scaleX=canvas.width/r.width, scaleY=canvas.height/r.height;
+      var b=bldAtPoint((e.clientX-r.left)*scaleX,(e.clientY-r.top)*scaleY);
+      canvas.style.cursor=(b&&b.project)?'pointer':'default';
+    };
+    canvas.addEventListener('click',_onClick);
+    canvas.addEventListener('mousemove',_onMove);
+
     setTimeout(function(){
       resize();
       if (!raf){lastT=performance.now();raf=requestAnimationFrame(loop);}
@@ -8321,6 +8346,12 @@ function closeTerminal() {
   };
   window.stopLodge=function(){
     if (raf){cancelAnimationFrame(raf);raf=null;}
+    var canvas=document.getElementById('lodge-canvas');
+    if (canvas){
+      if (_onClick) canvas.removeEventListener('click',_onClick);
+      if (_onMove)  canvas.removeEventListener('mousemove',_onMove);
+      canvas.style.cursor='default';
+    }
   };
   window.addEventListener('resize',function(){if(raf)resize();});
 })();
