@@ -1213,6 +1213,12 @@
     min-height: 0;
   }
 
+  #custom-home-view {
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+  }
+
   .home-scroll {
     flex: 1;
     overflow-y: auto;
@@ -2782,6 +2788,7 @@
   }
   .main:has(#chat-view[style*="flex"]),
   .main:has(#home-view[style*="flex"]),
+  .main:has(#custom-home-view[style*="flex"]),
   .main:has(#lodge-view[style*="flex"]) {
     padding: 0;
     overflow: hidden;
@@ -3603,7 +3610,8 @@
       width: 100%;
     }
     .main:has(#chat-view[style*="flex"]),
-    .main:has(#home-view[style*="flex"]) {
+    .main:has(#home-view[style*="flex"]),
+    .main:has(#custom-home-view[style*="flex"]) {
       padding: 0;
     }
 
@@ -3741,7 +3749,7 @@
       </div>
     </div>
 
-    <div class="wolt-card" onclick="openWoltSite('creationwolt')">
+    <div class="wolt-card" onclick="openCreationwoltSite()">
       <div class="wolt-avatar">
         🦫
         <div class="wolt-status-dot running"></div>
@@ -3890,6 +3898,11 @@
 <!-- ── MAIN ──────────────────────────────────────────────────── -->
 <main class="main">
 
+<!-- ── CUSTOM HOME VIEW (set-as-home) ─────────────────────────── -->
+<div id="custom-home-view" style="display:none;flex:1;min-height:0">
+  <iframe id="custom-home-iframe" style="width:100%;height:100%;border:none;display:block"></iframe>
+</div>
+
 <!-- ── HOME VIEW ──────────────────────────────────────────────── -->
 <div id="home-view" style="display:flex">
   <div class="home-scroll" id="home-scroll">
@@ -3963,7 +3976,7 @@
         </div>
       </div>
       <div class="context-menu" id="menu-1">
-        <div class="context-menu-item">⌂ Set as Home</div>
+        <div class="context-menu-item" onclick="cardSetAsHome('Creatorspace')">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Reassign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
@@ -4010,7 +4023,7 @@
         </div>
       </div>
       <div class="context-menu" id="menu-2">
-        <div class="context-menu-item">⌂ Set as Home</div>
+        <div class="context-menu-item" onclick="cardSetAsHome('Signal Desk Pro')">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Reassign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
@@ -4054,7 +4067,7 @@
         </div>
       </div>
       <div class="context-menu" id="menu-4">
-        <div class="context-menu-item">⌂ Set as Home</div>
+        <div class="context-menu-item" onclick="cardSetAsHome('Memex')">⌂ Set as Home</div>
         <div class="context-menu-item">✏ Edit project</div>
         <div class="context-menu-item">🔁 Assign wolt</div>
         <div class="context-menu-item">📋 Copy URL</div>
@@ -4468,6 +4481,12 @@
     document.getElementById(id).classList.toggle('open');
   }
 
+  function cardSetAsHome(name) {
+    document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('open'));
+    customHomeProject = { name: name, isWoltSite: false };
+    showHome();
+  }
+
   // Close menus on outside click
   document.addEventListener('click', e => {
     if (!e.target.closest('.action-btn') && !e.target.closest('.context-menu')) {
@@ -4529,7 +4548,9 @@
 
   function pdMenuSetHome() {
     pdCloseMenu();
-    // stub — wire to real home-setting logic when built
+    customHomeProject = { name: pdProjectName, isWoltSite: pdIsWoltSite };
+    closeProject();
+    showHome();
   }
 
   function pdMenuReassignWolt(event) {
@@ -5006,7 +5027,7 @@ function setNavActive(id) {
 }
 
 function hideAllViews() {
-  ['projects-view','all-sessions-view','threads-view','chat-view','home-view','lodge-view','waking-view'].forEach(id => {
+  ['projects-view','all-sessions-view','threads-view','chat-view','home-view','custom-home-view','lodge-view','waking-view'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -5696,12 +5717,30 @@ let homeFirstProjectCreated = false;
 
 function showHome() {
   hideAllViews();
-  const el = document.getElementById('home-view');
-  el.style.display = 'flex';
   setNavActive('nav-home');
   document.querySelectorAll('.wolt-card').forEach(c => c.classList.remove('active'));
-  setGeoVisible(true);
-  randomizeHomeText();
+
+  if (customHomeProject) {
+    // Load the set-as-home project/site into the full-width iframe
+    const chv = document.getElementById('custom-home-view');
+    chv.style.display = 'flex';
+    const iframe = document.getElementById('custom-home-iframe');
+    let page = '';
+    if (customHomeProject.isWoltSite) {
+      const wolt = WOLT_DATA[customHomeProject.name];
+      page = wolt && wolt.site ? wolt.site.page : '';
+    } else {
+      const proj = PROJECT_DATA[customHomeProject.name];
+      page = proj ? proj.page : '';
+    }
+    if (iframe.srcdoc !== page) iframe.srcdoc = page;
+    setGeoVisible(false);
+  } else {
+    const el = document.getElementById('home-view');
+    el.style.display = 'flex';
+    setGeoVisible(true);
+    randomizeHomeText();
+  }
 }
 
 function sendHomeMessage() {
@@ -5999,6 +6038,59 @@ function openWoltSite(name) {
   setPdChatMode(pdChatMode);
 }
 
+function openCreationwoltSite() {
+  hideAllViews();
+  document.querySelector('aside.sidebar').classList.add('hidden');
+  document.querySelector('main.main').style.display = 'none';
+
+  const overlay = document.getElementById('project-detail');
+  overlay.style.display = 'flex';
+  document.body.classList.add('project-open');
+
+  pdCurrentUrl = '';
+  pdProjectName = 'creationwolt';
+  pdIsWoltSite = true;
+  pdIsHomeView = true;
+  document.getElementById('pd-back-project').textContent = 'creationwolt';
+  pdMode = _pdOpenMode();
+  pdSetMode(pdMode);
+
+  // Move bg-scene + home-view into the preview panel
+  const iframe = document.getElementById('pd-iframe');
+  iframe.style.display = 'none';
+  const preview = document.getElementById('pd-preview-panel');
+  preview.style.position = 'relative';
+  preview.style.background = 'var(--bg)';
+
+  const bgS = document.getElementById('bg-scene');
+  if (bgS) {
+    _bgParent = bgS.parentNode; _bgNext = bgS.nextSibling;
+    bgS.style.position = 'absolute'; bgS.style.inset = '0'; bgS.style.display = '';
+    preview.appendChild(bgS);
+  }
+
+  const hv = document.getElementById('home-view');
+  _hvParent = hv.parentNode; _hvNext = hv.nextSibling;
+  hv.style.position = 'absolute'; hv.style.inset = '0';
+  hv.style.display = 'flex'; hv.style.overflow = 'auto';
+  preview.appendChild(hv);
+  randomizeHomeText();
+
+  // Chat panel
+  const wolt = WOLT_DATA['creationwolt'];
+  const head = document.getElementById('pd-wolt-head');
+  const msgs = document.getElementById('pd-messages');
+  document.getElementById('pd-input-area').style.display = '';
+  head.innerHTML = `<div class="pd-wolt-avatar">${wolt.emoji||'🦫'}</div>
+    <div><div class="pd-wolt-name">creationwolt</div><div class="pd-wolt-meta">${wolt.meta||''}</div></div>`;
+  pdCurrentThread = wolt.threads?.[0] || null;
+  if (!pdCurrentThread) {
+    msgs.innerHTML = `<div style="text-align:center;padding:40px 16px;font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,0.22)">No sessions yet.<br>Send a message to start.</div>`;
+  }
+  document.getElementById('pd-input').value = '';
+  setPdChatMode(pdChatMode);
+}
+
 function openProject(name) {
   const proj = PROJECT_DATA[name];
   if (!proj) return;
@@ -6071,6 +6163,23 @@ function renderPdChat(proj) {
 }
 
 function closeProject() {
+  if (pdIsHomeView) {
+    pdIsHomeView = false;
+    // Restore home-view and bg-scene to their original DOM positions
+    const preview = document.getElementById('pd-preview-panel');
+    preview.style.position = '';
+    preview.style.background = '';
+    const hv = document.getElementById('home-view');
+    hv.style.position = ''; hv.style.inset = ''; hv.style.overflow = '';
+    hv.style.display = 'flex';
+    if (_hvParent) _hvParent.insertBefore(hv, _hvNext);
+    const bgS = document.getElementById('bg-scene');
+    if (bgS && _bgParent) {
+      bgS.style.position = ''; bgS.style.inset = '';
+      _bgParent.insertBefore(bgS, _bgNext);
+    }
+    document.getElementById('pd-iframe').style.display = '';
+  }
   document.getElementById('project-detail').style.display = 'none';
   document.getElementById('pd-iframe').srcdoc = '';
   document.querySelector('aside.sidebar').classList.remove('hidden');
@@ -6078,7 +6187,7 @@ function closeProject() {
   const bgS2 = document.getElementById('bg-scene'); if (bgS2) bgS2.style.display = '';
   document.body.classList.remove('project-open');
   pdCloseMenu();
-  pdMode = 'split'; // reset state for next open
+  pdMode = 'split';
 }
 
 function _pdOpenMode() {
@@ -6090,6 +6199,9 @@ let pdMode = 'split';
 let pdSavedChatWidth = '380px';
 let pdProjectName = '';
 let pdIsWoltSite = false;
+let pdIsHomeView = false;
+let _hvParent = null, _hvNext = null, _bgParent = null, _bgNext = null;
+let customHomeProject = null; // { name, isWoltSite } when a project/site is set as home
 
 // Snap mode when resizing across the mobile breakpoint
 window.addEventListener('resize', function() {
